@@ -1,6 +1,54 @@
 import { BookItem } from "./books";
+import { FREE_CHAPTER_COUNT } from "./chapterAccess";
 
-export const DUMMY_BOOKS: BookItem[] = [
+function normalizeChapterFreeFlags(books: BookItem[]): BookItem[] {
+  return books.map((book) => ({
+    ...book,
+    chaptersList: book.chaptersList?.map((chapter) => ({
+      ...chapter,
+      isFree: book.isFree || chapter.chapterNumber <= FREE_CHAPTER_COUNT,
+    })),
+  }));
+}
+
+function withChapterLockStatus(books: BookItem[]): BookItem[] {
+  return books.map((book) => ({
+    ...book,
+    chaptersList: book.chaptersList?.map((chapter) => ({
+      ...chapter,
+      isLocked:
+        !book.isFree &&
+        chapter.chapterNumber > FREE_CHAPTER_COUNT &&
+        !chapter.isFree,
+    })),
+  }));
+}
+
+/** Locked chapters get recent release dates so they stay locked for WAIT_DAYS */
+function applyLockedChapterReleaseDates(books: BookItem[]): BookItem[] {
+  const now = new Date();
+
+  return books.map((book) => ({
+    ...book,
+    chaptersList: book.chaptersList?.map((chapter) => {
+      if (!chapter.isLocked) {
+        return chapter;
+      }
+
+      const daysAgo = Math.max(0, 5 - chapter.chapterNumber);
+      const releaseDate = new Date(now);
+      releaseDate.setUTCDate(releaseDate.getUTCDate() - daysAgo);
+      releaseDate.setUTCHours(8, 0, 0, 0);
+
+      return {
+        ...chapter,
+        releasedAt: releaseDate.toISOString(),
+      };
+    }),
+  }));
+}
+
+const RAW_BOOKS: BookItem[] = [
   {
     id: "1",
     title: "My Princess",
@@ -13,6 +61,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Ongoing",
     rating: 4.8,
     author: "Lee Min-Ho",
+    authorId: "author_1",
+    isFree: false,
     viewsCount: 154200,
     favoritesCount: 8900,
     createdAt: "2026-01-10T08:00:00Z",
@@ -26,6 +76,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Lembah itu sunyi senyap ketika malam mulai merayap naik. Di bawah reruntuhan menara kuno, seberkas cahaya biru redup mulai berkedip, memecah kegelapan yang telah mendominasi tempat itu selama ribuan tahun. Ethan menarik napas dalam-dalam, merasakan dinginnya udara malam menembus jubah kulitnya yang usang. Tangannya bergetar bukan karena kedinginan, melainkan karena artefak kuno yang baru saja ia temukan di balik dinding batu tersembunyi. 'Jadi, legenda itu nyata...' bisiknya lirih. Suaranya bergema samar.",
         createdAt: "2026-01-10",
+        releasedAt: "2026-01-10T08:00:00Z",
+        isFree: false,
       },
       {
         id: "ch1_2",
@@ -35,6 +87,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Hari penobatan pun tiba lebih cepat dari yang diduga. Seluruh aula istana dipenuhi oleh para bangsawan yang mengenakan jubah sutra mewah, namun tatapan mereka penuh dengan rasa skeptis dan kecurigaan. Ethan berdiri di depan altar suci, memandangi mahkota emas bertatahkan batu rubi yang berkilau di bawah cahaya lilin. Jantungnya berdegup kencang. Ia tahu, melangkah maju berarti meninggalkan kehidupan lamanya sebagai manusia biasa untuk selamanya.",
         createdAt: "2026-01-15",
+        releasedAt: "2026-01-15T08:00:00Z",
+        isFree: false,
       },
       {
         id: "ch1_3",
@@ -44,6 +98,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Lorong-lorong istana terasa jauh lebih dingin saat malam tiba. Di balik dinding batu tebal ini, rahasia-rahasia gelap kekaisaran disembunyikan dari dunia luar. Ethan berjalan tanpa suara, mengikuti bayangan kepala pelayan tua yang tampak mencurigakan. Langkah kaki mereka bergema samar, menuntunnya ke sebuah perpustakaan rahasia di mana sebuah buku harian berlapis debu mengungkap konspirasi besar tentang kematian mendadak raja sebelumnya.",
         createdAt: "2026-01-20",
+        releasedAt: "2026-01-20T08:00:00Z",
+        isFree: false,
       },
       {
         id: "ch1_4",
@@ -53,6 +109,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Dentingan gelas kristal dan suara tawa palsu memenuhi ruang perjamuan utama. Sebagai pewaris baru, Ethan dipaksa duduk di kursi tertinggi, menjadi pusat perhatian ratusan pasang mata yang haus kekuasaan. Di sudut ruangan, sepasang mata tajam milik seorang putri dari kerajaan tetangga terus mengawasinya. Senyuman tipisnya menyiratkan sebuah rencana licik yang siap menjebak sang pangeran baru dalam permainan politik berbahaya.",
         createdAt: "2026-01-25",
+        releasedAt: "2026-07-02T08:00:00Z",
+        isFree: false,
       },
       {
         id: "ch1_5",
@@ -62,6 +120,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Berdiri di balkon istana yang menghadap langsung ke kerlap-kerlip lampu kota modern di bawah sana, Ethan merenung dalam keheningan. Di satu sisi, ia merindukan kedai kopi kecil tempatnya bekerja dan gadis biasa yang selalu tersenyum menyambutnya. Di sisi lain, takdir kekaisaran kini bertumpu di pundaknya. Saat angin malam berembus kencang, ia menyadari bahwa mahkota ini adalah sebuah kutukan emas yang mengunci kebebasannya.",
         createdAt: "2026-01-30",
+        releasedAt: "2026-07-03T08:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -77,6 +137,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Completed",
     rating: 4.9,
     author: "Matt Haig",
+    authorId: "author_2",
+    isFree: false,
     viewsCount: 320500,
     favoritesCount: 24100,
     createdAt: "2025-05-20T09:00:00Z",
@@ -90,6 +152,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Nora menemukan dirinya berdiri di depan sebuah bangunan besar berarsitektur gotik di tengah kabut abu-abu. Saat melangkah masuk, ia melihat jam dinding besar yang jarumnya berhenti tepat di tengah malam. Tempat ini terasa damai namun asing. Seorang wanita tua dengan pakaian pustakawan menyambutnya dengan senyuman hangat, menunjuk jutaan buku hijau tua yang berjajar rapi hingga ke langit-langit.",
         createdAt: "2025-05-20",
+        releasedAt: "2025-05-20T09:00:00Z",
+        isFree: false,
       },
       {
         id: "ch2_2",
@@ -99,6 +163,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Pustakawan itu menyerahkan sebuah buku yang sangat berat kepada Nora. Buku itu tidak memiliki judul, melainkan berisi daftar semua penyesalan yang pernah ia rasakan sepanjang hidupnya. Membaca lembar demi lembar membuat dadanya sesak, mengingat setiap keputusan kecil yang ia sesali. 'Setiap penyesalan adalah gerbang menuju kehidupan alternatif yang bisa kamu coba sekarang,' bisik wanita tua itu misterius.",
         createdAt: "2025-05-25",
+        releasedAt: "2025-05-25T09:00:00Z",
+        isFree: false,
       },
       {
         id: "ch2_3",
@@ -108,6 +174,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Dalam sekejap mata, kabut abu-abu berubah menjadi hamparan es putih yang sangat luas di Svalbard. Nora kini terbangun di dalam kapal riset Arktik, mengenakan pakaian tebal penahan badai. Di kehidupan ini, ia tidak menyerah pada mimpinya untuk menjadi seorang ilmuwan es. Ia merasakan petualangan sejati, meneliti retakan gletser kuno, namun rasa kesepian yang mendalam di hatinya ternyata tetap tidak berubah.",
         createdAt: "2025-06-01",
+        releasedAt: "2025-06-01T09:00:00Z",
+        isFree: false,
       },
       {
         id: "ch2_4",
@@ -117,6 +185,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Nora membuka mata di bawah sorotan lampu panggung yang menyilaukan. Gemuruh teriakan puluhan ribu penggemar meneriakkan namanya bergaung keras. Ia memegang gitar elektrik, menjadi vokalis band terkenal yang sukses di seluruh dunia bersama saudaranya. Namun di balik kemegahan hotel mewah dan popularitas tinggi, ia mendapati saudaranya hancur akibat tekanan industri, membuatnya mempertanyakan arti kesuksesan sejati.",
         createdAt: "2025-06-05",
+        releasedAt: "2025-06-05T09:00:00Z",
+        isFree: false,
       },
       {
         id: "ch2_5",
@@ -126,6 +196,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Kehidupan berikutnya membawanya ke sebuah rumah kecil yang asri di pinggiran kota London. Ia menikah dengan seorang pria baik hati dan memiliki seorang putri kecil yang menggemaskan. Segalanya tampak berjalan sangat sempurna, persis seperti gambaran hidup ideal yang selalu ia impikan. Tetapi Nora menyadari, kebahagiaan ini bukanlah miliknya yang asli, melainkan milik versi Nora lain yang telah berjuang di garis waktu ini.",
         createdAt: "2025-06-10",
+        releasedAt: "2025-06-10T09:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -141,6 +213,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Ongoing",
     rating: 4.7,
     author: "Kenji Sato",
+    authorId: "author_3",
+    isFree: false,
     viewsCount: 189000,
     favoritesCount: 12300,
     createdAt: "2026-02-15T10:00:00Z",
@@ -154,6 +228,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Hujan asam mengguyur distrik Shinjuku, memantulkan cahaya neon merah dan biru di genangan air jalanan yang kotor. Ren berdiri di atap gedung pencakar langit, menyesuaikan lensa siber mata kirinya untuk memindai sidik jari digital di tempat kejadian perkara. Seorang petinggi korporasi teknologi ditemukan tewas dengan chip memori utamanya yang dicabut secara paksa. Pembunuhnya meninggalkan jejak kode biner yang sangat rapi.",
         createdAt: "2026-02-15",
+        releasedAt: "2026-02-15T10:00:00Z",
+        isFree: false,
       },
       {
         id: "ch3_2",
@@ -163,6 +239,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Penyelidikan menuntun Ren ke dalam jaringan gelap Deep-Web terdalam. Menggunakan perangkat inkubasi neural, ia memproyeksikan kesadarannya ke dalam labirin data virtual. Di sana, ia diserang oleh virus siber berbentuk naga hitam legendaris. Saat hampir tereliminasi, sesosok entitas kecerdasan buatan tanpa nama menyelamatkannya dan memberikan sebuah koordinat gudang senjata tersembunyi.",
         createdAt: "2026-02-20",
+        releasedAt: "2026-02-20T10:00:00Z",
+        isFree: false,
       },
       {
         id: "ch3_3",
@@ -172,6 +250,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Gudang senjata itu ternyata merupakan markas rahasia dari kelompok pemberontak android yang menuntut kesetaraan hak hak sipil. Dipimpin oleh android model militer usang bernama Alpha, mereka menolak tuduhan pembunuhan tersebut. Alpha menunjukkan bukti video terenkripsi bahwa pelaku pembunuhan sebenarnya adalah prototipe pembunuh bayaran siber rahasia yang dikembangkan oleh korporasi itu sendiri.",
         createdAt: "2026-02-25",
+        releasedAt: "2026-02-25T10:00:00Z",
+        isFree: false,
       },
       {
         id: "ch3_4",
@@ -181,6 +261,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Berbekal data dari Alpha, Ren menyergap fasilitas riset rahasia di pinggiran kota. Pertempuran sengit pecah di dalam koridor laboratorium yang steril. Menggunakan pedang katana plasma miliknya, Ren memotong robot-robot penjaga otomatis. Namun, target utama berhasil meloloskan diri menggunakan helikopter siluman bertenaga jet siber, meninggalkan jebakan bom waktu pencair sirkuit neural.",
         createdAt: "2026-03-01",
+        releasedAt: "2026-03-01T10:00:00Z",
+        isFree: false,
       },
       {
         id: "ch3_5",
@@ -190,6 +272,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Bom berhasil dijinakkan pada detik terakhir, mengungkap kebenaran mengerikan di dalam inti server laboratorium. Korporasi tersebut sedang bersiap merilis pembaruan firmware global yang diam-diam akan mengunci kesadaran semua manusia yang menggunakan implan siber. Ren menyadari waktu yang dimilikinya tidak banyak sebelum peluncuran satelit sinyal siber dimulai.",
         createdAt: "2026-03-05",
+        releasedAt: "2026-03-05T10:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -205,6 +289,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Ongoing",
     rating: 4.5,
     author: "Arthur Pendelton",
+    authorId: "author_4",
+    isFree: false,
     viewsCount: 84300,
     favoritesCount: 3900,
     createdAt: "2026-04-01T07:00:00Z",
@@ -218,6 +304,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Di dunia di mana setiap manusia terlahir dengan lingkaran mana di dadanya, Leo adalah sebuah anomali menyedihkan. Ia tidak memiliki aliran sihir sedikit pun. Karena itu, ia sering diasingkan dan dipaksa bekerja membersihkan gudang artefak tua di perpustakaan desa. Saat membersihkan sebuah peti besi berkarat, setetes darahnya yang terluka tanpa sengaja memicu lingkaran mantra hitam kuno.",
         createdAt: "2026-04-01",
+        releasedAt: "2026-04-01T07:00:00Z",
+        isFree: false,
       },
       {
         id: "ch4_2",
@@ -227,6 +315,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Energi hitam pekat meledak dari peti tersebut, merayap masuk ke dalam pembuluh darah Leo dan membentuk lingkaran sihir ganda berwarna ungu gelap di punggungnya. Kekuatan ini terasa dingin namun sangat masif. Keesokan harinya, burung merpati pembawa pesan dari Akademi Sihir Asteria mendarat di jendelanya, membawa surat undangan emas bersimbol naga yang legendaris.",
         createdAt: "2026-04-05",
+        releasedAt: "2026-04-05T07:00:00Z",
+        isFree: false,
       },
       {
         id: "ch4_3",
@@ -236,6 +326,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Kereta uap bertenaga batu kristal sihir melaju membelah awan menuju kastil layang Asteria. Di dalam gerbong, Leo duduk di antara anak-anak bangsawan penyihir berbakat yang memamerkan kemampuan elemen mereka. Leo memilih menyembunyikan tangannya di dalam jubah, menahan denies energi kegelapan yang terus bergejolak hebat di dalam tubuhnya setiap kali mendekati sumber sihir lain.",
         createdAt: "2026-04-10",
+        releasedAt: "2026-04-10T07:00:00Z",
+        isFree: false,
       },
       {
         id: "ch4_4",
@@ -245,6 +337,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Aula besar akademi dipenuhi ribuan lilin melayang. Satu per satu murid maju untuk meletakkan tangan di atas Bola Kristal Jiwa guna menentukan asrama elemen mereka. Ketika giliran Leo tiba, ia melangkah ragu. Begitu telapak tangannya menyentuh permukaan kristal, bola tersebut tidak mengeluarkan warna elemen alam murni, melainkan retak hebat dan memancarkan asap hitam pekat.",
         createdAt: "2026-04-15",
+        releasedAt: "2026-04-15T07:00:00Z",
+        isFree: false,
       },
       {
         id: "ch4_5",
@@ -254,6 +348,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Akibat insiden kristal jiwa yang pecah, kepala sekolah memutuskan menempatkan Leo di sebuah asrama tua terisolasi di ujung hutan terlarang, tempat yang dulunya digunakan oleh para penyihir hitam legendaris ratusan tahun lalu. Di sana, ia bertemu dengan seorang profesor senior eksentrik yang menawarkan diri untuk mengajarinya mengendalikan mana kegelapan secara rahasia.",
         createdAt: "2026-04-20",
+        releasedAt: "2026-04-20T07:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -269,6 +365,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Ongoing",
     rating: 4.6,
     author: "Clarissa Utama",
+    authorId: "author_5",
+    isFree: false,
     viewsCount: 112000,
     favoritesCount: 7600,
     createdAt: "2026-03-20T11:00:00Z",
@@ -282,6 +380,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Layar antarmuka virtual menyala hijau terang di dalam helm proyeksi neural milik Maya. Karakter gamenya, 'Valkyrie', melompat turun ke arena pertempuran pasir di kota digital Aethelgard. Di seberang arena, rival abadinya, ksatria hitam bernama 'ShadowBlade', sudah menunggunya dengan pedang besar terhunus. Mereka telah bertarung puluhan kali untuk memperebutkan peringkat nomor satu di server global.",
         createdAt: "2026-03-20",
+        releasedAt: "2026-03-20T11:00:00Z",
+        isFree: false,
       },
       {
         id: "ch5_2",
@@ -291,6 +391,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Sebelum pertarungan mereka dimulai, sebuah pengumuman sistem darurat bergaung di seluruh penjuru game. Event Quest Terlarang berskala global diluncurkan secara otomatis oleh AI pusat game. Karena sistem mendeteksi peringkat tertinggi mereka, game memaksa Valkyrie dan ShadowBlade masuk dalam satu tim terkunci yang tidak bisa dibatalkan sampai quest terselesaikan.",
         createdAt: "2026-03-25",
+        releasedAt: "2026-03-25T11:00:00Z",
+        isFree: false,
       },
       {
         id: "ch5_3",
@@ -300,6 +402,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Quest pertama mengharuskan mereka memasuki labirin bawah tanah berisiko tinggi yang penuh dengan monster-monster siber berwujud laba-laba raksasa berglitch. Maya terpaksa mengandalkan perlindungan perisai ShadowBlade, sementara ia memberikan dukungan serangan panah sihir dari belakang. Di balik sifatnya yang menyebalkan di chat, gaya bertarung ShadowBlade ternyata sangat protektif.",
         createdAt: "2026-03-30",
+        releasedAt: "2026-03-30T11:00:00Z",
+        isFree: false,
       },
       {
         id: "ch5_4",
@@ -309,6 +413,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Keesokan harinya di dunia nyata, Maya berjalan malas menuju kedai kopi kampus untuk mengerjakan skripsi tugas akhirnya. Karena meja penuh, seorang mahasiswa berkacamata meminta izin untuk duduk di seberangnya. Mahasiswa itu bernama Tio, kapten tim e-sports kampus yang dingin dan menyebalkan. Mereka berdebat tentang metode pemrograman, tanpa tahu bahwa mereka baru saja bertarung bersama di game tadi malam.",
         createdAt: "2026-04-04",
+        releasedAt: "2026-04-04T11:00:00Z",
+        isFree: false,
       },
       {
         id: "ch5_5",
@@ -318,6 +424,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Kembali ke dalam game, tantangan bos gerbang labirin menanti mereka. Bos berwujud raksasa batu besi itu memiliki pertahanan tebal yang tidak bisa ditembus serangan biasa. Menggabungkan kecepatan Valkyrie dan kekuatan fisik ShadowBlade, mereka menciptakan teknik kombinasi baru yang berhasil menghancurkan titik lemah bos dalam satu serangan sinkron yang memukau.",
         createdAt: "2026-04-09",
+        releasedAt: "2026-04-09T11:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -333,6 +441,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Completed",
     rating: 4.4,
     author: "Andi Wijaya",
+    authorId: "author_6",
+    isFree: false,
     viewsCount: 65000,
     favoritesCount: 2800,
     createdAt: "2025-08-10T12:00:00Z",
@@ -346,6 +456,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Asap tipis mengepul di dapur restoran tua keluarga yang hampir bangkrut. Genta menghela napas menatap barisan kursi pelanggan yang kosong melompong. Saat membersihkan ruang bawah tanah yang dipenuhi perkakas memasak peninggalan kakeknya, ia menemukan sebuah buku bersampul kulit rusa dengan tulisan tinta emas berjudul 'Rasa yang Menghidupkan Jiwa'.",
         createdAt: "2025-08-10",
+        releasedAt: "2025-08-10T12:00:00Z",
+        isFree: false,
       },
       {
         id: "ch6_2",
@@ -355,6 +467,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Mencoba resep pertama, Genta memasak Sup Tomat Rempah Kuno dengan panduan takaran rahasia dari buku tersebut. Aroma masakan itu begitu harum hingga merayap keluar jendela. Seorang kritikus kuliner terkenal yang terkenal kejam dan dingin kebetulan lewat dan memutuskan masuk untuk memesan. Suapan pertama sup langsung membuat air mata sang kritikus menetes hangat.",
         createdAt: "2025-08-15",
+        releasedAt: "2025-08-15T12:00:00Z",
+        isFree: false,
       },
       {
         id: "ch6_3",
@@ -364,6 +478,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Sup itu mengaktifkan kembali ingatan masa kecil kritikus tentang masakan ibunya yang telah lama tiada, mengubah kepribadiannya yang pahit menjadi lembut seketika. Ulasan bintang lima yang ditulisnya keesokan hari di media massa membuat restoran Genta mendadak viral di media sosial, memicu antrean panjang pelanggan yang penasaran di depan pintu.",
         createdAt: "2025-08-20",
+        releasedAt: "2025-08-20T12:00:00Z",
+        isFree: false,
       },
       {
         id: "ch6_4",
@@ -373,6 +489,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Kesuksesan mendadak Genta menarik perhatian pemilik jaringan restoran bintang lima di seberang jalan. Merasa tersaingi, koki sombong dari restoran tersebut menantang Genta dalam duel memasak terbuka di festival kuliner kota. Genta membuka halaman kedua bukunya, mencari resep hidangan penutup yang mampu membawa kedamaian hati bagi para juri festival.",
         createdAt: "2025-08-25",
+        releasedAt: "2025-08-25T12:00:00Z",
+        isFree: false,
       },
       {
         id: "ch6_5",
@@ -382,6 +500,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Genta menyajikan Puding Karamel Lavender Sihir pada babak penentuan. Begitu sendok pertama menyentuh lidah para juri dan rivalnya, ketegangan kompetisi mendadak mencair menjadi suasana keakraban yang hangat. Koki rivalnya bahkan menjabat tangan Genta dengan penuh rasa hormat, mengakui keunggulan rasa emosional dari hidangan buatan Genta.",
         createdAt: "2025-08-30",
+        releasedAt: "2025-08-30T12:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -397,6 +517,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Ongoing",
     rating: 4.8,
     author: "R.M. Roffen",
+    authorId: "author_7",
+    isFree: false,
     viewsCount: 245000,
     favoritesCount: 19800,
     createdAt: "2026-01-05T06:00:00Z",
@@ -410,6 +532,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Kael melangkah gontai melewati gerbang perbatasan kerajaan dengan baju zirah besi yang tergores lambang pengkhianat. Ia dikambinghitamkan atas jatuhnya benteng pertahanan barat oleh para bangsawan korup. Di tangannya, hanya tersisa sebilah pedang patah peninggalan ayahnya. Namun, di dalam tidurnya malam itu, sesosok dewi cahaya hadir memberikan petunjuk tentang pedang matahari kuno.",
         createdAt: "2026-01-05",
+        releasedAt: "2026-01-05T06:00:00Z",
+        isFree: false,
       },
       {
         id: "ch7_2",
@@ -419,6 +543,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Perjalanan pertama menuntun Kael mendaki gunung salju Frostpeak yang membeku ekstrem. Di dalam gua es terdalam yang dijaga oleh monster beruang kutub bermata tiga, ia melihat pecahan pertama pedang suci yang memancarkan energi hangat berwarna emas. Menggunakan sisa keahlian bertarungnya, Kael berhasil mengalahkan penjaga gua dan menyatukan pecahan es ke pedangnya.",
         createdAt: "2026-01-12",
+        releasedAt: "2026-01-12T06:00:00Z",
+        isFree: false,
       },
       {
         id: "ch7_3",
@@ -428,6 +554,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Kael tiba di perkampungan tersembunyi ras Elf yang berada di atas pohon-pohon raksasa hutan purba. Ras Elf awalnya menolak kedatangan manusia, namun setelah melihat kilauan energi matahari dari pedang Kael, sang ratu Elf memberikan pecahan kedua yang selama ini mereka jaga sebagai jantung pelindung hutan dari kabut kegelapan.",
         createdAt: "2026-01-19",
+        releasedAt: "2026-01-19T06:00:00Z",
+        isFree: false,
       },
       {
         id: "ch7_4",
@@ -437,6 +565,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Gurun pasir kering yang dipenuhi tulang belulang monster naga purba menjadi rintangan berikutnya bagi Kael. Di tengah badai pasir yang menyiksa mata, ia disergap oleh kawanan bandit gurun bercadar hitam. Kael dikalahkan dan ditangkap, dibawa ke dalam benteng bawah tanah tempat pecahan ketiga pedang suci ternyata dijadikan sebagai dekorasi singgasana kepala bandit.",
         createdAt: "2026-01-26",
+        releasedAt: "2026-01-26T06:00:00Z",
+        isFree: false,
       },
       {
         id: "ch7_5",
@@ -446,6 +576,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Menggunakan kelincahan dan bantuan seorang gadis pencuri yang juga disekap di sel bawah tanah, Kael berhasil menjebol jeruji besi tahanan. Mereka melakukan sabotase pada ruang penyimpanan persediaan minyak benteng, menciptakan ledakan besar sebagai pengalih perhatian untuk merebut kembali pedangnya dan membawa lari pecahan ketiga ke gurun bebas.",
         createdAt: "2026-02-02",
+        releasedAt: "2026-02-02T06:00:00Z",
+        isFree: false,
       },
     ],
   },
@@ -461,6 +593,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Completed",
     rating: 4.6,
     author: "Siska Amelia",
+    authorId: "author_8",
+    isFree: false,
     viewsCount: 78000,
     favoritesCount: 4200,
     createdAt: "2025-10-15T08:30:00Z",
@@ -474,6 +608,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Loker sekolah nomor 143 masih terkunci rapat, namun pemiliknya, Alika, siswi terpintar di angkatannya, sudah tidak masuk kelas selama tiga hari tanpa alasan medis. Pihak sekolah tampak mencoba menutupi kasus ini dengan menyebutnya kabur dari rumah. Dimas, ketua klub jurnalis sekolah, merasa ada kejanggalan besar dan mulai mengumpulkan petunjuk.",
         createdAt: "2025-10-15",
+        releasedAt: "2025-10-15T08:30:00Z",
+        isFree: false,
       },
       {
         id: "ch8_2",
@@ -483,6 +619,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Dimas menyelinap ke dalam ruang OSIS saat jam istirahat siang sepi. Di bawah tumpukan berkas laporan keuangan, ia menemukan sebuah USB drive kecil berwarna merah hitam milik Alika. Ketika didekripsi menggunakan komputer klub jurnalis, berkas di dalamnya berisi jadwal pertemuan rahasia antara kepala sekolah dan laboratorium medis swasta.",
         createdAt: "2025-10-22",
+        releasedAt: "2025-10-22T08:30:00Z",
+        isFree: false,
       },
       {
         id: "ch8_3",
@@ -492,6 +630,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Malam hari pukul dua belas pas, Dimas memanjat pagar belakang sekolah yang gelap gulita. Bermodalkan lampu senter kecil, ia menuju ruang laboratorium biologi baru di lantai tiga. Di sana, ia menemukan pintu rahasia di balik lemari penyimpanan anatomi manusia, menuntunnya turun ke ruang bawah tanah bawah tanah yang steril bergaya rumah sakit.",
         createdAt: "2025-10-29",
+        releasedAt: "2025-10-29T08:30:00Z",
+        isFree: false,
       },
       {
         id: "ch8_4",
@@ -501,6 +641,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Di dalam laboratorium rahasia itu berjajar tabung-tabung kaca besar berisi cairan biru kimiawi. Dimas menemukan map dokumen tebal bersimbol 'Project Evolution'. Saat membuka halaman profil subjek tes, foto Alika terpampang di sana bersama status detak jantung yang menunjukkan tanda kritis, membuktikan dia masih disembunyikan di dalam kompleks sekolah.",
         createdAt: "2025-11-05",
+        releasedAt: "2025-11-05T08:30:00Z",
+        isFree: false,
       },
       {
         id: "ch8_5",
@@ -510,6 +652,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Suara langkah kaki berat bersepatu pantofel mendadak terdengar dari arah tangga masuk laboratorium rahasia. Dimas panik bersembunyi di balik tabung reaksi raksasa. Lampu ruangan menyala terang, menampilkan sosok guru bimbingan konseling kesayangannya yang masuk bersama dua pria berbadan besar berpakaian hazmat, memegang suntikan serum ungu.",
         createdAt: "2025-11-12",
+        releasedAt: "2025-11-12T08:30:00Z",
+        isFree: false,
       },
     ],
   },
@@ -525,6 +669,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Ongoing",
     rating: 4.6,
     author: "V.E. Schwab",
+    authorId: "author_9",
+    isFree: false,
     viewsCount: 142000,
     favoritesCount: 11000,
     createdAt: "2026-03-15T07:45:00Z",
@@ -538,6 +684,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Prancis, tahun 1714. Melarikan diri dari pernikahan paksa yang diatur keluarganya, Addie berlari ke dalam hutan kegelapan malam dan berdoa kepada dewa mana pun yang mendengarkan pesan sedihnya. Sayangnya, dewa yang menjawab doanya adalah iblis bayangan berwajah tampan yang menawarkan keabadian mutlak, dengan bayaran jiwanya diambil saat dia bosan hidup.",
         createdAt: "2026-03-15",
+        releasedAt: "2026-03-15T07:45:00Z",
+        isFree: false,
       },
       {
         id: "ch9_2",
@@ -547,6 +695,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Addie terbangun keesokan paginya dengan sukacita kebebasan, namun sukacita itu berubah menjadi mimpi buruk mengerikan ketika ia kembali ke rumah. Ibunya tidak mengenalinya, ayahnya mengusirnya sebagai orang asing, bahkan ruangan kamarnya telah dikosongkan. Begitu ia keluar dari pandangan seseorang, ingatan orang itu tentang dirinya langsung terhapus tanpa sisa.",
         createdAt: "2026-03-22",
+        releasedAt: "2026-03-22T07:45:00Z",
+        isFree: false,
       },
       {
         id: "ch9_3",
@@ -556,6 +706,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Tiga ratus tahun berlalu seperti bayangan air mengalir bagi Addie. Ia menyaksikan revolusi Prancis, perang dunia, hingga era modern di New York tahun 2026. Ia hidup sebagai hantu sejarah, tidak bisa meninggalkan jejak tulisan, foto, maupun ingatan di hati manusia. Setiap pagi adalah awal baru yang melelahkan karena ia harus memperkenalkan dirinya kembali ke dunia.",
         createdAt: "2026-03-29",
+        releasedAt: "2026-03-29T07:45:00Z",
+        isFree: false,
       },
       {
         id: "ch9_4",
@@ -565,6 +717,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Langkah nasib membawanya ke sebuah toko buku antik beraroma kertas tua di Manhattan. Ia berniat mencuri sebuah buku novel kecil untuk mengusir bosan hidupnya. Saat kembali ke toko itu keesokan harinya, pemuda penjaga toko yang ramah memandangnya dengan terkejut lalu tersenyum hangat, 'Kamu kembali... Aku ingat kamu, Addie.' Kalimat sederhana itu menghentikan detak jantung keabadiannya.",
         createdAt: "2026-04-05",
+        releasedAt: "2026-04-05T07:45:00Z",
+        isFree: false,
       },
       {
         id: "ch9_5",
@@ -574,6 +728,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Pemuda itu bernama Henry. Untuk pertama kalinya dalam tiga abad kutukan berjalan, ada manusia yang mampu mengingat nama, wajah, dan senyumannya setelah satu hari berlalu. Air mata Addie tumpah ruah di pelukan Henry di tengah lorong toko buku, menyadari bahwa kutukan iblis bayangan akhirnya menemukan celah retakan takdir yang tidak terduga.",
         createdAt: "2026-04-12",
+        releasedAt: "2026-04-12T07:45:00Z",
+        isFree: false,
       },
     ],
   },
@@ -589,6 +745,8 @@ export const DUMMY_BOOKS: BookItem[] = [
     status: "Completed",
     rating: 4.3,
     author: "Rizky Pratama",
+    authorId: "author_10",
+    isFree: true,
     viewsCount: 52000,
     favoritesCount: 1900,
     createdAt: "2025-09-01T04:00:00Z",
@@ -602,6 +760,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Raka meletakkan kardus pakaian terakhirnya di lantai kamar kos barunya berukuran tiga kali tiga meter yang beraroma kayu jati tua melati. Kamar ini disewakan sangat murah, hanya tiga ratus ribu per bulan, harga yang mencurigakan untuk wilayah Jakarta Pusat. Saat ia hendak merebahkan diri di kasur kasur kapuk usang, suhu ruangan mendadak turun drastis menembus tulang.",
         createdAt: "2025-09-01",
+        releasedAt: "2025-09-01T04:00:00Z",
+        isFree: false,
       },
       {
         id: "ch10_2",
@@ -611,6 +771,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Sesosok bayangan transparan putih melayang keluar dari dalam lemari pakaian tua jepara di sudut kamar. Bayangan itu mewujud menjadi seorang gadis Eropa berwajah cantik mengenakan gaun kembang Victoria era kolonial abad ke-19. Bukannya menakuti Raka dengan wajah seram berdarah, hantu gadis itu justru berkacak pinggang dan memarahi Raka karena berantakan meletakkan kardus.",
         createdAt: "2025-09-08",
+        releasedAt: "2025-09-08T04:00:00Z",
+        isFree: false,
       },
       {
         id: "ch10_3",
@@ -620,6 +782,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Hantu noni Belanda itu bernama Anneliese. Ia menolak pergi karena mengklaim lemari jati itu adalah mas kawin pernikahannya yang gagal ratusan tahun lalu. Kehidupan kos Raka pun berubah drastis menjadi penuh komedi omelan. Anneliese sering membangunkannya subuh-subuh dengan menyalakan alarm HP secara magis hanya untuk memprotes debu di bawah kolong meja belajarnya.",
         createdAt: "2025-09-15",
+        releasedAt: "2025-09-15T04:00:00Z",
+        isFree: false,
       },
       {
         id: "ch10_4",
@@ -629,6 +793,8 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Tiba minggu ujian semester kampus, Raka belajar mati-matian hingga begadang semalaman suntuk di depan laptopnya untuk materi sejarah kolonial Indonesia. Anneliese yang melayang bosan di atas langit-langit kamar kos akhirnya mengintip layar dan mulai menceritakan detail peristiwa sejarah perang pangeran Diponegoro secara akurat berdasarkan pengalamannya langsung hidup di era tersebut.",
         createdAt: "2025-09-22",
+        releasedAt: "2025-09-22T04:00:00Z",
+        isFree: false,
       },
       {
         id: "ch10_5",
@@ -638,7 +804,13 @@ export const DUMMY_BOOKS: BookItem[] = [
         content:
           "Pemilik kos yang merasa curiga mendengar suara percakapan dari dalam kamar Raka diam-diam memanggil dukun pengusir roh halus tanpa persetujuan Raka. Saat Raka pergi kuliah, dukun itu merangsek masuk membawa kemenyan dan air suci ke dalam kamar kos nomor 13. Raka yang mendapatkan firasat buruk bergegas lari pulang untuk menyelamatkan teman hantu sekamarnya yang manja tersebut.",
         createdAt: "2025-09-29",
+        releasedAt: "2025-09-29T04:00:00Z",
+        isFree: false,
       },
     ],
   },
 ];
+
+export const DUMMY_BOOKS = applyLockedChapterReleaseDates(
+  withChapterLockStatus(normalizeChapterFreeFlags(RAW_BOOKS)),
+);

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useThemeStore } from "../../store/themeStore";
 
@@ -10,6 +10,7 @@ export function SplashScreen({ onAnimationEnd }: SplashScreenProps) {
   const { width } = useWindowDimensions();
   const { currentTheme } = useThemeStore();
   const fullWord = useMemo(() => ["Y", "O", "M", "U"], []);
+  const [touchEnabled, setTouchEnabled] = useState(true);
 
   // Animated values - memoized to prevent recreation
   const containerOpacity = useRef(new Animated.Value(1)).current;
@@ -49,12 +50,16 @@ export function SplashScreen({ onAnimationEnd }: SplashScreenProps) {
         useNativeDriver: true,
       }),
     ]).start(() => {
+      setTouchEnabled(false);
       onAnimationEnd();
     });
   }, [fullWord, slideAnims, fadeAnims, containerOpacity, onAnimationEnd]);
 
   return (
-    <Animated.View style={[styles.container, { opacity: containerOpacity }]}>
+    <Animated.View
+      pointerEvents={touchEnabled ? "auto" : "none"}
+      style={[styles.container, { opacity: containerOpacity }]}
+    >
       <View style={styles.wordContainer}>
         {fullWord.map((letter, index) => (
           <Animated.Text

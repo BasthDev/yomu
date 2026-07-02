@@ -15,7 +15,9 @@ export interface ChapterItem {
   title: string; // Judul bab (misal: "The Beginning")
   content: string; // Teks isi cerita novel panjang
   createdAt: string; // Tanggal rilis bab
-  isLocked?: boolean; // Status premium / terkunci (jika ada fitur koin)
+  releasedAt: string; // Tanggal rilis untuk perhitungan auto-unlock (2 hari)
+  isLocked?: boolean; // Set on each chapter in data; true = needs coins or 2-day wait
+  isFree?: boolean; // Bab gratis (tidak perlu koin)
 }
 
 /**
@@ -46,6 +48,8 @@ export interface BookItem {
   status: BookStatus; // Menggunakan tipe data khusus (Ongoing/Completed)
   rating: number; // Diubah jadi Number agar bisa dihitung rata-ratanya matematik (misal: 4.85)
   author: string; // Nama penulis novel
+  authorId: string; // ID penulis untuk sistem dompet koin
+  isFree: boolean; // Buku gratis (tidak perlu koin untuk membaca)
   viewsCount: number; // Statistik total pembaca (misal: 15400)
   favoritesCount: number; // Jumlah pengguna yang menyimpan ke pustaka
   createdAt: string; // Tanggal rilis pertama

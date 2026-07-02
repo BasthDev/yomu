@@ -15,6 +15,7 @@ import { CustomHeader } from "../../components/Header";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useThemeStore } from "../../store/themeStore";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
+import { navigateToBook } from "../../utils/navigation";
 
 export default function Bookmark() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function Bookmark() {
   );
 
   const handleBookPress = (bookId: string) => {
-    router.push(`/book/${bookId}` as any);
+    navigateToBook(router, bookId);
   };
 
   return (

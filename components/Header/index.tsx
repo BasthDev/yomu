@@ -1,4 +1,6 @@
+import { useCoinStore } from "@/store/coinStore";
 import { useThemeStore } from "@/store/themeStore";
+import { navigateToWallet } from "@/utils/navigation";
 import { Ionicons as VectorIcons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
 import React from "react";
@@ -12,7 +14,8 @@ import {
 
 interface CustomHeaderProps {
   showBack?: boolean;
-  onBack?: () => void;
+  onBack?: (navigation: any) => void;
+  forceBackPath?: string; // TAMBAHAN: Rute paksa absolut (misal: `/book/${currentBook.id}`)
   title?: string;
   showSearch?: boolean;
   searchQuery?: string;
@@ -29,6 +32,7 @@ interface CustomHeaderProps {
 export function CustomHeader({
   showBack,
   onBack,
+  forceBackPath, // Ambil properti forceBackPath baru
   title,
   showSearch,
   searchQuery,
@@ -44,11 +48,31 @@ export function CustomHeader({
   const router = useRouter();
   const pathname = usePathname();
   const { currentTheme } = useThemeStore();
+  const balance = useCoinStore((state) => state.balance);
+  const balanceLoading = useCoinStore((state) => state.isLoading);
 
   const handleLogoPress = () => {
     if (pathname !== "/") {
       router.push("/");
     }
+  };
+
+  const handleWalletPress = () => {
+    navigateToWallet(router);
+  };
+
+  // Logika interseptor tombol kembali otomatis
+  const handlePressBack = () => {
+    if (forceBackPath) {
+      // 1. Menggunakan router.replace untuk menghancurkan riwayat tumpukan halaman di atasnya
+      router.back();
+      return;
+    }
+    if (onBack) {
+      onBack(router);
+      return;
+    }
+    router.back();
   };
 
   return (
@@ -57,14 +81,10 @@ export function CustomHeader({
     >
       <View style={styles.topRow}>
         {showBack ? (
-          <TouchableOpacity onPress={onBack} style={styles.iconButton}>
+          <TouchableOpacity onPress={handlePressBack} style={styles.iconButton}>
             <VectorIcons name="chevron-back" size={28} color="#fff" />
           </TouchableOpacity>
         ) : (
-          /* 
-            Kuncinya di sini: Logo YOMU hanya akan muncul 
-            jika properti 'title' tidak diisi (!title)
-          */
           !title && (
             <TouchableOpacity onPress={handleLogoPress}>
               <Text style={[styles.logo, { color: currentTheme.primary }]}>
@@ -74,19 +94,34 @@ export function CustomHeader({
           )
         )}
 
-        {/* Jika judul ada, teks akan otomatis mengisi ruang kiri yang kosong */}
+        {/* 
+          PERBAIKAN KONTRAST TEKS: Judul dibungkus dengan titleContainer 
+          agar elipsis (...) terpicu rapi sebelum menabrak saldo koin / ikon kanan
+        */}
         {title && (
-          <Text
-            style={[styles.title, { color: currentTheme.text }]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {title}
-          </Text>
+          <View style={styles.titleContainer}>
+            <Text
+              style={[styles.title, { color: currentTheme.text }]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {title}
+            </Text>
+          </View>
         )}
 
         <View style={styles.rightIcons}>
-          {!hideIcons && <></>}
+          {!hideIcons && (
+            <TouchableOpacity
+              style={styles.balancePill}
+              onPress={handleWalletPress}
+            >
+              <VectorIcons name="cash" size={16} color="#ffd700" />
+              <Text style={styles.balanceText}>
+                {balanceLoading ? "…" : balance}
+              </Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.profilePic}>
             <VectorIcons name="person-circle" size={32} color="#fff" />
           </TouchableOpacity>
@@ -161,25 +196,42 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: "#E50914",
   },
+  // Mengunci ruang area tengah judul agar elipsis berjalan sempurna
+  titleContainer: {
+    flex: 1,
+    marginRight: 8,
+  },
   title: {
     fontSize: 20,
-    color: "#fff",
     fontWeight: "600",
-    flex: 1,
-    // Diubah menjadi left agar posisi judul rapi di sebelah tombol back
-    // atau di pojok kiri saat logo YOMU bersembunyi
     textAlign: "left",
     marginLeft: 8,
     paddingVertical: 8.5,
   },
   iconButton: {
     padding: 4,
-    marginLeft: -4, // Geser sedikit ke kiri agar sejajar dengan margin container
+    marginLeft: -4,
   },
   rightIcons: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
+  },
+  balancePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(255, 215, 0, 0.12)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255, 215, 0, 0.25)",
+  },
+  balanceText: {
+    color: "#ffd700",
+    fontSize: 13,
+    fontWeight: "700",
   },
   profilePic: {
     borderRadius: 16,

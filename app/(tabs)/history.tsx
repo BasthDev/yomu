@@ -12,25 +12,43 @@ import {
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
+import { useSecurity } from "../../context/SecurityContext";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useThemeStore } from "../../store/themeStore";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
+import { navigateToBook, navigateToRead } from "../../utils/navigation";
 
 export default function History() {
   const router = useRouter();
   const { readingHistory, clearReadingHistory, loadData } = useBookmarkStore();
   const { currentTheme } = useThemeStore();
+  const { checkAccess } = useSecurity();
 
   useEffect(() => {
     loadData();
   }, []);
 
   const handleBookPress = (bookId: string) => {
-    router.push(`/book/${bookId}` as any);
+    navigateToBook(router, bookId);
   };
 
   const handleContinueReading = (historyItem: any) => {
-    router.push(`/read/${historyItem.chapterId}` as any);
+    const book = DUMMY_BOOKS.find((b) => b.id === historyItem.bookId);
+    const chapter = book?.chaptersList?.find(
+      (ch) => ch.id === historyItem.chapterId,
+    );
+
+    if (!book || !chapter) {
+      navigateToBook(router, historyItem.bookId);
+      return;
+    }
+
+    const access = checkAccess(book, chapter);
+    if (access.canAccess) {
+      navigateToRead(router, historyItem.chapterId);
+    } else {
+      navigateToBook(router, historyItem.bookId);
+    }
   };
 
   const formatTimeAgo = (isoString: string) => {

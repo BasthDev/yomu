@@ -31,7 +31,7 @@ export function ChapterNavigation({
       >
         <Text style={[styles.prevButtonText, !hasPrev && styles.disabledText]}>
           {/* Teks dinamis untuk tombol Prev */}
-          {hasPrev ? `Ch ${currentChapterNumber - 1}` : "First Ch"}
+          {hasPrev ? `Chapter ${currentChapterNumber - 1}` : "First Chapter"}
         </Text>
       </TouchableOpacity>
 
@@ -51,7 +51,7 @@ export function ChapterNavigation({
       >
         <Text style={styles.nextButtonText}>
           {/* Teks dinamis untuk tombol Next */}
-          {hasNext ? `Ch ${currentChapterNumber + 1}` : "Last Ch"}
+          {hasNext ? `Chapter ${currentChapterNumber + 1}` : "Last Chapter"}
         </Text>
       </TouchableOpacity>
     </View>

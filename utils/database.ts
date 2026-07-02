@@ -16,6 +16,54 @@ export interface ReadingHistory {
   last_read_at: string;
 }
 
+export interface User {
+  id: string;
+  coin_balance: number;
+  created_at: string;
+}
+
+export interface AuthorWallet {
+  author_id: string;
+  coin_balance: number;
+  total_earned: number;
+}
+
+export interface ChapterUnlock {
+  id: number;
+  user_id: string;
+  book_id: string;
+  chapter_id: string;
+  unlock_method: string; // 'coins' or 'wait'
+  coins_spent: number;
+  unlocked_at: string;
+}
+
+export interface Comment {
+  id: number;
+  chapter_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  likes_count: number;
+}
+
+export interface CoinTransaction {
+  id: number;
+  user_id: string;
+  amount: number;
+  type: string; // 'earned', 'spent', 'received'
+  description: string;
+  created_at: string;
+}
+
+export interface AdWatch {
+  id: number;
+  user_id: string;
+  ad_type: string;
+  coins_earned: number;
+  watched_at: string;
+}
+
 let db: SQLite.SQLiteDatabase | null = null;
 
 export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
@@ -46,7 +94,61 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       value TEXT NOT NULL
     );
     
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      coin_balance INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS author_wallets (
+      author_id TEXT PRIMARY KEY,
+      coin_balance INTEGER DEFAULT 0,
+      total_earned INTEGER DEFAULT 0
+    );
+    
+    CREATE TABLE IF NOT EXISTS chapter_unlocks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      book_id TEXT NOT NULL,
+      chapter_id TEXT NOT NULL,
+      unlock_method TEXT NOT NULL,
+      coins_spent INTEGER DEFAULT 0,
+      unlocked_at TEXT NOT NULL,
+      UNIQUE(user_id, chapter_id)
+    );
+    
+    CREATE TABLE IF NOT EXISTS comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      chapter_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      likes_count INTEGER DEFAULT 0
+    );
+    
+    CREATE TABLE IF NOT EXISTS coin_transactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      type TEXT NOT NULL,
+      description TEXT,
+      created_at TEXT NOT NULL
+    );
+    
+    CREATE TABLE IF NOT EXISTS ad_watches (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      ad_type TEXT NOT NULL,
+      coins_earned INTEGER NOT NULL,
+      watched_at TEXT NOT NULL
+    );
+    
     CREATE INDEX IF NOT EXISTS idx_reading_history_book_id ON reading_history(book_id);
+    CREATE INDEX IF NOT EXISTS idx_chapter_unlocks_user ON chapter_unlocks(user_id);
+    CREATE INDEX IF NOT EXISTS idx_chapter_unlocks_chapter ON chapter_unlocks(chapter_id);
+    CREATE INDEX IF NOT EXISTS idx_comments_chapter ON comments(chapter_id);
+    CREATE INDEX IF NOT EXISTS idx_coin_transactions_user ON coin_transactions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_ad_watches_user ON ad_watches(user_id);
   `);
 
   return db;
@@ -160,4 +262,208 @@ export const setSetting = async (key: string, value: string): Promise<void> => {
     "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
     [key, value],
   );
+};
+
+// User operations
+export const getOrCreateUser = async (userId: string): Promise<User> => {
+  const database = await getDatabase();
+  let user = await database.getFirstAsync<User>(
+    "SELECT * FROM users WHERE id = ?",
+    [userId],
+  );
+
+  if (!user) {
+    await database.runAsync(
+      "INSERT INTO users (id, coin_balance, created_at) VALUES (?, 0, ?)",
+      [userId, new Date().toISOString()],
+    );
+    user = await database.getFirstAsync<User>(
+      "SELECT * FROM users WHERE id = ?",
+      [userId],
+    );
+  }
+
+  return user!;
+};
+
+export const updateUserCoins = async (
+  userId: string,
+  amount: number,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "UPDATE users SET coin_balance = coin_balance + ? WHERE id = ?",
+    [amount, userId],
+  );
+};
+
+export const getUserBalance = async (userId: string): Promise<number> => {
+  const database = await getDatabase();
+  const user = await database.getFirstAsync<{ coin_balance: number }>(
+    "SELECT coin_balance FROM users WHERE id = ?",
+    [userId],
+  );
+  return user?.coin_balance ?? 0;
+};
+
+// Author wallet operations
+export const getAuthorWallet = async (
+  authorId: string,
+): Promise<AuthorWallet | null> => {
+  const database = await getDatabase();
+  const wallet = await database.getFirstAsync<AuthorWallet>(
+    "SELECT * FROM author_wallets WHERE author_id = ?",
+    [authorId],
+  );
+  return wallet || null;
+};
+
+export const addCoinsToAuthor = async (
+  authorId: string,
+  amount: number,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    `INSERT INTO author_wallets (author_id, coin_balance, total_earned) 
+     VALUES (?, ?, ?) 
+     ON CONFLICT(author_id) DO UPDATE SET 
+       coin_balance = coin_balance + ?,
+       total_earned = total_earned + ?`,
+    [authorId, amount, amount, amount, amount],
+  );
+};
+
+// Chapter unlock operations
+export const unlockChapter = async (
+  userId: string,
+  bookId: string,
+  chapterId: string,
+  method: string,
+  coinsSpent: number,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "INSERT OR IGNORE INTO chapter_unlocks (user_id, book_id, chapter_id, unlock_method, coins_spent, unlocked_at) VALUES (?, ?, ?, ?, ?, ?)",
+    [userId, bookId, chapterId, method, coinsSpent, new Date().toISOString()],
+  );
+};
+
+export const isChapterUnlocked = async (
+  userId: string,
+  chapterId: string,
+): Promise<boolean> => {
+  const database = await getDatabase();
+  const result = await database.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM chapter_unlocks WHERE user_id = ? AND chapter_id = ?",
+    [userId, chapterId],
+  );
+  return (result?.count ?? 0) > 0;
+};
+
+export const getChapterUnlock = async (
+  userId: string,
+  chapterId: string,
+): Promise<ChapterUnlock | null> => {
+  const database = await getDatabase();
+  const unlock = await database.getFirstAsync<ChapterUnlock>(
+    "SELECT * FROM chapter_unlocks WHERE user_id = ? AND chapter_id = ?",
+    [userId, chapterId],
+  );
+  return unlock || null;
+};
+
+export const getPurchasedChapterIds = async (
+  userId: string,
+): Promise<string[]> => {
+  const database = await getDatabase();
+  const rows = await database.getAllAsync<{ chapter_id: string }>(
+    "SELECT chapter_id FROM chapter_unlocks WHERE user_id = ?",
+    [userId],
+  );
+  return rows.map((row) => row.chapter_id);
+};
+
+// Comment operations
+export const addComment = async (
+  chapterId: string,
+  userId: string,
+  content: string,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "INSERT INTO comments (chapter_id, user_id, content, created_at, likes_count) VALUES (?, ?, ?, ?, 0)",
+    [chapterId, userId, content, new Date().toISOString()],
+  );
+};
+
+export const getComments = async (chapterId: string): Promise<Comment[]> => {
+  const database = await getDatabase();
+  const comments = await database.getAllAsync<Comment>(
+    "SELECT * FROM comments WHERE chapter_id = ? ORDER BY created_at DESC",
+    [chapterId],
+  );
+  return comments;
+};
+
+export const likeComment = async (commentId: number): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?",
+    [commentId],
+  );
+};
+
+export const deleteComment = async (commentId: number): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync("DELETE FROM comments WHERE id = ?", [commentId]);
+};
+
+// Coin transaction operations
+export const addCoinTransaction = async (
+  userId: string,
+  amount: number,
+  type: string,
+  description: string,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "INSERT INTO coin_transactions (user_id, amount, type, description, created_at) VALUES (?, ?, ?, ?, ?)",
+    [userId, amount, type, description, new Date().toISOString()],
+  );
+};
+
+export const getCoinTransactions = async (
+  userId: string,
+): Promise<CoinTransaction[]> => {
+  const database = await getDatabase();
+  const transactions = await database.getAllAsync<CoinTransaction>(
+    "SELECT * FROM coin_transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 50",
+    [userId],
+  );
+  return transactions;
+};
+
+// Ad watch operations
+export const recordAdWatch = async (
+  userId: string,
+  adType: string,
+  coinsEarned: number,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "INSERT INTO ad_watches (user_id, ad_type, coins_earned, watched_at) VALUES (?, ?, ?, ?)",
+    [userId, adType, coinsEarned, new Date().toISOString()],
+  );
+};
+
+export const getLastAdWatch = async (
+  userId: string,
+  adType: string,
+): Promise<AdWatch | null> => {
+  const database = await getDatabase();
+  const adWatch = await database.getFirstAsync<AdWatch>(
+    "SELECT * FROM ad_watches WHERE user_id = ? AND ad_type = ? ORDER BY watched_at DESC LIMIT 1",
+    [userId, adType],
+  );
+  return adWatch || null;
 };

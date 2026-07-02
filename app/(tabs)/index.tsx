@@ -1,11 +1,11 @@
 import { router } from "expo-router";
-import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { BookGridCard } from "../../components/Card";
 import { Container } from "../../components/Container";
 import { CustomHeader } from "../../components/Header";
 import { HeroSlider } from "../../components/HeroSlider";
 import { useThemeStore } from "../../store/themeStore";
+import { navigateToBook } from "../../utils/navigation";
 import { BookItem } from "../../utils/books";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
 
@@ -13,8 +13,7 @@ export default function Index() {
   const { currentTheme } = useThemeStore();
 
   const handleBookPress = (item: BookItem) => {
-    console.log("Membuka buku:", item.title);
-    router.push(`/book/${item.id}` as any);
+    navigateToBook(router, item.id);
   };
 
   // Komponen header di atas grid
