@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
+import { AuthGuard } from "../../components/AuthGuard";
 import { useThemeStore } from "../../store/themeStore";
 
 export default function TabsLayout() {
