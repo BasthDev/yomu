@@ -1,33 +1,91 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { useEffect } from "react";
+import { useThemeStore } from "../../store/themeStore";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+export default function TabsLayout() {
+  const { currentTheme, loadTheme } = useThemeStore();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    loadTheme();
+  }, []);
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        animation: "shift",
+        tabBarActiveTintColor: currentTheme.primary,
+        tabBarInactiveTintColor: currentTheme.textSecondary,
+        tabBarStyle: {
+          backgroundColor: currentTheme.background,
+          borderTopWidth: 0,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Home",
+          // Perbaikan Icon: Gunakan prop 'color' dan 'focused' bawaan Expo Router
+          // agar warna ikon otomatis berubah abu-abu saat tidak aktif
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="book" size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="history"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "History",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="time" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="bookmark"
+        options={{
+          title: "Bookmark",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="bookmark" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings" size={24} color={color} />
+          ),
+        }}
+      />
+
+      {/* 
+        Halaman Baca: Disembunyikan dari daftar menu 
+        DAN bottom bar dihilangkan total saat dibuka
+      */}
+      <Tabs.Screen
+        name="read/[chapterId]"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" }, // Kuncinya di sini!
+        }}
+      />
+
+      {/* 
+        Halaman Detail Buku: Disembunyikan dari daftar menu 
+        DAN bottom bar dihilangkan total saat dibuka
+      */}
+      <Tabs.Screen
+        name="book/[id]"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" }, // Kuncinya di sini!
         }}
       />
     </Tabs>

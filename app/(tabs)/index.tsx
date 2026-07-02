@@ -1,98 +1,83 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { router } from "expo-router";
+import React from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { BookGridCard } from "../../components/Card";
+import { Container } from "../../components/Container";
+import { CustomHeader } from "../../components/Header";
+import { HeroSlider } from "../../components/HeroSlider";
+import { useThemeStore } from "../../store/themeStore";
+import { BookItem } from "../../utils/books";
+import { DUMMY_BOOKS } from "../../utils/dummyData";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function Index() {
+  const { currentTheme } = useThemeStore();
 
-export default function HomeScreen() {
+  const handleBookPress = (item: BookItem) => {
+    console.log("Membuka buku:", item.title);
+    router.push(`/book/${item.id}` as any);
+  };
+
+  // Komponen header di atas grid
+  const renderHeader = () => (
+    <View>
+      {/* 1. Slider sekarang berada di luar komponen padding sehingga bisa tampil penuh (edge-to-edge) */}
+      <HeroSlider
+        data={DUMMY_BOOKS.filter((book) => book.isHot)}
+        onPress={handleBookPress}
+      />
+
+      {/* 2. Berikan padding horizontal khusus untuk area judul seksi saja */}
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionTitle, { color: currentTheme.primary }]}>
+          POPULAR BOOKS
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <Container>
+      <CustomHeader />
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      {/* 
+        3. PERBAIKAN UTAMA: Mengeluarkan FlatList dari <ContentWithPadding>.
+        Kita menggunakan contentContainerStyle langsung pada FlatList untuk memberi padding 
+        pada daftar buku di bawah tanpa memengaruhi Slider atas.
+      */}
+      <FlatList
+        data={DUMMY_BOOKS}
+        renderItem={({ item }) => (
+          <BookGridCard item={item} onPress={handleBookPress} />
+        )}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        ListHeaderComponent={renderHeader}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
+    </Container>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  listContent: {
+    paddingBottom: 60, // Jarak ekstra di bawah agar tidak terpotong tab bar bawah
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  row: {
+    justifyContent: "space-between",
+    marginBottom: 16, // Jarak vertikal antar baris kartu grid novel
+    paddingHorizontal: 16, // 4. Memberikan padding sisi kanan-kiri khusus untuk kartu grid saja
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  sectionHeader: {
+    marginTop: 20,
+    marginBottom: 16,
+    paddingHorizontal: 16, // 5. Memberikan padding sisi kanan-kiri khusus untuk teks judul seksi
+  },
+  sectionTitle: {
+    fontFamily: "Audiowide_400Regular",
+    color: "#ffffff",
+    fontSize: 18,
+    letterSpacing: 1,
   },
 });
