@@ -14,6 +14,7 @@ import { navigateToBook } from "../../utils/navigation";
 export default function Index() {
   const { currentTheme } = useThemeStore();
   const loadAllRatings = useBookRatingsStore((state) => state.loadAllRatings);
+  const ratings = useBookRatingsStore((state) => state.ratings);
 
   useEffect(() => {
     const bookIds = DUMMY_BOOKS.map((book) => book.id);

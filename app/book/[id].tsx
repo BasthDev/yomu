@@ -1,7 +1,6 @@
 import { UnlockModal } from "@/components/UnlockModal";
 import { useSecurity } from "@/context/SecurityContext";
 import { useChapterUnlockStore } from "@/store/chapterUnlockStore";
-import { useRatingStore } from "@/store/ratingStore";
 import { useThemeStore } from "@/store/themeStore";
 import {
   ChapterAccessResult,
@@ -28,6 +27,7 @@ import {
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { useBookmarkStore } from "../../store/bookmarkStore";
+import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useCoinStore } from "../../store/coinStore";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
 
@@ -48,8 +48,11 @@ export default function BookDetail() {
   const purchasedChapterIds = useChapterUnlockStore(
     (state) => state.purchasedChapterIds,
   );
-  const { userRating, averageRating, ratingCount, loadBookRating, rateBook } =
-    useRatingStore();
+  const { getUserRating, loadBookRating, rateBook, ratings, ratingCounts } =
+    useBookRatingsStore();
+  const userRating = getUserRating(id || "");
+  const averageRating = ratings[id || ""] || 0;
+  const ratingCount = ratingCounts[id || ""] || 0;
 
   const [selectedChapter, setSelectedChapter] = useState<any>(null);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
@@ -408,7 +411,7 @@ export default function BookDetail() {
                             { color: currentTheme.success },
                           ]}
                         >
-                          BOUGHT
+                          UNLOCKED
                         </Text>
                       </View>
                     )}

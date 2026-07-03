@@ -1,8 +1,8 @@
-import { create } from 'zustand';
-import * as Database from '../utils/database';
-import { useChapterUnlockStore } from './chapterUnlockStore';
+import { create } from "zustand";
+import * as Database from "../utils/database";
+import { useChapterUnlockStore } from "./chapterUnlockStore";
 
-const USER_ID = 'user_1'; // In production, this would come from auth
+const USER_ID = "user_1"; // In production, this would come from auth
 
 interface CoinState {
   balance: number;
@@ -31,7 +31,7 @@ export const useCoinStore = create<CoinState>((set, get) => ({
       const balance = await Database.getUserBalance(USER_ID);
       set({ balance, isLoading: false });
     } catch (error) {
-      console.error('Error loading balance:', error);
+      console.error("Error loading balance:", error);
       set({ isLoading: false });
     }
   },
@@ -39,11 +39,11 @@ export const useCoinStore = create<CoinState>((set, get) => ({
   addCoins: async (amount: number, description: string) => {
     try {
       await Database.updateUserCoins(USER_ID, amount);
-      await Database.addCoinTransaction(USER_ID, amount, 'earned', description);
+      await Database.addCoinTransaction(USER_ID, amount, "earned", description);
       const newBalance = await Database.getUserBalance(USER_ID);
       set({ balance: newBalance });
     } catch (error) {
-      console.error('Error adding coins:', error);
+      console.error("Error adding coins:", error);
     }
   },
 
@@ -53,12 +53,12 @@ export const useCoinStore = create<CoinState>((set, get) => ({
       if (currentBalance < amount) return false;
 
       await Database.updateUserCoins(USER_ID, -amount);
-      await Database.addCoinTransaction(USER_ID, -amount, 'spent', description);
+      await Database.addCoinTransaction(USER_ID, -amount, "spent", description);
       const newBalance = await Database.getUserBalance(USER_ID);
       set({ balance: newBalance });
       return true;
     } catch (error) {
-      console.error('Error spending coins:', error);
+      console.error("Error spending coins:", error);
       return false;
     }
   },
@@ -71,38 +71,48 @@ export const useCoinStore = create<CoinState>((set, get) => ({
     try {
       return await Database.getCoinTransactions(USER_ID);
     } catch (error) {
-      console.error('Error getting transactions:', error);
+      console.error("Error getting transactions:", error);
       return [];
     }
   },
 
   watchRewardAd: async () => {
     try {
-      // User taps manually on wallet screen; no cooldown — each tap earns coins
-      const coinsEarned = 10;
-      await Database.recordAdWatch(USER_ID, 'reward', coinsEarned);
-      await get().addCoins(coinsEarned, 'Watched reward ad');
+      // User watches rewarded ad to earn coins
+      const coinsEarned = 15; // Set to 15 as per ad settings
+      await Database.recordAdWatch(USER_ID, "reward", coinsEarned);
+      await get().addCoins(coinsEarned, "Watched reward ad");
       return true;
     } catch (error) {
-      console.error('Error watching ad:', error);
+      console.error("Error watching ad:", error);
       return false;
     }
   },
 
-  unlockChapter: async (bookId: string, chapterId: string, authorId: string) => {
+  unlockChapter: async (
+    bookId: string,
+    chapterId: string,
+    authorId: string,
+  ) => {
     try {
-      const alreadyUnlocked = await Database.isChapterUnlocked(USER_ID, chapterId);
+      const alreadyUnlocked = await Database.isChapterUnlocked(
+        USER_ID,
+        chapterId,
+      );
       if (alreadyUnlocked) return true;
 
       const cost = 15;
-      const success = await get().spendCoins(cost, `Unlocked chapter ${chapterId}`);
+      const success = await get().spendCoins(
+        cost,
+        `Unlocked chapter ${chapterId}`,
+      );
       if (success) {
-        await Database.unlockChapter(USER_ID, bookId, chapterId, 'coins', cost);
+        await Database.unlockChapter(USER_ID, bookId, chapterId, "coins", cost);
         await Database.addCoinsToAuthor(authorId, cost);
         await Database.addCoinTransaction(
           authorId,
           cost,
-          'received',
+          "received",
           `Chapter unlock from user ${USER_ID}`,
         );
         useChapterUnlockStore.getState().markPurchased(chapterId);
@@ -110,7 +120,7 @@ export const useCoinStore = create<CoinState>((set, get) => ({
       }
       return false;
     } catch (error) {
-      console.error('Error unlocking chapter:', error);
+      console.error("Error unlocking chapter:", error);
       return false;
     }
   },
@@ -119,7 +129,7 @@ export const useCoinStore = create<CoinState>((set, get) => ({
     try {
       return await Database.isChapterUnlocked(USER_ID, chapterId);
     } catch (error) {
-      console.error('Error checking chapter unlock:', error);
+      console.error("Error checking chapter unlock:", error);
       return false;
     }
   },

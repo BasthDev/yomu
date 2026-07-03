@@ -4,11 +4,18 @@ import { Audiowide_400Regular, useFonts } from "@expo-google-fonts/audiowide";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SplashScreen } from "../components/SplashScreen";
 import { SecurityProvider } from "../context/SecurityContext";
 import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 import { useCoinStore } from "../store/coinStore";
+
+// Only import NavigationBar on Android
+let NavigationBar: any;
+if (Platform.OS === "android") {
+  NavigationBar = require("expo-navigation-bar");
+}
 
 function AppBootstrap() {
   const loadBalance = useCoinStore((s) => s.loadBalance);
@@ -57,6 +64,15 @@ export default function RootLayout() {
       setSplashVisible(false);
     }, 5000);
     return () => clearTimeout(timeout);
+  }, []);
+
+  // Hide native navigation bar on app launch
+  useEffect(() => {
+    if (Platform.OS === "android" && NavigationBar) {
+      NavigationBar.setPositionAsync("absolute");
+      NavigationBar.setVisibilityAsync("hidden");
+      NavigationBar.setButtonStyleAsync("light");
+    }
   }, []);
 
   return (

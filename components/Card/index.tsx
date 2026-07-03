@@ -4,12 +4,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
-    Dimensions,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { BookGridCardProps } from "../../utils/books";
 
@@ -19,8 +19,8 @@ const CARD_HEIGHT = CARD_WIDTH * 1.4;
 
 export function BookGridCard({ item, onPress }: BookGridCardProps) {
   const { currentTheme } = useThemeStore();
-  const getRating = useBookRatingsStore((state) => state.getRating);
-  const rating = getRating(item.id);
+  const ratings = useBookRatingsStore((state) => state.ratings);
+  const rating = ratings[item.id] || 0;
 
   return (
     <Pressable style={styles.card} onPress={() => onPress?.(item)}>

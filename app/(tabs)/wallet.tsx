@@ -12,17 +12,17 @@ import {
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
+import { useRewardedAd } from "../../hooks/useRewardedAd";
 import { useCoinStore } from "../../store/coinStore";
 import { useThemeStore } from "../../store/themeStore";
 
 export default function Wallet() {
   const router = useRouter();
-  const { balance, loadBalance, watchRewardAd, getTransactions } =
-    useCoinStore();
+  const { balance, loadBalance, getTransactions } = useCoinStore();
   const { currentTheme } = useThemeStore();
+  const { isLoaded, isLoading, isEarned, showAd } = useRewardedAd();
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isWatchingAd, setIsWatchingAd] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
     loadData();
@@ -32,20 +32,19 @@ export default function Wallet() {
     await loadBalance();
     const txs = await getTransactions();
     setTransactions(txs);
-    setIsLoading(false);
+    setIsLoadingData(false);
   };
 
   const handleWatchAd = async () => {
-    setIsWatchingAd(true);
-    try {
-      const success = await watchRewardAd();
-      if (success) {
-        const txs = await getTransactions();
-        setTransactions(txs);
-      }
-    } finally {
-      setIsWatchingAd(false);
+    const success = showAd();
+    if (!success) {
+      // Reload ad if failed
     }
+    // Refresh transactions after ad is watched (coins are added automatically in the hook)
+    setTimeout(async () => {
+      const txs = await getTransactions();
+      setTransactions(txs);
+    }, 2000);
   };
 
   const formatTransactionType = (type: string) => {
@@ -75,7 +74,7 @@ export default function Wallet() {
     });
   };
 
-  if (isLoading) {
+  if (isLoadingData) {
     return (
       <Container>
         <CustomHeader title="Wallet" />
@@ -96,7 +95,12 @@ export default function Wallet() {
       >
         <ContentWithPadding style={styles.content}>
           {/* Balance Card */}
-          <View style={[styles.balanceCard, { backgroundColor: currentTheme.primary }]}>
+          <View
+            style={[
+              styles.balanceCard,
+              { backgroundColor: currentTheme.primary },
+            ]}
+          >
             <Text style={styles.balanceLabel}>Your Balance</Text>
             <Text style={styles.balanceAmount}>{balance}</Text>
             <Text style={styles.balanceUnit}>Coins</Text>
@@ -108,21 +112,35 @@ export default function Wallet() {
               Earn Coins
             </Text>
             <Pressable
-              style={[styles.watchAdButton, { backgroundColor: currentTheme.surface }]}
+              style={[
+                styles.watchAdButton,
+                { backgroundColor: currentTheme.surface },
+              ]}
               onPress={handleWatchAd}
-              disabled={isWatchingAd}
+              disabled={!isLoaded || isLoading}
             >
-              {isWatchingAd ? (
+              {isLoading ? (
                 <ActivityIndicator color={currentTheme.primary} />
               ) : (
                 <>
-                  <Ionicons name="play-circle" size={24} color={currentTheme.primary} />
+                  <Ionicons
+                    name="play-circle"
+                    size={24}
+                    color={currentTheme.primary}
+                  />
                   <View style={styles.adTextContainer}>
-                    <Text style={[styles.adTitle, { color: currentTheme.text }]}>
+                    <Text
+                      style={[styles.adTitle, { color: currentTheme.text }]}
+                    >
                       Watch Reward Ad
                     </Text>
-                    <Text style={[styles.adSubtitle, { color: currentTheme.textSecondary }]}>
-                      Earn 10 coins
+                    <Text
+                      style={[
+                        styles.adSubtitle,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      Earn 15 coins
                     </Text>
                   </View>
                 </>
@@ -145,19 +163,36 @@ export default function Wallet() {
                 {transactions.map((tx) => (
                   <View
                     key={tx.id}
-                    style={[styles.transactionItem, { backgroundColor: currentTheme.surface }]}
+                    style={[
+                      styles.transactionItem,
+                      { backgroundColor: currentTheme.surface },
+                    ]}
                   >
                     <View style={styles.transactionLeft}>
                       <Ionicons
-                        name={tx.amount > 0 ? "arrow-up-circle" : "arrow-down-circle"}
+                        name={
+                          tx.amount > 0
+                            ? "arrow-up-circle"
+                            : "arrow-down-circle"
+                        }
                         size={20}
                         color={tx.amount > 0 ? "#4CAF50" : "#E50914"}
                       />
                       <View style={styles.transactionDetails}>
-                        <Text style={[styles.transactionDescription, { color: currentTheme.text }]}>
+                        <Text
+                          style={[
+                            styles.transactionDescription,
+                            { color: currentTheme.text },
+                          ]}
+                        >
                           {tx.description}
                         </Text>
-                        <Text style={[styles.transactionType, { color: currentTheme.textSecondary }]}>
+                        <Text
+                          style={[
+                            styles.transactionType,
+                            { color: currentTheme.textSecondary },
+                          ]}
+                        >
                           {formatTransactionType(tx.type)}
                         </Text>
                       </View>
@@ -171,7 +206,12 @@ export default function Wallet() {
                       >
                         {formatAmount(tx.amount)}
                       </Text>
-                      <Text style={[styles.transactionDate, { color: currentTheme.textSecondary }]}>
+                      <Text
+                        style={[
+                          styles.transactionDate,
+                          { color: currentTheme.textSecondary },
+                        ]}
+                      >
                         {formatDate(tx.created_at)}
                       </Text>
                     </View>

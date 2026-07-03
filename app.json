@@ -43,7 +43,14 @@
       "expo-font",
       "expo-sqlite",
       "@clerk/expo",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7279615482242846~2254635969",
+          "iosAppId": "ca-app-pub-7279615482242846~2254635969"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

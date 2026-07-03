@@ -75,145 +75,259 @@ export interface AdWatch {
 }
 
 let db: SQLite.SQLiteDatabase | null = null;
+let initPromise: Promise<SQLite.SQLiteDatabase> | null = null;
+let isResetting = false;
+let resetAttempts = 0;
+const MAX_RESET_ATTEMPTS = 3;
+
+export const resetDatabase = async (): Promise<void> => {
+  try {
+    if (db) {
+      try {
+        await db.closeAsync();
+      } catch (e) {
+        // Ignore close errors
+      }
+      db = null;
+    }
+    // Delete the database file
+    await SQLite.deleteDatabaseAsync(DB_NAME);
+    console.log("Database reset successfully");
+  } catch (error) {
+    console.error("Failed to reset database:", error);
+    throw error;
+  }
+};
 
 export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
-  if (db) return db;
+  // If already initializing, wait for the existing promise
+  if (initPromise) {
+    return initPromise;
+  }
 
-  db = await SQLite.openDatabaseAsync(DB_NAME);
+  // If resetting, wait and retry
+  if (isResetting) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return getDatabase();
+  }
 
-  // Create tables
-  await db.execAsync(`
-    PRAGMA journal_mode = WAL;
-    
-    CREATE TABLE IF NOT EXISTS bookmarks (
-      id TEXT PRIMARY KEY,
-      created_at TEXT NOT NULL
-    );
-    
-    CREATE TABLE IF NOT EXISTS reading_history (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      book_id TEXT NOT NULL,
-      chapter_id TEXT NOT NULL,
-      chapter_number INTEGER NOT NULL,
-      chapter_title TEXT NOT NULL,
-      last_read_at TEXT NOT NULL
-    );
-    
-    CREATE TABLE IF NOT EXISTS settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    );
-    
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      coin_balance INTEGER DEFAULT 0,
-      created_at TEXT NOT NULL
-    );
-    
-    CREATE TABLE IF NOT EXISTS author_wallets (
-      author_id TEXT PRIMARY KEY,
-      coin_balance INTEGER DEFAULT 0,
-      total_earned INTEGER DEFAULT 0
-    );
-    
-    CREATE TABLE IF NOT EXISTS chapter_unlocks (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT NOT NULL,
-      book_id TEXT NOT NULL,
-      chapter_id TEXT NOT NULL,
-      unlock_method TEXT NOT NULL,
-      coins_spent INTEGER DEFAULT 0,
-      unlocked_at TEXT NOT NULL,
-      UNIQUE(user_id, chapter_id)
-    );
-    
-    CREATE TABLE IF NOT EXISTS comments (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      chapter_id TEXT NOT NULL,
-      user_id TEXT NOT NULL,
-      content TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      likes_count INTEGER DEFAULT 0,
-      parent_comment_id INTEGER,
-      FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
-    );
+  // Create initialization promise
+  initPromise = (async () => {
+    try {
+      if (db) {
+        // Test if database is still valid
+        try {
+          await db.execAsync("SELECT 1");
+          return db;
+        } catch (testError) {
+          console.log("Database connection invalid, reconnecting...");
+          db = null;
+        }
+      }
 
-    CREATE TABLE IF NOT EXISTS comment_likes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      comment_id INTEGER NOT NULL,
-      user_id TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      UNIQUE(comment_id, user_id),
-      FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
-    );
+      db = await SQLite.openDatabaseAsync(DB_NAME);
 
-    CREATE TABLE IF NOT EXISTS book_ratings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      book_id TEXT NOT NULL,
-      user_id TEXT NOT NULL,
-      rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
-      created_at TEXT NOT NULL,
-      UNIQUE(book_id, user_id)
-    );
-    
-    CREATE TABLE IF NOT EXISTS coin_transactions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT NOT NULL,
-      amount INTEGER NOT NULL,
-      type TEXT NOT NULL,
-      description TEXT,
-      created_at TEXT NOT NULL
-    );
-    
-    CREATE TABLE IF NOT EXISTS ad_watches (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id TEXT NOT NULL,
-      ad_type TEXT NOT NULL,
-      coins_earned INTEGER NOT NULL,
-      watched_at TEXT NOT NULL
-    );
-    
-    CREATE INDEX IF NOT EXISTS idx_reading_history_book_id ON reading_history(book_id);
-    CREATE INDEX IF NOT EXISTS idx_chapter_unlocks_user ON chapter_unlocks(user_id);
-    CREATE INDEX IF NOT EXISTS idx_chapter_unlocks_chapter ON chapter_unlocks(chapter_id);
-    CREATE INDEX IF NOT EXISTS idx_comments_chapter ON comments(chapter_id);
-    CREATE INDEX IF NOT EXISTS idx_coin_transactions_user ON coin_transactions(user_id);
-    CREATE INDEX IF NOT EXISTS idx_ad_watches_user ON ad_watches(user_id);
-  `);
+      // Create tables
+      await db.execAsync(`
+        PRAGMA journal_mode = WAL;
+        
+        CREATE TABLE IF NOT EXISTS bookmarks (
+          id TEXT PRIMARY KEY,
+          created_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS reading_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          book_id TEXT NOT NULL,
+          chapter_id TEXT NOT NULL,
+          chapter_number INTEGER NOT NULL,
+          chapter_title TEXT NOT NULL,
+          last_read_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS settings (
+          key TEXT PRIMARY KEY,
+          value TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS users (
+          id TEXT PRIMARY KEY,
+          coin_balance INTEGER DEFAULT 0,
+          created_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS author_wallets (
+          author_id TEXT PRIMARY KEY,
+          coin_balance INTEGER DEFAULT 0,
+          total_earned INTEGER DEFAULT 0
+        );
+        
+        CREATE TABLE IF NOT EXISTS chapter_unlocks (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          book_id TEXT NOT NULL,
+          chapter_id TEXT NOT NULL,
+          unlock_method TEXT NOT NULL,
+          coins_spent INTEGER DEFAULT 0,
+          unlocked_at TEXT NOT NULL,
+          UNIQUE(user_id, chapter_id)
+        );
+        
+        CREATE TABLE IF NOT EXISTS comments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          chapter_id TEXT NOT NULL,
+          user_id TEXT NOT NULL,
+          content TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          likes_count INTEGER DEFAULT 0,
+          parent_comment_id INTEGER,
+          FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
+        );
 
-  // Add parent_comment_id column if it doesn't exist (for existing databases)
-  try {
-    const columns = await db.getAllAsync<any>("PRAGMA table_info(comments)");
-    const hasParentCommentId = columns.some(
-      (col: any) => col.name === "parent_comment_id",
-    );
-    if (!hasParentCommentId) {
-      await db.execAsync(
-        "ALTER TABLE comments ADD COLUMN parent_comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE",
-      );
+        CREATE TABLE IF NOT EXISTS comment_likes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          comment_id INTEGER NOT NULL,
+          user_id TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(comment_id, user_id),
+          FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS book_ratings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          book_id TEXT NOT NULL,
+          user_id TEXT NOT NULL,
+          rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+          created_at TEXT NOT NULL,
+          UNIQUE(book_id, user_id)
+        );
+        
+        CREATE TABLE IF NOT EXISTS coin_transactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          amount INTEGER NOT NULL,
+          type TEXT NOT NULL,
+          description TEXT,
+          created_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS ad_watches (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          ad_type TEXT NOT NULL,
+          coins_earned INTEGER NOT NULL,
+          watched_at TEXT NOT NULL
+        );
+        
+        CREATE INDEX IF NOT EXISTS idx_reading_history_book_id ON reading_history(book_id);
+        CREATE INDEX IF NOT EXISTS idx_chapter_unlocks_user ON chapter_unlocks(user_id);
+        CREATE INDEX IF NOT EXISTS idx_chapter_unlocks_chapter ON chapter_unlocks(chapter_id);
+        CREATE INDEX IF NOT EXISTS idx_comments_chapter ON comments(chapter_id);
+        CREATE INDEX IF NOT EXISTS idx_coin_transactions_user ON coin_transactions(user_id);
+        CREATE INDEX IF NOT EXISTS idx_ad_watches_user ON ad_watches(user_id);
+      `);
+
+      // Add parent_comment_id column if it doesn't exist (for existing databases)
+      try {
+        const columns = await db.getAllAsync<any>(
+          "PRAGMA table_info(comments)",
+        );
+        const hasParentCommentId = columns.some(
+          (col: any) => col.name === "parent_comment_id",
+        );
+        if (!hasParentCommentId) {
+          await db.execAsync(
+            "ALTER TABLE comments ADD COLUMN parent_comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE",
+          );
+        }
+      } catch (error) {
+        // Ignore migration errors
+        console.log("Migration check failed:", error);
+      }
+
+      // Add comment_likes table migration
+      try {
+        await db.execAsync(`
+          CREATE TABLE IF NOT EXISTS comment_likes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            comment_id INTEGER NOT NULL,
+            user_id TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(comment_id, user_id),
+            FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
+          )
+        `);
+      } catch (error) {
+        console.log("Comment likes table migration failed:", error);
+      }
+
+      return db;
+    } catch (error) {
+      console.error("Failed to initialize database:", error);
+
+      // If it's a NullPointerException, reset the database and retry
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes("NullPointerException")) {
+        if (resetAttempts >= MAX_RESET_ATTEMPTS) {
+          console.error("Max reset attempts reached, giving up");
+          initPromise = null;
+          throw new Error(
+            "Database initialization failed after multiple reset attempts",
+          );
+        }
+
+        console.log(
+          `Database corrupted, resetting... (attempt ${resetAttempts + 1}/${MAX_RESET_ATTEMPTS})`,
+        );
+        isResetting = true;
+        resetAttempts++;
+        initPromise = null;
+
+        try {
+          // Close all connections
+          if (db) {
+            try {
+              await db.closeAsync();
+            } catch (e) {
+              // Ignore close errors
+            }
+            db = null;
+          }
+
+          // Wait a bit for connections to fully close
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          // Delete the database
+          await SQLite.deleteDatabaseAsync(DB_NAME);
+          console.log("Database deleted successfully");
+
+          // Wait a bit before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Retry after reset
+          isResetting = false;
+          return getDatabase();
+        } catch (resetError) {
+          isResetting = false;
+          console.error("Reset failed:", resetError);
+          throw resetError;
+        }
+      }
+
+      // Reset db to null on error so we can retry
+      db = null;
+      initPromise = null;
+      throw error;
+    } finally {
+      // Clear the promise after completion (success or failure)
+      if (!isResetting) {
+        initPromise = null;
+      }
     }
-  } catch (error) {
-    // Ignore migration errors
-    console.log("Migration check failed:", error);
-  }
+  })();
 
-  // Add comment_likes table migration
-  try {
-    await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS comment_likes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        comment_id INTEGER NOT NULL,
-        user_id TEXT NOT NULL,
-        created_at TEXT NOT NULL,
-        UNIQUE(comment_id, user_id),
-        FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
-      )
-    `);
-  } catch (error) {
-    console.log("Comment likes table migration failed:", error);
-  }
-
-  return db;
+  return initPromise;
 };
 
 // Bookmark operations

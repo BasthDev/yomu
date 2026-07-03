@@ -1,0 +1,52 @@
+{
+  "cli": {
+    "version": ">= 5.2.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "BUILD_TYPE": "patch"
+      },
+      "hooks": {
+        "preBuild": [
+          {
+            "file": "scripts/version.js"
+          }
+        ]
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle",
+        "keystorePath": "android/app/release.keystore",
+        "keystorePassword": "Basthdev04",
+        "keyAlias": "yomu-release-key",
+        "keyPassword": "Basthdev04"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "BUILD_TYPE": "patch"
+      },
+      "hooks": {
+        "preBuild": [
+          {
+            "file": "scripts/version.js"
+          }
+        ]
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
