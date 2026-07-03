@@ -1,6 +1,6 @@
-import { useSignIn, useSignUp } from "@clerk/clerk-expo";
+import { useAuth, useClerk, useSignIn, useSignUp } from "@clerk/expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -19,17 +19,22 @@ export default function AuthScreen() {
   const { type } = useLocalSearchParams<{ type?: "signin" | "signup" }>();
   const router = useRouter();
   const { currentTheme } = useThemeStore();
-  const { signIn, setActive, isLoaded: signInLoaded } = useSignIn();
-  const {
-    signUp,
-    setActive: setSignUpActive,
-    isLoaded: signUpLoaded,
-  } = useSignUp();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { signIn } = useSignIn();
+  const { signUp } = useSignUp();
+  const { setActive } = useClerk();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(type === "signup");
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.replace("/(tabs)");
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -40,29 +45,40 @@ export default function AuthScreen() {
     setLoading(true);
     try {
       if (isSignUp) {
-        if (!signUpLoaded || !signUp) return;
+        if (!signUp) return;
 
         const result = await signUp.create({
           emailAddress: email,
           password,
         });
 
-        if (result.status === "complete") {
-          await setSignUpActive({ session: result.createdSessionId });
-          router.replace("/(tabs)");
-        } else {
-          Alert.alert("Sign up", "Please complete verification");
+        if ("error" in result) {
+          Alert.alert("Error", result.error.message || "Sign up failed");
+          return;
         }
+
+        // For password-based sign up, we need to verify the email
+        // For now, we'll use a simpler approach
+        Alert.alert(
+          "Sign up",
+          "Please check your email to verify your account",
+        );
       } else {
-        if (!signInLoaded || !signIn) return;
+        if (!signIn) return;
 
         const result = await signIn.create({
           identifier: email,
           password,
         });
 
-        if (result.status === "complete") {
-          await setActive({ session: result.createdSessionId });
+        if ("error" in result) {
+          Alert.alert("Error", result.error.message || "Sign in failed");
+          return;
+        }
+
+        // Set the active session
+        if (signIn.status === "complete") {
+          await setActive({ session: signIn.createdSessionId });
           router.replace("/(tabs)");
         } else {
           Alert.alert("Sign in", "Please complete verification");
@@ -79,12 +95,7 @@ export default function AuthScreen() {
   };
 
   const handleGoogleSignIn = async () => {
-    // Google OAuth will be configured in Clerk dashboard
-    // This is a placeholder for the Google sign-in flow
-    Alert.alert(
-      "Google Sign In",
-      "Configure Google OAuth in Clerk dashboard first",
-    );
+    Alert.alert("Google Sign In", "Coming soon - configure Google OAuth");
   };
 
   return (

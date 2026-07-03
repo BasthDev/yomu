@@ -1,7 +1,15 @@
+import { useAuth } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+    Alert,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
@@ -10,6 +18,16 @@ import { useThemeStore } from "../../store/themeStore";
 export default function Settings() {
   const router = useRouter();
   const { currentTheme, themeName, setPresetTheme } = useThemeStore();
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace("/auth");
+    } catch (error) {
+      Alert.alert("Error", "Failed to sign out");
+    }
+  };
 
   const themeColors = [
     { name: "Red", key: "red", color: "#E50914" },
@@ -72,6 +90,33 @@ export default function Settings() {
                 </Pressable>
               ))}
             </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: currentTheme.text }]}>
+              Account
+            </Text>
+            <Pressable
+              style={[
+                styles.menuItem,
+                { backgroundColor: currentTheme.surface },
+              ]}
+              onPress={handleSignOut}
+            >
+              <Ionicons
+                name="log-out-outline"
+                size={24}
+                color={currentTheme.text}
+              />
+              <Text style={[styles.menuItemText, { color: currentTheme.text }]}>
+                Sign Out
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={currentTheme.textSecondary}
+              />
+            </Pressable>
           </View>
 
           {/* <View style={styles.section}>
@@ -188,5 +233,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "600",
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    gap: 12,
+  },
+  menuItemText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

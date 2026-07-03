@@ -2,8 +2,8 @@ import { useSecurity } from "@/context/SecurityContext";
 import { useChapterUnlockStore } from "@/store/chapterUnlockStore";
 import { useThemeStore } from "@/store/themeStore";
 import {
-    ChapterAccessResult,
-    getChapterDisplayStatusSync,
+  ChapterAccessResult,
+  getChapterDisplayStatusSync,
 } from "@/utils/chapterAccess";
 import { navigateToRead } from "@/utils/navigation";
 import { getRouteParam } from "@/utils/routeParams";
@@ -12,16 +12,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
@@ -119,299 +119,283 @@ export default function BookDetail() {
   }
 
   return (
-    <AuthGuard>
-      <Container>
-        <View style={styles.topNavigation}>
-          <View style={styles.topNavLeft}>
-            {showBackButton && (
-              <Pressable
-                onPress={() => router.back()}
-                style={styles.backButton}
-              >
-                <Ionicons name="chevron-back" size={24} color="#fff" />
-              </Pressable>
-            )}
-          </View>
+    <Container>
+      <View style={styles.topNavigation}>
+        <View style={styles.topNavLeft}>
           {showBackButton && (
-            <Pressable
-              onPress={toggleBookmark}
-              style={styles.bookmarkButton}
-              disabled={isSaving}
-            >
-              {isSaving ? (
-                <Ionicons name="time" size={24} color="#888" />
-              ) : (
-                <Ionicons
-                  name={isBookmarked(id) ? "bookmark" : "bookmark-outline"}
-                  size={24}
-                  color={isBookmarked(id) ? currentTheme.primary : "#fff"}
-                />
-              )}
+            <Pressable onPress={() => router.back()} style={styles.backButton}>
+              <Ionicons name="chevron-back" size={24} color="#fff" />
             </Pressable>
           )}
         </View>
+        {showBackButton && (
+          <Pressable
+            onPress={toggleBookmark}
+            style={styles.bookmarkButton}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <Ionicons name="time" size={24} color="#888" />
+            ) : (
+              <Ionicons
+                name={isBookmarked(id) ? "bookmark" : "bookmark-outline"}
+                size={24}
+                color={isBookmarked(id) ? currentTheme.primary : "#fff"}
+              />
+            )}
+          </Pressable>
+        )}
+      </View>
 
-        <View style={styles.bannerContainer}>
-          <Image
-            source={{ uri: book.banner }}
-            style={styles.bannerImage}
-            resizeMode="cover"
-          />
-          <LinearGradient
-            colors={[
-              "rgba(18, 18, 18, 0.1)",
-              "rgba(18, 18, 18, 0.5)",
-              "#121212",
-            ]}
-            locations={[0, 0.6, 1]}
-            style={styles.gradientOverlay}
-          />
-        </View>
+      <View style={styles.bannerContainer}>
+        <Image
+          source={{ uri: book.banner }}
+          style={styles.bannerImage}
+          resizeMode="cover"
+        />
+        <LinearGradient
+          colors={["rgba(18, 18, 18, 0.1)", "rgba(18, 18, 18, 0.5)", "#121212"]}
+          locations={[0, 0.6, 1]}
+          style={styles.gradientOverlay}
+        />
+      </View>
 
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          onScroll={(event) => {
-            setShowBackButton(event.nativeEvent.contentOffset.y < 150);
-          }}
-          scrollEventThrottle={16}
-        >
-          <View style={styles.headerSpacer} />
-          <ContentWithPadding style={styles.mainContent}>
-            <View style={styles.metaRow}>
-              <View style={styles.badgeHot}>
-                <Text style={styles.badgeText}>
-                  {book.status.toUpperCase()}
-                </Text>
-              </View>
-              <View style={styles.ratingBox}>
-                <Ionicons name="star" size={14} color="#ffcc00" />
-                <Text style={styles.ratingText}>{book.rating.toFixed(1)}</Text>
-              </View>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onScroll={(event) => {
+          setShowBackButton(event.nativeEvent.contentOffset.y < 150);
+        }}
+        scrollEventThrottle={16}
+      >
+        <View style={styles.headerSpacer} />
+        <ContentWithPadding style={styles.mainContent}>
+          <View style={styles.metaRow}>
+            <View style={styles.badgeHot}>
+              <Text style={styles.badgeText}>{book.status.toUpperCase()}</Text>
             </View>
-
-            <Text style={styles.title}>{book.title}</Text>
-            <Text style={styles.author}>Author: {book.author}</Text>
-
-            <View style={styles.genreContainer}>
-              {book.genre.map((g, idx) => (
-                <View key={idx} style={styles.genreTag}>
-                  <Text style={styles.genreTagText}>{g}</Text>
-                </View>
-              ))}
+            <View style={styles.ratingBox}>
+              <Ionicons name="star" size={14} color="#ffcc00" />
+              <Text style={styles.ratingText}>{book.rating.toFixed(1)}</Text>
             </View>
+          </View>
 
-            <Text style={styles.sectionTitle}>SINOPSIS</Text>
-            <Text style={styles.description}>{book.description}</Text>
+          <Text style={styles.title}>{book.title}</Text>
+          <Text style={styles.author}>Author: {book.author}</Text>
 
-            <Text style={styles.sectionTitle}>DAFTAR CHAPTER</Text>
+          <View style={styles.genreContainer}>
+            {book.genre.map((g, idx) => (
+              <View key={idx} style={styles.genreTag}>
+                <Text style={styles.genreTagText}>{g}</Text>
+              </View>
+            ))}
+          </View>
 
-            <View style={styles.episodeListContainer}>
-              {book.chaptersList?.map((chapter) => {
-                const status = getChapterDisplayStatusSync(
-                  book,
-                  chapter,
-                  purchasedChapterIds,
-                );
+          <Text style={styles.sectionTitle}>SINOPSIS</Text>
+          <Text style={styles.description}>{book.description}</Text>
 
-                return (
-                  <Pressable
-                    key={chapter.id}
-                    style={styles.episodeCard}
-                    onPress={() => handleChapterPress(chapter)}
-                  >
-                    <View style={styles.episodeLeft}>
-                      <View
-                        style={[
-                          styles.episodeIconBox,
-                          { backgroundColor: currentTheme.primary + "20" },
-                        ]}
-                      >
-                        <Ionicons
-                          name="book"
-                          size={18}
-                          color={currentTheme.primary}
-                        />
-                      </View>
-                      <View style={styles.episodeMeta}>
-                        <Text
-                          style={[
-                            styles.episodeNumber,
-                            { color: currentTheme.text },
-                          ]}
-                        >
-                          Chapter {chapter.chapterNumber}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.episodeTitle,
-                            { color: currentTheme.textSecondary },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {chapter.title}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.episodeRight}>
-                      {status === "free" && (
-                        <View style={styles.freeBadge}>
-                          <Text style={styles.freeBadgeText}>FREE</Text>
-                        </View>
-                      )}
-                      {status === "wait_available" && (
-                        <View style={styles.waitBadge}>
-                          <Text style={styles.waitBadgeText}>WAIT</Text>
-                        </View>
-                      )}
-                      {status === "unlocked" && (
-                        <View style={styles.freeBadge}>
-                          <Text style={styles.freeBadgeText}>BOUGHT</Text>
-                        </View>
-                      )}
-                      {status === "locked" && (
-                        <View style={styles.lockBadge}>
-                          <Ionicons
-                            name="lock-closed"
-                            size={14}
-                            color="#ffd700"
-                          />
-                          <Text style={styles.lockBadgeText}>
-                            {chapterCost}
-                          </Text>
-                        </View>
-                      )}
+          <Text style={styles.sectionTitle}>DAFTAR CHAPTER</Text>
+
+          <View style={styles.episodeListContainer}>
+            {book.chaptersList?.map((chapter) => {
+              const status = getChapterDisplayStatusSync(
+                book,
+                chapter,
+                purchasedChapterIds,
+              );
+
+              return (
+                <Pressable
+                  key={chapter.id}
+                  style={styles.episodeCard}
+                  onPress={() => handleChapterPress(chapter)}
+                >
+                  <View style={styles.episodeLeft}>
+                    <View
+                      style={[
+                        styles.episodeIconBox,
+                        { backgroundColor: currentTheme.primary + "20" },
+                      ]}
+                    >
                       <Ionicons
-                        name="chevron-forward"
+                        name="book"
                         size={18}
-                        color={currentTheme.textSecondary}
+                        color={currentTheme.primary}
                       />
                     </View>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </ContentWithPadding>
-        </ScrollView>
-
-        <Modal
-          visible={showUnlockModal}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setShowUnlockModal(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View
-              style={[
-                styles.modalContent,
-                { backgroundColor: currentTheme.surface },
-              ]}
-            >
-              <Text style={[styles.modalTitle, { color: currentTheme.text }]}>
-                Chapter Locked
-              </Text>
-              <Text
-                style={[
-                  styles.modalText,
-                  { color: currentTheme.textSecondary },
-                ]}
-              >
-                You need to unlock this chapter to read it.
-              </Text>
-
-              {chapterAccess && (
-                <View style={styles.unlockOptions}>
-                  <TouchableOpacity
-                    style={[
-                      styles.unlockOption,
-                      { backgroundColor: currentTheme.background },
-                    ]}
-                    onPress={handleUnlockWithCoins}
-                    disabled={isUnlocking || balance < chapterCost}
-                  >
-                    <Ionicons
-                      name="wallet"
-                      size={24}
-                      color={currentTheme.primary}
-                    />
-                    <View style={styles.unlockOptionText}>
+                    <View style={styles.episodeMeta}>
                       <Text
                         style={[
-                          styles.unlockOptionTitle,
+                          styles.episodeNumber,
                           { color: currentTheme.text },
                         ]}
                       >
-                        Unlock with Coins
+                        Chapter {chapter.chapterNumber}
                       </Text>
                       <Text
                         style={[
-                          styles.unlockOptionSubtitle,
+                          styles.episodeTitle,
                           { color: currentTheme.textSecondary },
                         ]}
+                        numberOfLines={1}
                       >
-                        {balance >= chapterCost
-                          ? `${chapterCost} coins (You have ${balance})`
-                          : `Need ${chapterCost} coins (You have ${balance})`}
+                        {chapter.title}
                       </Text>
                     </View>
-                  </TouchableOpacity>
-
-                  {chapterAccess.reason === "wait_required" &&
-                    chapterAccess.daysUntilFree &&
-                    chapterAccess.daysUntilFree > 0 && (
-                      <View
-                        style={[
-                          styles.unlockOption,
-                          { backgroundColor: currentTheme.background },
-                        ]}
-                      >
-                        <Ionicons name="time" size={24} color="#ffd700" />
-                        <View style={styles.unlockOptionText}>
-                          <Text
-                            style={[
-                              styles.unlockOptionTitle,
-                              { color: currentTheme.text },
-                            ]}
-                          >
-                            Wait for Free Access
-                          </Text>
-                          <Text
-                            style={[
-                              styles.unlockOptionSubtitle,
-                              { color: currentTheme.textSecondary },
-                            ]}
-                          >
-                            Available in {chapterAccess.daysUntilFree}{" "}
-                            {chapterAccess.daysUntilFree === 1 ? "day" : "days"}
-                          </Text>
-                        </View>
+                  </View>
+                  <View style={styles.episodeRight}>
+                    {status === "free" && (
+                      <View style={styles.freeBadge}>
+                        <Text style={styles.freeBadgeText}>FREE</Text>
                       </View>
                     )}
-                </View>
-              )}
-
-              <TouchableOpacity
-                style={[
-                  styles.closeButton,
-                  { backgroundColor: currentTheme.background },
-                ]}
-                onPress={() => setShowUnlockModal(false)}
-              >
-                <Text
-                  style={[
-                    styles.closeButtonText,
-                    { color: currentTheme.textSecondary },
-                  ]}
-                >
-                  Close
-                </Text>
-              </TouchableOpacity>
-            </View>
+                    {status === "wait_available" && (
+                      <View style={styles.waitBadge}>
+                        <Text style={styles.waitBadgeText}>WAIT</Text>
+                      </View>
+                    )}
+                    {status === "unlocked" && (
+                      <View style={styles.freeBadge}>
+                        <Text style={styles.freeBadgeText}>BOUGHT</Text>
+                      </View>
+                    )}
+                    {status === "locked" && (
+                      <View style={styles.lockBadge}>
+                        <Ionicons
+                          name="lock-closed"
+                          size={14}
+                          color="#ffd700"
+                        />
+                        <Text style={styles.lockBadgeText}>{chapterCost}</Text>
+                      </View>
+                    )}
+                    <Ionicons
+                      name="chevron-forward"
+                      size={18}
+                      color={currentTheme.textSecondary}
+                    />
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
-        </Modal>
-      </Container>
-    </AuthGuard>
+        </ContentWithPadding>
+      </ScrollView>
+
+      <Modal
+        visible={showUnlockModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowUnlockModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalContent,
+              { backgroundColor: currentTheme.surface },
+            ]}
+          >
+            <Text style={[styles.modalTitle, { color: currentTheme.text }]}>
+              Chapter Locked
+            </Text>
+            <Text
+              style={[styles.modalText, { color: currentTheme.textSecondary }]}
+            >
+              You need to unlock this chapter to read it.
+            </Text>
+
+            {chapterAccess && (
+              <View style={styles.unlockOptions}>
+                <TouchableOpacity
+                  style={[
+                    styles.unlockOption,
+                    { backgroundColor: currentTheme.background },
+                  ]}
+                  onPress={handleUnlockWithCoins}
+                  disabled={isUnlocking || balance < chapterCost}
+                >
+                  <Ionicons
+                    name="wallet"
+                    size={24}
+                    color={currentTheme.primary}
+                  />
+                  <View style={styles.unlockOptionText}>
+                    <Text
+                      style={[
+                        styles.unlockOptionTitle,
+                        { color: currentTheme.text },
+                      ]}
+                    >
+                      Unlock with Coins
+                    </Text>
+                    <Text
+                      style={[
+                        styles.unlockOptionSubtitle,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      {balance >= chapterCost
+                        ? `${chapterCost} coins (You have ${balance})`
+                        : `Need ${chapterCost} coins (You have ${balance})`}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                {chapterAccess.reason === "wait_required" &&
+                  chapterAccess.daysUntilFree &&
+                  chapterAccess.daysUntilFree > 0 && (
+                    <View
+                      style={[
+                        styles.unlockOption,
+                        { backgroundColor: currentTheme.background },
+                      ]}
+                    >
+                      <Ionicons name="time" size={24} color="#ffd700" />
+                      <View style={styles.unlockOptionText}>
+                        <Text
+                          style={[
+                            styles.unlockOptionTitle,
+                            { color: currentTheme.text },
+                          ]}
+                        >
+                          Wait for Free Access
+                        </Text>
+                        <Text
+                          style={[
+                            styles.unlockOptionSubtitle,
+                            { color: currentTheme.textSecondary },
+                          ]}
+                        >
+                          Available in {chapterAccess.daysUntilFree}{" "}
+                          {chapterAccess.daysUntilFree === 1 ? "day" : "days"}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={[
+                styles.closeButton,
+                { backgroundColor: currentTheme.background },
+              ]}
+              onPress={() => setShowUnlockModal(false)}
+            >
+              <Text
+                style={[
+                  styles.closeButtonText,
+                  { color: currentTheme.textSecondary },
+                ]}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </Container>
   );
 }
 
