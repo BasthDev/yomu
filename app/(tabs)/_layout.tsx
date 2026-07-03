@@ -64,6 +64,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="profile"
+        options={{
+          title: "You",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person" size={24} color={color} />
+          ),
+        }}
+      />
+      {/* <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
@@ -71,7 +80,7 @@ export default function TabsLayout() {
             <Ionicons name="settings" size={24} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="wallet"
         options={{
@@ -79,6 +88,12 @@ export default function TabsLayout() {
           // tabBarIcon: ({ color }) => (
           //   <Ionicons name="wallet" size={24} color={color} />
           // ),
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="user"
+        options={{
           href: null,
         }}
       />

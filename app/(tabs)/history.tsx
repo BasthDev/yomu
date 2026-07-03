@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
@@ -77,9 +77,20 @@ export default function History() {
         <ContentWithPadding style={styles.content}>
           {readingHistory.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="time-outline" size={64} color="#333" />
-              <Text style={styles.emptyText}>No reading history yet</Text>
-              <Text style={styles.emptySubtext}>
+              <Ionicons
+                name="time-outline"
+                size={64}
+                color={currentTheme.textSecondary}
+              />
+              <Text style={[styles.emptyText, { color: currentTheme.text }]}>
+                No reading history yet
+              </Text>
+              <Text
+                style={[
+                  styles.emptySubtext,
+                  { color: currentTheme.textSecondary },
+                ]}
+              >
                 Start reading to track your progress!
               </Text>
             </View>
@@ -87,7 +98,10 @@ export default function History() {
             <>
               <View style={styles.headerRow}>
                 <Text
-                  style={[styles.historyCount, { color: currentTheme.text }]}
+                  style={[
+                    styles.historyCount,
+                    { color: currentTheme.textSecondary },
+                  ]}
                 >
                   {readingHistory.length}{" "}
                   {readingHistory.length === 1 ? "book" : "books"}
@@ -102,7 +116,7 @@ export default function History() {
                   <Text
                     style={[
                       styles.clearButtonText,
-                      { color: currentTheme.textSecondary },
+                      { color: currentTheme.primary },
                     ]}
                   >
                     Clear All
@@ -120,7 +134,13 @@ export default function History() {
                   return (
                     <Pressable
                       key={historyItem.bookId}
-                      style={styles.historyCard}
+                      style={[
+                        styles.historyCard,
+                        {
+                          backgroundColor: currentTheme.surface,
+                          borderColor: currentTheme.border,
+                        },
+                      ]}
                       onPress={() => handleBookPress(historyItem.bookId)}
                     >
                       <Image
@@ -130,10 +150,23 @@ export default function History() {
                       />
 
                       <View style={styles.bookInfo}>
-                        <Text style={styles.bookTitle} numberOfLines={2}>
+                        <Text
+                          style={[
+                            styles.bookTitle,
+                            { color: currentTheme.text },
+                          ]}
+                          numberOfLines={2}
+                        >
                           {book.title}
                         </Text>
-                        <Text style={styles.bookAuthor}>{book.author}</Text>
+                        <Text
+                          style={[
+                            styles.bookAuthor,
+                            { color: currentTheme.textSecondary },
+                          ]}
+                        >
+                          {book.author}
+                        </Text>
 
                         <View style={styles.chapterInfo}>
                           <Text
@@ -164,7 +197,12 @@ export default function History() {
                           </Text>
                         </View>
 
-                        <Text style={styles.timeText}>
+                        <Text
+                          style={[
+                            styles.timeText,
+                            { color: currentTheme.textSecondary },
+                          ]}
+                        >
                           {formatTimeAgo(historyItem.lastReadAt)}
                         </Text>
                       </View>
@@ -207,13 +245,11 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
   },
   emptyText: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "600",
     marginTop: 16,
   },
   emptySubtext: {
-    color: "#666",
     fontSize: 14,
     marginTop: 8,
   },
@@ -224,7 +260,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   historyCount: {
-    color: "#888",
     fontSize: 14,
   },
   clearButton: {
@@ -232,7 +267,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   clearButtonText: {
-    color: "#E50914",
     fontSize: 14,
     fontWeight: "600",
   },
@@ -241,12 +275,10 @@ const styles = StyleSheet.create({
   },
   historyCard: {
     flexDirection: "row",
-    backgroundColor: "#1e1e1e",
     borderRadius: 12,
     padding: 12,
     gap: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.05)",
   },
   bookCover: {
     width: 100,
@@ -258,13 +290,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   bookTitle: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
   },
   bookAuthor: {
-    color: "#888",
     fontSize: 13,
     marginBottom: 8,
   },
@@ -275,20 +305,17 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   chapterText: {
-    color: "#E50914",
     fontSize: 12,
     fontWeight: "600",
     flex: 1,
   },
   timeText: {
-    color: "#666",
     fontSize: 11,
   },
   continueButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#E50914",
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",

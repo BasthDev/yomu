@@ -1,16 +1,24 @@
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { BookGridCard } from "../../components/Card";
 import { Container } from "../../components/Container";
 import { CustomHeader } from "../../components/Header";
 import { HeroSlider } from "../../components/HeroSlider";
+import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useThemeStore } from "../../store/themeStore";
-import { navigateToBook } from "../../utils/navigation";
 import { BookItem } from "../../utils/books";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
+import { navigateToBook } from "../../utils/navigation";
 
 export default function Index() {
   const { currentTheme } = useThemeStore();
+  const loadAllRatings = useBookRatingsStore((state) => state.loadAllRatings);
+
+  useEffect(() => {
+    const bookIds = DUMMY_BOOKS.map((book) => book.id);
+    loadAllRatings(bookIds);
+  }, [loadAllRatings]);
 
   const handleBookPress = (item: BookItem) => {
     navigateToBook(router, item.id);
@@ -52,7 +60,10 @@ export default function Index() {
         numColumns={2}
         columnWrapperStyle={styles.row}
         ListHeaderComponent={renderHeader}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          { backgroundColor: currentTheme.background },
+        ]}
         showsVerticalScrollIndicator={false}
       />
     </Container>

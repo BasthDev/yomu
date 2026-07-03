@@ -1,14 +1,15 @@
+import { useBookRatingsStore } from "@/store/bookRatingsStore";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Dimensions,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { BookGridCardProps } from "../../utils/books";
 
@@ -18,6 +19,8 @@ const CARD_HEIGHT = CARD_WIDTH * 1.4;
 
 export function BookGridCard({ item, onPress }: BookGridCardProps) {
   const { currentTheme } = useThemeStore();
+  const getRating = useBookRatingsStore((state) => state.getRating);
+  const rating = getRating(item.id);
 
   return (
     <Pressable style={styles.card} onPress={() => onPress?.(item)}>
@@ -36,12 +39,10 @@ export function BookGridCard({ item, onPress }: BookGridCardProps) {
       />
 
       {/* Indikator Rating Bintang di Pojok Kiri Atas Kartu */}
-      {item.rating !== undefined && (
-        <View style={styles.ratingBadge}>
-          <Ionicons name="star" size={10} color="#ffcc00" />
-          <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
-        </View>
-      )}
+      <View style={styles.ratingBadge}>
+        <Ionicons name="star" size={10} color="#ffcc00" />
+        <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
+      </View>
 
       {/* Area Informasi Buku (Bawah) */}
       <View style={styles.infoContainer}>

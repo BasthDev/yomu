@@ -2,6 +2,7 @@ import { ChapterNavigation } from "@/components/ChapterNavigation";
 import { Container } from "@/components/Container";
 import { ContentWithPadding } from "@/components/Content";
 import { CustomHeader } from "@/components/Header";
+import { UnlockModal } from "@/components/UnlockModal";
 import { useSecurity } from "@/context/SecurityContext";
 import { useThemeStore } from "@/store/themeStore";
 import { ChapterItem } from "@/utils/books";
@@ -13,11 +14,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -34,12 +33,11 @@ export default function Read() {
   const scrollRef = useRef<ScrollView>(null);
   const { updateReadingHistory } = useBookmarkStore();
   const { currentTheme } = useThemeStore();
-  const { comments, loadComments, addComment } = useCommentStore();
+  const { comments, loadComments } = useCommentStore();
   const { balance } = useCoinStore();
   const { checkAccess, unlockWithCoins, findBookAndChapter, chapterCost } =
     useSecurity();
 
-  const [newComment, setNewComment] = useState("");
   const [pendingUnlock, setPendingUnlock] = useState<ChapterItem | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
 
@@ -207,13 +205,12 @@ export default function Read() {
         </View>
         <UnlockModal
           visible
-          title={chapter.title}
-          access={access}
-          balance={balance}
-          chapterCost={chapterCost}
-          isUnlocking={isUnlocking}
+          onClose={handleGoBack}
           onUnlock={handleUnlockWithCoins}
-          onCancel={handleGoBack}
+          chapterCost={chapterCost}
+          balance={balance}
+          isUnlocking={isUnlocking}
+          daysUntilFree={access?.daysUntilFree}
           theme={currentTheme}
         />
       </Container>
@@ -294,91 +291,6 @@ export default function Read() {
                   color={currentTheme.textSecondary}
                 />
               </TouchableOpacity>
-
-              <View
-                style={[
-                  styles.commentInputContainer,
-                  { backgroundColor: currentTheme.surface },
-                ]}
-              >
-                <TextInput
-                  style={[
-                    styles.commentInput,
-                    {
-                      color: currentTheme.text,
-                      backgroundColor: currentTheme.background,
-                    },
-                  ]}
-                  placeholder="Add a comment..."
-                  placeholderTextColor={currentTheme.textSecondary}
-                  value={newComment}
-                  onChangeText={setNewComment}
-                  multiline
-                />
-                <TouchableOpacity
-                  style={[
-                    styles.sendButton,
-                    { backgroundColor: currentTheme.primary },
-                  ]}
-                  onPress={async () => {
-                    if (!newComment.trim()) return;
-                    await addComment(chapter.id, newComment.trim());
-                    setNewComment("");
-                  }}
-                  disabled={!newComment.trim()}
-                >
-                  <Ionicons name="send" size={18} color="#fff" />
-                </TouchableOpacity>
-              </View>
-
-              {comments.length > 0 && (
-                <View style={styles.commentsPreview}>
-                  {comments.slice(0, 3).map((comment) => (
-                    <View
-                      key={comment.id}
-                      style={[
-                        styles.commentPreviewItem,
-                        { backgroundColor: currentTheme.surface },
-                      ]}
-                    >
-                      <View
-                        style={[
-                          styles.commentAvatar,
-                          { backgroundColor: currentTheme.primary + "20" },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.commentAvatarText,
-                            { color: currentTheme.primary },
-                          ]}
-                        >
-                          {comment.user_id.charAt(0).toUpperCase()}
-                        </Text>
-                      </View>
-                      <View style={styles.commentContent}>
-                        <Text
-                          style={[
-                            styles.commentUsername,
-                            { color: currentTheme.text },
-                          ]}
-                        >
-                          User {comment.user_id.slice(-4)}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.commentText,
-                            { color: currentTheme.textSecondary },
-                          ]}
-                          numberOfLines={2}
-                        >
-                          {comment.content}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              )}
             </View>
           </View>
         </ContentWithPadding>
@@ -386,95 +298,15 @@ export default function Read() {
 
       <UnlockModal
         visible={pendingUnlock !== null}
-        title={unlockTarget?.title ?? "Chapter Locked"}
-        access={unlockAccess}
-        balance={balance}
-        chapterCost={chapterCost}
-        isUnlocking={isUnlocking}
+        onClose={() => setPendingUnlock(null)}
         onUnlock={handleUnlockWithCoins}
-        onCancel={() => setPendingUnlock(null)}
+        chapterCost={chapterCost}
+        balance={balance}
+        isUnlocking={isUnlocking}
+        daysUntilFree={unlockAccess?.daysUntilFree}
         theme={currentTheme}
       />
     </Container>
-  );
-}
-
-function UnlockModal({
-  visible,
-  title,
-  access,
-  balance,
-  chapterCost,
-  isUnlocking,
-  onUnlock,
-  onCancel,
-  theme,
-}: {
-  visible: boolean;
-  title: string;
-  access: ChapterAccessResult | null;
-  balance: number;
-  chapterCost: number;
-  isUnlocking: boolean;
-  onUnlock: () => void;
-  onCancel: () => void;
-  theme: ReturnType<typeof useThemeStore.getState>["currentTheme"];
-}) {
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onCancel}
-    >
-      <View style={styles.modalOverlay}>
-        <View
-          style={[styles.modalContent, { backgroundColor: theme.background }]}
-        >
-          <Text style={[styles.modalTitle, { color: theme.text }]}>
-            Chapter Locked
-          </Text>
-          <Text style={[styles.modalText, { color: theme.textSecondary }]}>
-            {title}
-          </Text>
-
-          {access?.reason === "wait_required" && (
-            <View style={styles.waitInfo}>
-              <Ionicons name="time" size={24} color="#ffd700" />
-              <Text style={[styles.waitText, { color: theme.text }]}>
-                Free in {access.daysUntilFree}{" "}
-                {access.daysUntilFree === 1 ? "day" : "days"}
-              </Text>
-            </View>
-          )}
-
-          <View style={styles.modalButtons}>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.coinButton]}
-              onPress={onUnlock}
-              disabled={isUnlocking || balance < chapterCost}
-            >
-              <Ionicons name="cash" size={20} color="#fff" />
-              <Text style={styles.coinButtonText}>
-                {isUnlocking
-                  ? "Loading..."
-                  : balance >= chapterCost
-                    ? `Unlock ${chapterCost} Coins`
-                    : `Need ${chapterCost} coins (${balance} available)`}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-            <Text
-              style={[styles.cancelButtonText, { color: theme.textSecondary }]}
-            >
-              Cancel
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
   );
 }
 
@@ -528,48 +360,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   commentsTitle: { fontSize: 18, fontWeight: "600" },
-  commentInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 12,
-    gap: 12,
-    marginBottom: 16,
-  },
-  commentInput: {
-    flex: 1,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    maxHeight: 80,
-    fontSize: 14,
-  },
-  sendButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  commentsPreview: { gap: 12 },
-  commentPreviewItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 12,
-    borderRadius: 12,
-    gap: 12,
-  },
-  commentAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  commentAvatarText: { fontSize: 16, fontWeight: "bold" },
-  commentContent: { flex: 1 },
-  commentUsername: { fontSize: 14, fontWeight: "600", marginBottom: 4 },
-  commentText: { fontSize: 13, lineHeight: 18 },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
@@ -577,14 +367,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  modalContent: { borderRadius: 16, padding: 24, width: "100%", maxWidth: 320 },
+  modalContent: { borderRadius: 16, padding: 24, width: "100%", maxWidth: 400 },
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
     textAlign: "center",
   },
-  modalText: { fontSize: 16, marginBottom: 16, textAlign: "center" },
+  modalText: { fontSize: 14, textAlign: "center", marginBottom: 24 },
+  unlockOptions: { gap: 12, marginBottom: 16 },
+  unlockOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    gap: 12,
+  },
+  unlockOptionText: { flex: 1 },
+  unlockOptionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  unlockOptionSubtitle: {
+    fontSize: 14,
+  },
+  closeButton: {
+    padding: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  closeButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
   waitInfo: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/authStore";
 import { useCoinStore } from "@/store/coinStore";
 import { useThemeStore } from "@/store/themeStore";
 import { navigateToWallet } from "@/utils/navigation";
@@ -5,6 +6,7 @@ import { Ionicons as VectorIcons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
 import React from "react";
 import {
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -50,6 +52,7 @@ export function CustomHeader({
   const { currentTheme } = useThemeStore();
   const balance = useCoinStore((state) => state.balance);
   const balanceLoading = useCoinStore((state) => state.isLoading);
+  const { firstName, email, imageUrl } = useAuthStore();
 
   const handleLogoPress = () => {
     if (pathname !== "/") {
@@ -82,7 +85,11 @@ export function CustomHeader({
       <View style={styles.topRow}>
         {showBack ? (
           <TouchableOpacity onPress={handlePressBack} style={styles.iconButton}>
-            <VectorIcons name="chevron-back" size={28} color="#fff" />
+            <VectorIcons
+              name="chevron-back"
+              size={28}
+              color={currentTheme.text}
+            />
           </TouchableOpacity>
         ) : (
           !title && (
@@ -113,17 +120,43 @@ export function CustomHeader({
         <View style={styles.rightIcons}>
           {!hideIcons && (
             <TouchableOpacity
-              style={styles.balancePill}
+              style={[
+                styles.balancePill,
+                {
+                  backgroundColor: currentTheme.warning + "20",
+                  borderColor: currentTheme.warning + "40",
+                },
+              ]}
               onPress={handleWalletPress}
             >
-              <VectorIcons name="cash" size={16} color="#ffd700" />
-              <Text style={styles.balanceText}>
+              <VectorIcons name="cash" size={16} color={currentTheme.warning} />
+              <Text
+                style={[styles.balanceText, { color: currentTheme.warning }]}
+              >
                 {balanceLoading ? "…" : balance}
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={styles.profilePic}>
-            <VectorIcons name="person-circle" size={32} color="#fff" />
+          <TouchableOpacity
+            style={styles.profilePic}
+            onPress={() => router.push("/(tabs)/profile")}
+          >
+            {imageUrl ? (
+              <Image source={{ uri: imageUrl }} style={styles.profileImage} />
+            ) : (
+              <View
+                style={[
+                  styles.profileFallback,
+                  { backgroundColor: currentTheme.primary },
+                ]}
+              >
+                <Text style={styles.profileFallbackText}>
+                  {firstName?.[0]?.toUpperCase() ||
+                    email?.[0]?.toUpperCase() ||
+                    "U"}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -131,17 +164,25 @@ export function CustomHeader({
       {showSearch && (
         <View>
           <View style={styles.searchRow}>
-            <View style={styles.searchContainer}>
+            <View
+              style={[
+                styles.searchContainer,
+                {
+                  backgroundColor: currentTheme.surface,
+                  borderColor: currentTheme.border,
+                },
+              ]}
+            >
               <VectorIcons
                 name="search"
                 size={20}
-                color="#888"
+                color={currentTheme.textSecondary}
                 style={styles.searchIcon}
               />
               <TextInput
-                style={styles.searchInput}
+                style={[styles.searchInput, { color: currentTheme.text }]}
                 placeholder="Search movies, TV shows..."
-                placeholderTextColor="#888"
+                placeholderTextColor={currentTheme.textSecondary}
                 value={searchQuery}
                 onChangeText={onSearchChange}
                 onFocus={onSearchFocus}
@@ -149,23 +190,44 @@ export function CustomHeader({
               />
             </View>
             <TouchableOpacity
-              style={styles.filterButton}
+              style={[
+                styles.filterButton,
+                {
+                  backgroundColor: currentTheme.surface,
+                  borderColor: currentTheme.border,
+                },
+              ]}
               onPress={onFilterPress}
             >
-              <VectorIcons name="options-outline" size={20} color="#fff" />
+              <VectorIcons
+                name="options-outline"
+                size={20}
+                color={currentTheme.text}
+              />
             </TouchableOpacity>
           </View>
 
           {selectedFilters.length > 0 && (
             <View style={styles.chipsContainer}>
               {selectedFilters.map((filter) => (
-                <View key={filter} style={styles.chip}>
-                  <Text style={styles.chipText}>{filter}</Text>
+                <View
+                  key={filter}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: currentTheme.primary + "20",
+                      borderColor: currentTheme.primary + "40",
+                    },
+                  ]}
+                >
+                  <Text style={[styles.chipText, { color: currentTheme.text }]}>
+                    {filter}
+                  </Text>
                   <TouchableOpacity onPress={() => onRemoveFilter?.(filter)}>
                     <VectorIcons
                       name="close-circle"
                       size={16}
-                      color="#E50914"
+                      color={currentTheme.primary}
                       style={styles.chipCloseIcon}
                     />
                   </TouchableOpacity>
@@ -221,21 +283,37 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(255, 215, 0, 0.12)",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 215, 0, 0.25)",
   },
   balanceText: {
-    color: "#ffd700",
     fontSize: 13,
     fontWeight: "700",
   },
   profilePic: {
+    width: 32,
+    height: 32,
     borderRadius: 16,
     overflow: "hidden",
+  },
+  profileFallback: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileFallbackText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  profileImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   searchRow: {
     flexDirection: "row",
@@ -247,30 +325,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 46,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.05)",
   },
   searchIcon: {
     marginRight: 10,
   },
   searchInput: {
     flex: 1,
-    color: "#fff",
     fontSize: 16,
   },
   filterButton: {
     width: 46,
     height: 46,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.05)",
   },
   chipsContainer: {
     flexDirection: "row",
@@ -281,16 +354,13 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(229, 9, 20, 0.15)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "rgba(229, 9, 20, 0.3)",
     gap: 6,
   },
   chipText: {
-    color: "#fff",
     fontSize: 12,
     fontWeight: "600",
   },

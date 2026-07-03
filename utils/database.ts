@@ -45,6 +45,16 @@ export interface Comment {
   content: string;
   created_at: string;
   likes_count: number;
+  parent_comment_id: number | null;
+  replies?: Comment[];
+}
+
+export interface BookRating {
+  id: number;
+  book_id: string;
+  user_id: string;
+  rating: number;
+  created_at: string;
 }
 
 export interface CoinTransaction {
@@ -123,7 +133,27 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       user_id TEXT NOT NULL,
       content TEXT NOT NULL,
       created_at TEXT NOT NULL,
-      likes_count INTEGER DEFAULT 0
+      likes_count INTEGER DEFAULT 0,
+      parent_comment_id INTEGER,
+      FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS comment_likes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      comment_id INTEGER NOT NULL,
+      user_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(comment_id, user_id),
+      FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS book_ratings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      book_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+      created_at TEXT NOT NULL,
+      UNIQUE(book_id, user_id)
     );
     
     CREATE TABLE IF NOT EXISTS coin_transactions (
@@ -150,6 +180,38 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
     CREATE INDEX IF NOT EXISTS idx_coin_transactions_user ON coin_transactions(user_id);
     CREATE INDEX IF NOT EXISTS idx_ad_watches_user ON ad_watches(user_id);
   `);
+
+  // Add parent_comment_id column if it doesn't exist (for existing databases)
+  try {
+    const columns = await db.getAllAsync<any>("PRAGMA table_info(comments)");
+    const hasParentCommentId = columns.some(
+      (col: any) => col.name === "parent_comment_id",
+    );
+    if (!hasParentCommentId) {
+      await db.execAsync(
+        "ALTER TABLE comments ADD COLUMN parent_comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE",
+      );
+    }
+  } catch (error) {
+    // Ignore migration errors
+    console.log("Migration check failed:", error);
+  }
+
+  // Add comment_likes table migration
+  try {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS comment_likes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        comment_id INTEGER NOT NULL,
+        user_id TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(comment_id, user_id),
+        FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
+      )
+    `);
+  } catch (error) {
+    console.log("Comment likes table migration failed:", error);
+  }
 
   return db;
 };
@@ -388,11 +450,12 @@ export const addComment = async (
   chapterId: string,
   userId: string,
   content: string,
+  parentCommentId: number | null = null,
 ): Promise<void> => {
   const database = await getDatabase();
   await database.runAsync(
-    "INSERT INTO comments (chapter_id, user_id, content, created_at, likes_count) VALUES (?, ?, ?, ?, 0)",
-    [chapterId, userId, content, new Date().toISOString()],
+    "INSERT INTO comments (chapter_id, user_id, content, created_at, likes_count, parent_comment_id) VALUES (?, ?, ?, ?, 0, ?)",
+    [chapterId, userId, content, new Date().toISOString(), parentCommentId],
   );
 };
 
@@ -405,17 +468,122 @@ export const getComments = async (chapterId: string): Promise<Comment[]> => {
   return comments;
 };
 
-export const likeComment = async (commentId: number): Promise<void> => {
+export const getCommentsWithReplies = async (
+  chapterId: string,
+): Promise<Comment[]> => {
   const database = await getDatabase();
-  await database.runAsync(
-    "UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?",
-    [commentId],
+  const comments = await database.getAllAsync<Comment>(
+    "SELECT * FROM comments WHERE chapter_id = ? AND parent_comment_id IS NULL ORDER BY created_at DESC",
+    [chapterId],
   );
+
+  // Get replies for each comment
+  for (const comment of comments) {
+    const replies = await database.getAllAsync<Comment>(
+      "SELECT * FROM comments WHERE parent_comment_id = ? ORDER BY created_at ASC",
+      [comment.id],
+    );
+    (comment as any).replies = replies;
+  }
+
+  return comments;
+};
+
+export const likeComment = async (
+  commentId: number,
+  userId: string,
+): Promise<boolean> => {
+  const database = await getDatabase();
+
+  // Check if user already liked this comment
+  const existingLike = await database.getFirstAsync<any>(
+    "SELECT * FROM comment_likes WHERE comment_id = ? AND user_id = ?",
+    [commentId, userId],
+  );
+
+  if (existingLike) {
+    // Unlike: remove the like and decrement count
+    await database.runAsync(
+      "DELETE FROM comment_likes WHERE comment_id = ? AND user_id = ?",
+      [commentId, userId],
+    );
+    await database.runAsync(
+      "UPDATE comments SET likes_count = likes_count - 1 WHERE id = ?",
+      [commentId],
+    );
+    return false; // Unliked
+  } else {
+    // Like: add the like and increment count
+    await database.runAsync(
+      "INSERT INTO comment_likes (comment_id, user_id, created_at) VALUES (?, ?, ?)",
+      [commentId, userId, new Date().toISOString()],
+    );
+    await database.runAsync(
+      "UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?",
+      [commentId],
+    );
+    return true; // Liked
+  }
+};
+
+export const hasUserLikedComment = async (
+  commentId: number,
+  userId: string,
+): Promise<boolean> => {
+  const database = await getDatabase();
+  const like = await database.getFirstAsync<any>(
+    "SELECT * FROM comment_likes WHERE comment_id = ? AND user_id = ?",
+    [commentId, userId],
+  );
+  return !!like;
 };
 
 export const deleteComment = async (commentId: number): Promise<void> => {
   const database = await getDatabase();
   await database.runAsync("DELETE FROM comments WHERE id = ?", [commentId]);
+};
+
+// Book rating operations
+export const addOrUpdateBookRating = async (
+  bookId: string,
+  userId: string,
+  rating: number,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "INSERT OR REPLACE INTO book_ratings (book_id, user_id, rating, created_at) VALUES (?, ?, ?, ?)",
+    [bookId, userId, rating, new Date().toISOString()],
+  );
+};
+
+export const getBookRating = async (
+  bookId: string,
+  userId: string,
+): Promise<BookRating | null> => {
+  const database = await getDatabase();
+  const rating = await database.getFirstAsync<BookRating>(
+    "SELECT * FROM book_ratings WHERE book_id = ? AND user_id = ?",
+    [bookId, userId],
+  );
+  return rating || null;
+};
+
+export const getBookAverageRating = async (bookId: string): Promise<number> => {
+  const database = await getDatabase();
+  const result = await database.getFirstAsync<{ avg_rating: number }>(
+    "SELECT AVG(rating) as avg_rating FROM book_ratings WHERE book_id = ?",
+    [bookId],
+  );
+  return result?.avg_rating ? Math.round(result.avg_rating * 10) / 10 : 0;
+};
+
+export const getBookRatingCount = async (bookId: string): Promise<number> => {
+  const database = await getDatabase();
+  const result = await database.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM book_ratings WHERE book_id = ?",
+    [bookId],
+  );
+  return result?.count ?? 0;
 };
 
 // Coin transaction operations

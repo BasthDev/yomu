@@ -2,17 +2,18 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
 import { useBookmarkStore } from "../../store/bookmarkStore";
+import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useThemeStore } from "../../store/themeStore";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
 import { navigateToBook } from "../../utils/navigation";
@@ -22,6 +23,7 @@ export default function Bookmark() {
   const { bookmarkedIds, removeBookmark, loadData, isLoading } =
     useBookmarkStore();
   const { currentTheme } = useThemeStore();
+  const getRating = useBookRatingsStore((state) => state.getRating);
 
   useEffect(() => {
     loadData();
@@ -46,57 +48,104 @@ export default function Bookmark() {
         <ContentWithPadding style={styles.content}>
           {bookmarkedBooks.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="bookmark-outline" size={64} color="#333" />
-              <Text style={styles.emptyText}>No bookmarks yet</Text>
-              <Text style={styles.emptySubtext}>
+              <Ionicons
+                name="bookmark-outline"
+                size={64}
+                color={currentTheme.textSecondary}
+              />
+              <Text style={[styles.emptyText, { color: currentTheme.text }]}>
+                No bookmarks yet
+              </Text>
+              <Text
+                style={[
+                  styles.emptySubtext,
+                  { color: currentTheme.textSecondary },
+                ]}
+              >
                 Start adding books to your bookmarks!
               </Text>
             </View>
           ) : (
             <View style={styles.bookList}>
-              {bookmarkedBooks.map((book) => (
-                <Pressable
-                  key={book.id}
-                  style={styles.bookCard}
-                  onPress={() => handleBookPress(book.id)}
-                >
-                  <Image
-                    source={{ uri: book.cover }}
-                    style={styles.bookCover}
-                    resizeMode="cover"
-                  />
+              {bookmarkedBooks.map((book) => {
+                const rating = getRating(book.id);
+                return (
+                  <Pressable
+                    key={book.id}
+                    style={[
+                      styles.bookCard,
+                      {
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                    onPress={() => handleBookPress(book.id)}
+                  >
+                    <Image
+                      source={{ uri: book.cover }}
+                      style={styles.bookCover}
+                      resizeMode="cover"
+                    />
 
-                  <View style={styles.bookInfo}>
-                    <Text style={styles.bookTitle} numberOfLines={2}>
-                      {book.title}
-                    </Text>
-                    <Text style={styles.bookAuthor}>{book.author}</Text>
+                    <View style={styles.bookInfo}>
+                      <Text
+                        style={[styles.bookTitle, { color: currentTheme.text }]}
+                        numberOfLines={2}
+                      >
+                        {book.title}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.bookAuthor,
+                          { color: currentTheme.textSecondary },
+                        ]}
+                      >
+                        {book.author}
+                      </Text>
 
-                    <View style={styles.bookMeta}>
-                      <View style={styles.ratingBox}>
-                        <Ionicons name="star" size={12} color="#ffcc00" />
-                        <Text style={styles.ratingText}>
-                          {book.rating.toFixed(1)}
-                        </Text>
-                      </View>
-                      <View style={styles.statusBadge}>
-                        <Text style={styles.statusText}>{book.status}</Text>
+                      <View style={styles.bookMeta}>
+                        <View style={styles.ratingBox}>
+                          <Ionicons name="star" size={12} color="#ffcc00" />
+                          <Text
+                            style={[
+                              styles.ratingText,
+                              { color: currentTheme.text },
+                            ]}
+                          >
+                            {rating.toFixed(1)}
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.statusBadge,
+                            { backgroundColor: currentTheme.primary + "20" },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.statusText,
+                              { color: currentTheme.primary },
+                            ]}
+                          >
+                            {book.status}
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
 
-                  <Pressable
-                    style={styles.removeButton}
-                    onPress={() => removeBookmark(book.id)}
-                  >
-                    <Ionicons
-                      name="bookmark"
-                      size={20}
-                      color={currentTheme.primary}
-                    />
+                    <Pressable
+                      style={styles.removeButton}
+                      onPress={() => removeBookmark(book.id)}
+                    >
+                      <Ionicons
+                        name="bookmark"
+                        size={20}
+                        color={currentTheme.primary}
+                      />
+                    </Pressable>
                   </Pressable>
-                </Pressable>
-              ))}
+                );
+              })}
             </View>
           )}
         </ContentWithPadding>
@@ -118,13 +167,11 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
   },
   emptyText: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "600",
     marginTop: 16,
   },
   emptySubtext: {
-    color: "#666",
     fontSize: 14,
     marginTop: 8,
   },
@@ -133,12 +180,10 @@ const styles = StyleSheet.create({
   },
   bookCard: {
     flexDirection: "row",
-    backgroundColor: "#1e1e1e",
     borderRadius: 12,
     padding: 12,
     gap: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.05)",
   },
   bookCover: {
     width: 100,
@@ -150,13 +195,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   bookTitle: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
   },
   bookAuthor: {
-    color: "#888",
     fontSize: 13,
     marginBottom: 8,
   },
@@ -171,18 +214,15 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   ratingText: {
-    color: "#fff",
     fontSize: 12,
     fontWeight: "600",
   },
   statusBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
   },
   statusText: {
-    color: "#ccc",
     fontSize: 10,
     fontWeight: "600",
     textTransform: "uppercase",
