@@ -6,9 +6,11 @@ interface UnlockModalProps {
   visible: boolean;
   onClose: () => void;
   onUnlock: () => void;
+  onUnlockWithAd?: () => void;
   chapterCost: number;
   balance: number;
   isUnlocking: boolean;
+  isAdLoading?: boolean;
   daysUntilFree?: number;
   theme: {
     background: string;
@@ -23,9 +25,11 @@ export function UnlockModal({
   visible,
   onClose,
   onUnlock,
+  onUnlockWithAd,
   chapterCost,
   balance,
   isUnlocking,
+  isAdLoading,
   daysUntilFree,
   theme,
 }: UnlockModalProps) {
@@ -70,6 +74,36 @@ export function UnlockModal({
                 </Text>
               </View>
             </TouchableOpacity>
+
+            {onUnlockWithAd && (
+              <TouchableOpacity
+                style={[
+                  styles.unlockOption,
+                  { backgroundColor: theme.surface },
+                ]}
+                onPress={onUnlockWithAd}
+                disabled={isAdLoading || isUnlocking}
+              >
+                <Ionicons name="play-circle" size={24} color="#ff6b6b" />
+                <View style={styles.unlockOptionText}>
+                  <Text
+                    style={[styles.unlockOptionTitle, { color: theme.text }]}
+                  >
+                    Unlock with Ad
+                  </Text>
+                  <Text
+                    style={[
+                      styles.unlockOptionSubtitle,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    {isAdLoading
+                      ? "Loading ad..."
+                      : "Watch ad to unlock for free"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
 
             {daysUntilFree && daysUntilFree > 0 && (
               <View
@@ -131,22 +165,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: { fontSize: 14, textAlign: "center", marginBottom: 24 },
-  unlockOptions: { gap: 12, marginBottom: 16 },
+  unlockOptions: { marginBottom: 16 },
   unlockOption: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderRadius: 12,
-    gap: 12,
+    marginBottom: 12,
   },
   unlockOptionText: { flex: 1 },
   unlockOptionTitle: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
+    marginLeft: 12,
   },
   unlockOptionSubtitle: {
     fontSize: 14,
+    marginLeft: 12,
   },
   closeButton: {
     padding: 14,

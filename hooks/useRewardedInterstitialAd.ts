@@ -1,25 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import {
   AdEventType,
-  RewardedAd,
   RewardedAdEventType,
+  RewardedInterstitialAd,
 } from "react-native-google-mobile-ads";
+import { useCoinStore } from "../store/coinStore";
 import { AD_UNIT_IDS } from "../utils/adConfig";
 
 type ShowAdResult = { earned: boolean };
 
-type UseRewardedAdOptions = {
-  onRewardEarned?: () => void | Promise<void>;
-};
-
-export const useRewardedAd = (options?: UseRewardedAdOptions) => {
-  const [rewardedAd, setRewardedAd] = useState<RewardedAd | null>(null);
+export const useRewardedInterstitialAd = () => {
+  const [rewardedInterstitialAd, setRewardedInterstitialAd] =
+    useState<RewardedInterstitialAd | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEarned, setIsEarned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const onRewardEarnedRef = useRef(options?.onRewardEarned);
+  const watchInterstitialAd = useCoinStore(
+    (state) => state.watchInterstitialAd,
+  );
   const userInitiatedShowRef = useRef(false);
   const earnedThisShowRef = useRef(false);
   const showAdPromiseRef = useRef<((result: ShowAdResult) => void) | null>(
@@ -27,14 +27,15 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
   );
 
   useEffect(() => {
-    onRewardEarnedRef.current = options?.onRewardEarned;
-  }, [options?.onRewardEarned]);
+    const ad = RewardedInterstitialAd.createForAdRequest(
+      AD_UNIT_IDS.REWARDED_INTERSTITIAL,
+      {
+        requestNonPersonalizedAdsOnly: false,
+        keywords: ["books", "reading", "manga", "comics"],
+      },
+    );
 
-  useEffect(() => {
-    const ad = RewardedAd.createForAdRequest(AD_UNIT_IDS.REWARDED, {
-      requestNonPersonalizedAdsOnly: true,
-      keywords: ["games", "entertainment", "books", "reading"],
-    });
+    setRewardedInterstitialAd(ad);
 
     const unsubscribeLoaded = ad.addAdEventListener(
       RewardedAdEventType.LOADED,
@@ -52,7 +53,7 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
 
         setIsEarned(true);
         earnedThisShowRef.current = true;
-        await onRewardEarnedRef.current?.();
+        await watchInterstitialAd();
       },
     );
 
@@ -68,13 +69,14 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
         showAdPromiseRef.current = null;
       }
 
+      setIsLoading(true);
       ad.load();
     });
 
     const unsubscribeError = ad.addAdEventListener(
       AdEventType.ERROR,
       (adError) => {
-        console.error("Rewarded ad error:", adError);
+        console.error("Rewarded interstitial ad error:", adError);
         setError("Failed to load ad");
         setIsLoading(false);
 
@@ -89,7 +91,6 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
 
     setIsLoading(true);
     ad.load();
-    setRewardedAd(ad);
 
     return () => {
       unsubscribeLoaded();
@@ -97,11 +98,11 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
       unsubscribeClosed();
       unsubscribeError();
     };
-  }, []);
+  }, [watchInterstitialAd]);
 
   const showAd = (): Promise<ShowAdResult> => {
     return new Promise((resolve) => {
-      if (!rewardedAd || !isLoaded) {
+      if (!isLoaded || !rewardedInterstitialAd) {
         resolve({ earned: false });
         return;
       }
@@ -112,9 +113,9 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
       setIsLoaded(false);
 
       try {
-        rewardedAd.show();
+        rewardedInterstitialAd.show();
       } catch (adError) {
-        console.error("Failed to show rewarded ad:", adError);
+        console.error("Failed to show rewarded interstitial ad:", adError);
         userInitiatedShowRef.current = false;
         showAdPromiseRef.current = null;
         setError("Failed to show ad");
@@ -123,19 +124,11 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
     });
   };
 
-  const loadAd = () => {
-    if (rewardedAd && !isLoading) {
-      setIsLoading(true);
-      rewardedAd.load();
-    }
-  };
-
   return {
     isLoaded,
-    isLoading,
     isEarned,
+    isLoading,
     error,
     showAd,
-    loadAd,
   };
 };

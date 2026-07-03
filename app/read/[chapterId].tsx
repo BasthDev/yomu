@@ -1,9 +1,11 @@
+import { BonusCoinsModal } from "@/components/BonusCoinsModal";
 import { ChapterNavigation } from "@/components/ChapterNavigation";
 import { Container } from "@/components/Container";
 import { ContentWithPadding } from "@/components/Content";
 import { CustomHeader } from "@/components/Header";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useSecurity } from "@/context/SecurityContext";
+import { useBonusCoinsPrompt } from "@/hooks/useBonusCoinsPrompt";
 import { useThemeStore } from "@/store/themeStore";
 import { ChapterItem } from "@/utils/books";
 import { ChapterAccessResult } from "@/utils/chapterAccess";
@@ -20,6 +22,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useRewardedAd } from "../../hooks/useRewardedAd";
+import { useRewardedInterstitialAd } from "../../hooks/useRewardedInterstitialAd";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useCoinStore } from "../../store/coinStore";
 import { useCommentStore } from "../../store/commentStore";
@@ -35,11 +39,20 @@ export default function Read() {
   const { currentTheme } = useThemeStore();
   const { comments, loadComments } = useCommentStore();
   const { balance } = useCoinStore();
-  const { checkAccess, unlockWithCoins, findBookAndChapter, chapterCost } =
+  const { checkAccess, unlockWithCoins, unlockWithAd, findBookAndChapter, chapterCost } =
     useSecurity();
 
   const [pendingUnlock, setPendingUnlock] = useState<ChapterItem | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
+
+  const {
+    isLoaded: isInterstitialLoaded,
+    isLoading: isInterstitialLoading,
+    showAd: showInterstitialAd,
+  } = useRewardedInterstitialAd();
+
+  const { isLoaded: isUnlockAdLoaded, isLoading: isUnlockAdLoading, showAd: showUnlockAd } =
+    useRewardedAd();
 
   const match = useMemo(
     () => (chapterId ? findBookAndChapter(chapterId) : null),
@@ -58,6 +71,11 @@ export default function Read() {
     [activeMatch, checkAccess],
   );
 
+  const isUnlockModalVisible = pendingUnlock !== null || !access?.canAccess;
+
+  const { showPrompt, recordChapterRead, skipBonus, completeBonus } =
+    useBonusCoinsPrompt(isInterstitialLoaded, isUnlockModalVisible);
+
   const unlockTarget = pendingUnlock ?? activeMatch?.chapter ?? null;
   const unlockAccess: ChapterAccessResult | null = useMemo(() => {
     if (!activeMatch || !unlockTarget) return null;
@@ -71,7 +89,7 @@ export default function Read() {
   }, [chapterId, loadComments]);
 
   useEffect(() => {
-    if (!match || !access?.canAccess) return;
+    if (!match || !access?.canAccess || !chapterId) return;
 
     updateReadingHistory(
       match.book.id,
@@ -79,7 +97,9 @@ export default function Read() {
       match.chapter.chapterNumber,
       match.chapter.title,
     );
-  }, [chapterId, access?.canAccess, match, updateReadingHistory]);
+
+    recordChapterRead(chapterId);
+  }, [chapterId, access?.canAccess, match, updateReadingHistory, recordChapterRead]);
 
   useEffect(() => {
     setPendingUnlock(null);
@@ -101,6 +121,38 @@ export default function Read() {
     } finally {
       setIsUnlocking(false);
     }
+  };
+
+  const handleUnlockWithAd = async () => {
+    if (!activeMatch || !unlockTarget || !isUnlockAdLoaded) return;
+
+    setIsUnlocking(true);
+    try {
+      const { earned } = await showUnlockAd();
+      if (!earned) return;
+
+      const success = await unlockWithAd(activeMatch.book, unlockTarget);
+      if (!success) return;
+
+      setPendingUnlock(null);
+      if (unlockTarget.id !== chapterId) {
+        navigateToUnlockedChapter(unlockTarget);
+      }
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
+
+  const handleWatchBonusAd = async () => {
+    if (!isInterstitialLoaded) return;
+
+    const { earned } = await showInterstitialAd();
+    if (earned) {
+      completeBonus();
+      return;
+    }
+
+    skipBonus();
   };
 
   const navigateToUnlockedChapter = (targetChapter: ChapterItem) => {
@@ -207,9 +259,11 @@ export default function Read() {
           visible
           onClose={handleGoBack}
           onUnlock={handleUnlockWithCoins}
+          onUnlockWithAd={handleUnlockWithAd}
           chapterCost={chapterCost}
           balance={balance}
           isUnlocking={isUnlocking}
+          isAdLoading={isUnlockAdLoading || !isUnlockAdLoaded}
           daysUntilFree={access?.daysUntilFree}
           theme={currentTheme}
         />
@@ -300,10 +354,21 @@ export default function Read() {
         visible={pendingUnlock !== null}
         onClose={() => setPendingUnlock(null)}
         onUnlock={handleUnlockWithCoins}
+        onUnlockWithAd={handleUnlockWithAd}
         chapterCost={chapterCost}
         balance={balance}
         isUnlocking={isUnlocking}
+        isAdLoading={isUnlockAdLoading || !isUnlockAdLoaded}
         daysUntilFree={unlockAccess?.daysUntilFree}
+        theme={currentTheme}
+      />
+
+      <BonusCoinsModal
+        visible={showPrompt}
+        onSkip={skipBonus}
+        onWatchAd={handleWatchBonusAd}
+        isAdLoaded={isInterstitialLoaded}
+        isAdLoading={isInterstitialLoading}
         theme={currentTheme}
       />
     </Container>
@@ -360,69 +425,4 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   commentsTitle: { fontSize: 18, fontWeight: "600" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalContent: { borderRadius: 16, padding: 24, width: "100%", maxWidth: 400 },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  modalText: { fontSize: 14, textAlign: "center", marginBottom: 24 },
-  unlockOptions: { gap: 12, marginBottom: 16 },
-  unlockOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 12,
-    gap: 12,
-  },
-  unlockOptionText: { flex: 1 },
-  unlockOptionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  unlockOptionSubtitle: {
-    fontSize: 14,
-  },
-  closeButton: {
-    padding: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  closeButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  waitInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginBottom: 20,
-    padding: 12,
-    backgroundColor: "rgba(255, 215, 0, 0.1)",
-    borderRadius: 8,
-  },
-  waitText: { fontSize: 14, fontWeight: "600" },
-  modalButtons: { gap: 12, marginBottom: 16 },
-  modalButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    padding: 14,
-    borderRadius: 12,
-  },
-  coinButton: { backgroundColor: "#ffd700" },
-  coinButtonText: { color: "#000", fontSize: 16, fontWeight: "bold" },
-  cancelButton: { padding: 12, alignItems: "center" },
-  cancelButtonText: { fontSize: 14 },
 });

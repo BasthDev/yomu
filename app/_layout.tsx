@@ -8,6 +8,7 @@ import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SplashScreen } from "../components/SplashScreen";
 import { SecurityProvider } from "../context/SecurityContext";
+import { useAuthStore, useClerkAuthSync } from "../store/authStore";
 import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 import { useCoinStore } from "../store/coinStore";
 
@@ -18,13 +19,23 @@ if (Platform.OS === "android") {
 }
 
 function AppBootstrap() {
+  useClerkAuthSync();
+
+  const userId = useAuthStore((state) => state.userId);
   const loadBalance = useCoinStore((s) => s.loadBalance);
   const hydrateUnlocks = useChapterUnlockStore((s) => s.hydrate);
+  const resetUnlocks = useChapterUnlockStore((s) => s.reset);
 
   useEffect(() => {
-    loadBalance();
-    hydrateUnlocks();
-  }, [loadBalance, hydrateUnlocks]);
+    if (userId) {
+      loadBalance();
+      hydrateUnlocks();
+      return;
+    }
+
+    useCoinStore.setState({ balance: 0, isLoading: false });
+    resetUnlocks();
+  }, [userId, loadBalance, hydrateUnlocks, resetUnlocks]);
 
   return (
     <Stack

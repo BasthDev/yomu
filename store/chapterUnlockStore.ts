@@ -1,7 +1,6 @@
 import { create } from "zustand";
+import { getAuthUserIdOrNull } from "../utils/authUser";
 import * as Database from "../utils/database";
-
-const USER_ID = "user_1";
 
 interface ChapterUnlockState {
   purchasedChapterIds: Record<string, true>;
@@ -9,16 +8,22 @@ interface ChapterUnlockState {
   hydrate: () => Promise<void>;
   markPurchased: (chapterId: string) => void;
   isPurchased: (chapterId: string) => boolean;
+  reset: () => void;
 }
 
 export const useChapterUnlockStore = create<ChapterUnlockState>((set, get) => ({
   purchasedChapterIds: {},
-  // Never block screens — hydrate updates purchases in the background
   isHydrated: true,
 
   hydrate: async () => {
+    const userId = getAuthUserIdOrNull();
+    if (!userId) {
+      set({ purchasedChapterIds: {}, isHydrated: true });
+      return;
+    }
+
     try {
-      const ids = await Database.getPurchasedChapterIds(USER_ID);
+      const ids = await Database.getPurchasedChapterIds(userId);
       const purchasedChapterIds: Record<string, true> = {};
       for (const id of ids) {
         purchasedChapterIds[id] = true;
@@ -41,5 +46,9 @@ export const useChapterUnlockStore = create<ChapterUnlockState>((set, get) => ({
 
   isPurchased: (chapterId: string) => {
     return !!get().purchasedChapterIds[chapterId];
+  },
+
+  reset: () => {
+    set({ purchasedChapterIds: {}, isHydrated: true });
   },
 }));

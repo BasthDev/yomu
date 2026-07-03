@@ -1,7 +1,6 @@
 import { BookItem, ChapterItem } from "./books";
+import { getAuthUserIdOrNull } from "./authUser";
 import * as Database from "./database";
-
-const USER_ID = "user_1"; // In production, this would come from auth
 export const CHAPTER_COST = 15;
 export const WAIT_DAYS = 2;
 export const FREE_CHAPTER_COUNT = 3;
@@ -72,7 +71,12 @@ export async function checkChapterAccess(
     return resolveChapterAccess(book, chapter, purchasedChapterIds);
   }
 
-  const isPurchased = await Database.isChapterUnlocked(USER_ID, chapter.id);
+  const userId = getAuthUserIdOrNull();
+  if (!userId) {
+    return resolveChapterAccess(book, chapter, {});
+  }
+
+  const isPurchased = await Database.isChapterUnlocked(userId, chapter.id);
   const ids = isPurchased ? { [chapter.id]: true as const } : {};
   return resolveChapterAccess(book, chapter, ids);
 }

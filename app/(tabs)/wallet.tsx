@@ -20,7 +20,10 @@ export default function Wallet() {
   const router = useRouter();
   const { balance, loadBalance, getTransactions } = useCoinStore();
   const { currentTheme } = useThemeStore();
-  const { isLoaded, isLoading, isEarned, showAd } = useRewardedAd();
+  const watchRewardAd = useCoinStore((state) => state.watchRewardAd);
+  const { isLoaded, isLoading, isEarned, showAd } = useRewardedAd({
+    onRewardEarned: watchRewardAd,
+  });
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -36,15 +39,12 @@ export default function Wallet() {
   };
 
   const handleWatchAd = async () => {
-    const success = showAd();
-    if (!success) {
-      // Reload ad if failed
-    }
-    // Refresh transactions after ad is watched (coins are added automatically in the hook)
-    setTimeout(async () => {
-      const txs = await getTransactions();
-      setTransactions(txs);
-    }, 2000);
+    const { earned } = await showAd();
+    if (!earned) return;
+
+    await loadBalance();
+    const txs = await getTransactions();
+    setTransactions(txs);
   };
 
   const formatTransactionType = (type: string) => {

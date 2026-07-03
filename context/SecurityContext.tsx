@@ -29,6 +29,7 @@ interface SecurityContextValue {
   chapterCost: number;
   checkAccess: (book: BookItem, chapter: ChapterItem) => ChapterAccessResult;
   unlockWithCoins: (book: BookItem, chapter: ChapterItem) => Promise<boolean>;
+  unlockWithAd: (book: BookItem, chapter: ChapterItem) => Promise<boolean>;
   isChapterUnlockedInDb: (chapterId: string) => Promise<boolean>;
   isChapterAccessible: (book: BookItem, chapter: ChapterItem) => boolean;
   getChapterDisplayStatus: (
@@ -43,7 +44,8 @@ interface SecurityContextValue {
 const SecurityContext = createContext<SecurityContextValue | null>(null);
 
 export function SecurityProvider({ children }: { children: React.ReactNode }) {
-  const { unlockChapter, isChapterUnlocked } = useCoinStore();
+  const { unlockChapter, unlockChapterWithAd, isChapterUnlocked } =
+    useCoinStore();
   const isReady = useChapterUnlockStore((state) => state.isHydrated);
   const purchasedChapterIds = useChapterUnlockStore(
     (state) => state.purchasedChapterIds,
@@ -79,6 +81,13 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     [unlockChapter],
   );
 
+  const unlockWithAd = useCallback(
+    async (book: BookItem, chapter: ChapterItem) => {
+      return unlockChapterWithAd(book.id, chapter.id);
+    },
+    [unlockChapterWithAd],
+  );
+
   const getChapterDisplayStatus = useCallback(
     (book: BookItem, chapter: ChapterItem): ChapterDisplayStatus => {
       return getChapterDisplayStatusSync(book, chapter, purchasedChapterIds);
@@ -110,6 +119,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       chapterCost: CHAPTER_COST,
       checkAccess,
       unlockWithCoins,
+      unlockWithAd,
       isChapterUnlockedInDb: isChapterUnlocked,
       isChapterAccessible,
       getChapterDisplayStatus,
@@ -121,6 +131,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       isReady,
       checkAccess,
       unlockWithCoins,
+      unlockWithAd,
       isChapterUnlocked,
       isChapterAccessible,
       getChapterDisplayStatus,

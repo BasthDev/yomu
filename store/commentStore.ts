@@ -1,6 +1,6 @@
 import { create } from "zustand";
+import { getAuthUserId } from "../utils/authUser";
 import * as Database from "../utils/database";
-import { useAuthStore } from "./authStore";
 
 interface CommentState {
   comments: Database.Comment[];
@@ -51,7 +51,7 @@ export const useCommentStore = create<CommentState>((set, get) => ({
     parentCommentId: number | null = null,
   ) => {
     try {
-      const userId = useAuthStore.getState().userId || "user_1";
+      const userId = getAuthUserId();
       await Database.addComment(chapterId, userId, content, parentCommentId);
       await get().loadCommentsWithReplies(chapterId);
     } catch (error) {
@@ -61,7 +61,7 @@ export const useCommentStore = create<CommentState>((set, get) => ({
 
   likeComment: async (commentId: number) => {
     try {
-      const userId = useAuthStore.getState().userId || "user_1";
+      const userId = getAuthUserId();
       const liked = await Database.likeComment(commentId, userId);
 
       // Update local state
@@ -100,7 +100,7 @@ export const useCommentStore = create<CommentState>((set, get) => ({
 
   hasUserLikedComment: async (commentId: number) => {
     try {
-      const userId = useAuthStore.getState().userId || "user_1";
+      const userId = getAuthUserId();
       return await Database.hasUserLikedComment(commentId, userId);
     } catch (error) {
       console.error("Error checking like status:", error);

@@ -26,6 +26,7 @@ import {
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
+import { useRewardedAd } from "../../hooks/useRewardedAd";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useCoinStore } from "../../store/coinStore";
@@ -44,7 +45,8 @@ export default function BookDetail() {
     useBookmarkStore();
   const { currentTheme } = useThemeStore();
   const { balance } = useCoinStore();
-  const { checkAccess, unlockWithCoins, chapterCost } = useSecurity();
+  const { checkAccess, unlockWithCoins, unlockWithAd, chapterCost } =
+    useSecurity();
   const purchasedChapterIds = useChapterUnlockStore(
     (state) => state.purchasedChapterIds,
   );
@@ -59,6 +61,8 @@ export default function BookDetail() {
   const [chapterAccess, setChapterAccess] =
     useState<ChapterAccessResult | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
+
+  const { isLoaded, isLoading: isAdLoading, showAd } = useRewardedAd();
 
   const book = DUMMY_BOOKS.find((b) => b.id === id);
 
@@ -102,6 +106,24 @@ export default function BookDetail() {
     setIsUnlocking(true);
     try {
       const success = await unlockWithCoins(book!, selectedChapter);
+      if (success) {
+        setShowUnlockModal(false);
+        navigateToRead(router, selectedChapter.id);
+      }
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
+
+  const handleUnlockWithAd = async () => {
+    if (!isLoaded) return;
+
+    setIsUnlocking(true);
+    try {
+      const { earned } = await showAd();
+      if (!earned) return;
+
+      const success = await unlockWithAd(book!, selectedChapter);
       if (success) {
         setShowUnlockModal(false);
         navigateToRead(router, selectedChapter.id);
@@ -454,9 +476,11 @@ export default function BookDetail() {
         visible={showUnlockModal}
         onClose={() => setShowUnlockModal(false)}
         onUnlock={handleUnlockWithCoins}
+        onUnlockWithAd={handleUnlockWithAd}
         chapterCost={chapterCost}
         balance={balance}
         isUnlocking={isUnlocking}
+        isAdLoading={isAdLoading || !isLoaded}
         daysUntilFree={chapterAccess?.daysUntilFree}
         theme={currentTheme}
       />
