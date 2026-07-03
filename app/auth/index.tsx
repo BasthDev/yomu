@@ -52,17 +52,19 @@ export default function AuthScreen() {
           password,
         });
 
-        if ("error" in result) {
+        if ("error" in result && result.error) {
           Alert.alert("Error", result.error.message || "Sign up failed");
           return;
         }
 
-        // For password-based sign up, we need to verify the email
-        // For now, we'll use a simpler approach
-        Alert.alert(
-          "Sign up",
-          "Please check your email to verify your account",
-        );
+        // Complete sign-up without email verification
+        await signUp.finalize();
+        if (signUp.status === "complete") {
+          await setActive({ session: signUp.createdSessionId });
+          router.replace("/(tabs)");
+        } else {
+          Alert.alert("Sign up", "Please complete verification");
+        }
       } else {
         if (!signIn) return;
 
@@ -71,7 +73,7 @@ export default function AuthScreen() {
           password,
         });
 
-        if ("error" in result) {
+        if ("error" in result && result.error) {
           Alert.alert("Error", result.error.message || "Sign in failed");
           return;
         }
