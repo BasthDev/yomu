@@ -14,9 +14,11 @@ import {
 } from "react-native";
 import { Container } from "../../components/Container";
 import { CustomHeader } from "../../components/Header";
+import { useAuthStore } from "../../store/authStore";
 import { useCommentStore } from "../../store/commentStore";
 import { useThemeStore } from "../../store/themeStore";
 import { getRouteParam } from "../../utils/routeParams";
+import { resolveCommentAuthor } from "../../utils/userDisplayName";
 
 export default function Comments() {
   const { chapterId: chapterIdParam } = useLocalSearchParams();
@@ -32,6 +34,7 @@ export default function Comments() {
     deleteComment,
   } = useCommentStore();
   const { currentTheme } = useThemeStore();
+  const currentUserId = useAuthStore((s) => s.userId);
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [likedComments, setLikedComments] = useState<Set<number>>(new Set());
@@ -128,7 +131,7 @@ export default function Comments() {
               { color: currentTheme.text },
             ]}
           >
-            User {comment.user_id.slice(-4)}
+            {resolveCommentAuthor(comment, currentUserId)}
           </Text>
           <Text
             style={[styles.timestamp, { color: currentTheme.textSecondary }]}

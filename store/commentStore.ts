@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { getAuthUserId } from "../utils/authUser";
+import { getAuthDisplayName } from "../utils/userDisplayName";
 import * as Database from "../utils/database";
 
 interface CommentState {
@@ -52,7 +53,14 @@ export const useCommentStore = create<CommentState>((set, get) => ({
   ) => {
     try {
       const userId = getAuthUserId();
-      await Database.addComment(chapterId, userId, content, parentCommentId);
+      const displayName = getAuthDisplayName();
+      await Database.addComment(
+        chapterId,
+        userId,
+        content,
+        parentCommentId,
+        displayName,
+      );
       await get().loadCommentsWithReplies(chapterId);
     } catch (error) {
       console.error("Error adding comment:", error);

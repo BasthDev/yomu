@@ -155,47 +155,21 @@ export default function History() {
                             styles.bookTitle,
                             { color: currentTheme.text },
                           ]}
-                          numberOfLines={2}
+                          numberOfLines={1}
                         >
                           {book.title}
                         </Text>
+
                         <Text
                           style={[
-                            styles.bookAuthor,
-                            { color: currentTheme.textSecondary },
+                            styles.chapterLine,
+                            { color: currentTheme.primary },
                           ]}
+                          numberOfLines={1}
                         >
-                          {book.author}
+                          Ch. {historyItem.chapterNumber} ·{" "}
+                          {historyItem.chapterTitle}
                         </Text>
-
-                        <View style={styles.chapterInfo}>
-                          <Text
-                            style={[
-                              styles.chapterText,
-                              {
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 4,
-                                color: currentTheme.primary,
-                              },
-                            ]}
-                          >
-                            <Ionicons
-                              name="book"
-                              size={14}
-                              color={currentTheme.primary}
-                            />{" "}
-                            Chapter {historyItem.chapterNumber}
-                          </Text>
-                          <Text
-                            style={[
-                              styles.chapterText,
-                              { color: currentTheme.textSecondary },
-                            ]}
-                          >
-                            {historyItem.chapterTitle}
-                          </Text>
-                        </View>
 
                         <Text
                           style={[
@@ -216,7 +190,7 @@ export default function History() {
                       >
                         <Ionicons
                           name="chevron-forward"
-                          size={20}
+                          size={18}
                           color="#fff"
                         />
                       </Pressable>
@@ -275,49 +249,40 @@ const styles = StyleSheet.create({
   },
   historyCard: {
     flexDirection: "row",
+    alignItems: "center",
     borderRadius: 12,
-    padding: 12,
-    gap: 12,
+    padding: 10,
+    gap: 10,
     borderWidth: 1,
+    height: 76,
   },
   bookCover: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
+    width: 52,
+    height: 70,
+    borderRadius: 6,
   },
   bookInfo: {
     flex: 1,
-    justifyContent: "space-between",
+    minWidth: 0,
+    justifyContent: "center",
+    gap: 3,
   },
   bookTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
-    marginBottom: 4,
   },
-  bookAuthor: {
-    fontSize: 13,
-    marginBottom: 8,
-  },
-  chapterInfo: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: 6,
-    marginBottom: 4,
-  },
-  chapterText: {
+  chapterLine: {
     fontSize: 12,
     fontWeight: "600",
-    flex: 1,
   },
   timeText: {
     fontSize: 11,
   },
   continueButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    alignSelf: "center",
   },
 });

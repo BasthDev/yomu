@@ -56,6 +56,20 @@ export default function Profile() {
         showsVerticalScrollIndicator={false}
       >
         <ContentWithPadding style={styles.content}>
+          {/* <View
+            style={{
+              padding: 20,
+              backgroundColor: "#0e0d0f",
+            }}
+          >
+            <Image
+              source={require("@/assets/images/yomu-crop.png")}
+              style={{
+                width: 120,
+                height: 120,
+              }}
+            />
+          </View> */}
           {/* Avatar Section */}
           <View style={styles.avatarSection}>
             {user?.imageUrl ? (

@@ -42,6 +42,7 @@ export interface Comment {
   id: number;
   chapter_id: string;
   user_id: string;
+  display_name: string | null;
   content: string;
   created_at: string;
   likes_count: number;
@@ -177,6 +178,7 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           chapter_id TEXT NOT NULL,
           user_id TEXT NOT NULL,
+          display_name TEXT,
           content TEXT NOT NULL,
           created_at TEXT NOT NULL,
           likes_count INTEGER DEFAULT 0,
@@ -243,6 +245,23 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       } catch (error) {
         // Ignore migration errors
         console.log("Migration check failed:", error);
+      }
+
+      // Add display_name column if it doesn't exist (for existing databases)
+      try {
+        const commentColumns = await db.getAllAsync<any>(
+          "PRAGMA table_info(comments)",
+        );
+        const hasDisplayName = commentColumns.some(
+          (col: any) => col.name === "display_name",
+        );
+        if (!hasDisplayName) {
+          await db.execAsync(
+            "ALTER TABLE comments ADD COLUMN display_name TEXT",
+          );
+        }
+      } catch (error) {
+        console.log("display_name migration failed:", error);
       }
 
       // Add comment_likes table migration
@@ -565,12 +584,45 @@ export const addComment = async (
   userId: string,
   content: string,
   parentCommentId: number | null = null,
+  displayName: string | null = null,
 ): Promise<void> => {
   const database = await getDatabase();
   await database.runAsync(
-    "INSERT INTO comments (chapter_id, user_id, content, created_at, likes_count, parent_comment_id) VALUES (?, ?, ?, ?, 0, ?)",
-    [chapterId, userId, content, new Date().toISOString(), parentCommentId],
+    "INSERT INTO comments (chapter_id, user_id, display_name, content, created_at, likes_count, parent_comment_id) VALUES (?, ?, ?, ?, ?, 0, ?)",
+    [
+      chapterId,
+      userId,
+      displayName,
+      content,
+      new Date().toISOString(),
+      parentCommentId,
+    ],
   );
+};
+
+export const updateCommentDisplayNames = async (
+  userId: string,
+  displayName: string,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "UPDATE comments SET display_name = ? WHERE user_id = ?",
+    [displayName, userId],
+  );
+};
+
+export const getCommentCountsByChapter = async (): Promise<
+  Record<string, number>
+> => {
+  const database = await getDatabase();
+  const rows = await database.getAllAsync<{ chapter_id: string; count: number }>(
+    "SELECT chapter_id, COUNT(*) as count FROM comments GROUP BY chapter_id",
+  );
+  const counts: Record<string, number> = {};
+  for (const row of rows) {
+    counts[row.chapter_id] = row.count;
+  }
+  return counts;
 };
 
 export const getComments = async (chapterId: string): Promise<Comment[]> => {

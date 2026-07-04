@@ -181,7 +181,7 @@ export function CustomHeader({
               />
               <TextInput
                 style={[styles.searchInput, { color: currentTheme.text }]}
-                placeholder="Search movies, TV shows..."
+                placeholder="Search novels..."
                 placeholderTextColor={currentTheme.textSecondary}
                 value={searchQuery}
                 onChangeText={onSearchChange}

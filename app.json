@@ -4,7 +4,7 @@
     "slug": "Yomu",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/appLogo.png",
+    "icon": "./assets/images/yomu.png",
     "scheme": "yomu",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,13 +14,13 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#121212",
-        "foregroundImage": "./assets/images/appLogo.png",
-        "backgroundImage": "./assets/images/appLogo.png",
-        "monochromeImage": "./assets/images/appLogo.png"
+        "foregroundImage": "./assets/images/yomu.png",
+        "backgroundImage": "./assets/images/yomu.png",
+        "monochromeImage": "./assets/images/yomu.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.basth.Yomu"
+      "package": "id.my.basthdev.yomu"
     },
     "web": {
       "output": "static",
@@ -31,12 +31,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/appLogo.png",
+          "image": "./assets/images/yomu-crop.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#121212",
+          "backgroundColor": "#0e0d0f",
           "dark": {
-            "backgroundColor": "#121212"
+            "backgroundColor": "#0e0d0f"
           }
         }
       ],

@@ -1,44 +1,60 @@
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo } from "react";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { BookGridCard } from "../../components/Card";
 import { Container } from "../../components/Container";
 import { CustomHeader } from "../../components/Header";
 import { HeroSlider } from "../../components/HeroSlider";
+import { useAllBooks } from "../../hooks/queries/useBooks";
 import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useThemeStore } from "../../store/themeStore";
 import { BookItem } from "../../utils/books";
-import { DUMMY_BOOKS } from "../../utils/dummyData";
+import { getPopularBooks } from "../../utils/bookFilters";
 import { navigateToBook } from "../../utils/navigation";
 
 export default function Index() {
   const { currentTheme } = useThemeStore();
   const loadAllRatings = useBookRatingsStore((state) => state.loadAllRatings);
-  const ratings = useBookRatingsStore((state) => state.ratings);
+  const { data: allBooks = [] } = useAllBooks();
+
+  const hotBooks = useMemo(
+    () => allBooks.filter((book) => book.isHot),
+    [allBooks],
+  );
+  const popularBooks = useMemo(
+    () => getPopularBooks(allBooks, 8),
+    [allBooks],
+  );
 
   useEffect(() => {
-    const bookIds = DUMMY_BOOKS.map((book) => book.id);
+    if (allBooks.length === 0) return;
+    const bookIds = allBooks.map((book) => book.id);
     loadAllRatings(bookIds);
-  }, [loadAllRatings]);
+  }, [allBooks, loadAllRatings]);
 
   const handleBookPress = (item: BookItem) => {
     navigateToBook(router, item.id);
   };
 
-  // Komponen header di atas grid
   const renderHeader = () => (
     <View>
-      {/* 1. Slider sekarang berada di luar komponen padding sehingga bisa tampil penuh (edge-to-edge) */}
-      <HeroSlider
-        data={DUMMY_BOOKS.filter((book) => book.isHot)}
-        onPress={handleBookPress}
-      />
+      <HeroSlider data={hotBooks} onPress={handleBookPress} />
 
-      {/* 2. Berikan padding horizontal khusus untuk area judul seksi saja */}
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: currentTheme.primary }]}>
           POPULAR BOOKS
         </Text>
+        <Pressable onPress={() => router.push("/browse")}>
+          <Text style={[styles.seeAll, { color: currentTheme.textSecondary }]}>
+            See all →
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -47,13 +63,8 @@ export default function Index() {
     <Container>
       <CustomHeader />
 
-      {/* 
-        3. PERBAIKAN UTAMA: Mengeluarkan FlatList dari <ContentWithPadding>.
-        Kita menggunakan contentContainerStyle langsung pada FlatList untuk memberi padding 
-        pada daftar buku di bawah tanpa memengaruhi Slider atas.
-      */}
       <FlatList
-        data={DUMMY_BOOKS}
+        data={popularBooks}
         renderItem={({ item }) => (
           <BookGridCard item={item} onPress={handleBookPress} />
         )}
@@ -73,22 +84,29 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingBottom: 60, // Jarak ekstra di bawah agar tidak terpotong tab bar bawah
+    paddingBottom: 60,
   },
   row: {
     justifyContent: "space-between",
-    marginBottom: 16, // Jarak vertikal antar baris kartu grid novel
-    paddingHorizontal: 16, // 4. Memberikan padding sisi kanan-kiri khusus untuk kartu grid saja
+    marginBottom: 16,
+    paddingHorizontal: 16,
   },
   sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 20,
     marginBottom: 16,
-    paddingHorizontal: 16, // 5. Memberikan padding sisi kanan-kiri khusus untuk teks judul seksi
+    paddingHorizontal: 16,
   },
   sectionTitle: {
     fontFamily: "Audiowide_400Regular",
     color: "#ffffff",
     fontSize: 18,
     letterSpacing: 1,
+  },
+  seeAll: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

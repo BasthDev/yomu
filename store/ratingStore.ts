@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import * as Database from '../utils/database';
-import { useAuthStore } from './authStore';
+import { create } from "zustand";
+import * as Database from "../utils/database";
+import { getAuthUserIdOrNull } from "../utils/authUser";
 
 interface RatingState {
   userRating: number | null;
@@ -20,7 +20,7 @@ export const useRatingStore = create<RatingState>((set, get) => ({
   loadBookRating: async (bookId: string) => {
     try {
       set({ isLoading: true });
-      const userId = useAuthStore.getState().userId;
+      const userId = getAuthUserIdOrNull();
       
       const [userRatingData, avgRating, count] = await Promise.all([
         userId ? Database.getBookRating(bookId, userId) : Promise.resolve(null),
@@ -42,7 +42,7 @@ export const useRatingStore = create<RatingState>((set, get) => ({
 
   rateBook: async (bookId: string, rating: number) => {
     try {
-      const userId = useAuthStore.getState().userId;
+      const userId = getAuthUserIdOrNull();
       if (!userId) return;
 
       await Database.addOrUpdateBookRating(bookId, userId, rating);

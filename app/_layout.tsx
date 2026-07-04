@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Audiowide_400Regular, useFonts } from "@expo-google-fonts/audiowide";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ import { SecurityProvider } from "../context/SecurityContext";
 import { useAuthStore, useClerkAuthSync } from "../store/authStore";
 import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 import { useCoinStore } from "../store/coinStore";
+import { queryClient } from "../lib/queryClient";
 
 // Only import NavigationBar on Android
 let NavigationBar: any;
@@ -50,6 +52,7 @@ function AppBootstrap() {
       <Stack.Screen name="book/[id]" />
       <Stack.Screen name="read/[chapterId]" />
       <Stack.Screen name="comments/[chapterId]" />
+      <Stack.Screen name="browse" />
     </Stack>
   );
 }
@@ -92,13 +95,15 @@ export default function RootLayout() {
         publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}
         tokenCache={tokenCache}
       >
-        <SecurityProvider>
-          <StatusBar style="light" />
-          <AppBootstrap />
-          {splashVisible && (
-            <SplashScreen onAnimationEnd={() => setAnimationDone(true)} />
-          )}
-        </SecurityProvider>
+        <QueryClientProvider client={queryClient}>
+          <SecurityProvider>
+            <StatusBar style="light" />
+            <AppBootstrap />
+            {splashVisible && (
+              <SplashScreen onAnimationEnd={() => setAnimationDone(true)} />
+            )}
+          </SecurityProvider>
+        </QueryClientProvider>
       </ClerkProvider>
     </GestureHandlerRootView>
   );

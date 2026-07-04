@@ -1,6 +1,8 @@
 import { useAuth, useUser } from "@clerk/expo";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { create } from "zustand";
+import * as Database from "../utils/database";
+import { getDisplayName } from "../utils/userDisplayName";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -59,6 +61,7 @@ export const useClerkAuthSync = () => {
   const { user } = useUser();
   const setUserId = useAuthStore((s) => s.setUserId);
   const setUserData = useAuthStore((s) => s.setUserData);
+  const prevDisplayNameRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (isLoaded && isSignedIn && userId) {
@@ -67,13 +70,24 @@ export const useClerkAuthSync = () => {
   }, [isLoaded, isSignedIn, userId, setUserId]);
 
   useEffect(() => {
-    if (user) {
-      setUserData(
-        user.firstName || "",
-        user.lastName || "",
-        user.emailAddresses[0]?.emailAddress || "",
-        user.imageUrl || "",
+    if (!user || !userId) return;
+
+    const firstName = user.firstName || "";
+    const lastName = user.lastName || "";
+    const displayName = getDisplayName(firstName, lastName);
+
+    setUserData(
+      firstName,
+      lastName,
+      user.emailAddresses[0]?.emailAddress || "",
+      user.imageUrl || "",
+    );
+
+    if (displayName && displayName !== prevDisplayNameRef.current) {
+      prevDisplayNameRef.current = displayName;
+      Database.updateCommentDisplayNames(userId, displayName).catch((err) =>
+        console.error("Failed to backfill comment display names:", err),
       );
     }
-  }, [user, setUserData]);
+  }, [user, userId, setUserData]);
 };

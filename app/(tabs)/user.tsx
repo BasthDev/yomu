@@ -15,13 +15,17 @@ import {
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
+import { useAuthStore } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
+import * as Database from "../../utils/database";
+import { getDisplayName } from "../../utils/userDisplayName";
 
 export default function User() {
   const router = useRouter();
   const { currentTheme } = useThemeStore();
   const { user } = useUser();
-  const { signOut } = useAuth();
+  const { signOut, userId } = useAuth();
+  const setUserData = useAuthStore((s) => s.setUserData);
 
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
@@ -48,6 +52,16 @@ export default function User() {
         firstName,
         lastName,
       });
+      setUserData(
+        firstName,
+        lastName,
+        user?.emailAddresses[0]?.emailAddress || "",
+        user?.imageUrl || "",
+      );
+      const displayName = getDisplayName(firstName, lastName);
+      if (displayName && userId) {
+        await Database.updateCommentDisplayNames(userId, displayName);
+      }
       Alert.alert("Success", "Profile updated successfully");
     } catch (err: any) {
       Alert.alert("Error", err.message || "Failed to update profile");
