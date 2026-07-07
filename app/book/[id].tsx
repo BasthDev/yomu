@@ -157,7 +157,7 @@ export default function BookDetail() {
       <Container>
         <View style={styles.centered}>
           <Text style={{ color: currentTheme.text }}>
-            Novel tidak ditemukan.
+            Novel not found.
           </Text>
         </View>
       </Container>

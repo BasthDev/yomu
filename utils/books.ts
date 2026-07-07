@@ -1,27 +1,27 @@
 // utils/books.ts
 
 /**
- * Tipe data status perilisan novel
+ * Novel release status data type
  */
 export type BookStatus = "Ongoing" | "Completed" | "Hiatus";
 
 /**
- * Interface untuk detail satu buah Bab / Chapter Novel
+ * Interface for the details of a single Chapter
  */
 export interface ChapterItem {
   id: string;
-  bookId: string; // Relasi ke ID Buku
-  chapterNumber: number; // Urutan bab (misal: 1, 2, 3)
-  title: string; // Judul bab (misal: "The Beginning")
-  content: string; // Teks isi cerita novel panjang
-  createdAt: string; // Tanggal rilis bab
-  releasedAt: string; // Tanggal rilis untuk perhitungan auto-unlock (2 hari)
+  bookId: string; // Relation to Book ID
+  chapterNumber: number; // Chapter order (e.g.: 1, 2, 3)
+  title: string; // Chapter title (e.g.: "The Beginning")
+  content: string; // Full novel story text content
+  createdAt: string; // Chapter release date
+  releasedAt: string; // Release date for auto-unlock calculation (2 days)
   isLocked?: boolean; // Set on each chapter in data; true = needs coins or 2-day wait
-  isFree?: boolean; // Bab gratis (tidak perlu koin)
+  isFree?: boolean; // Free chapter (no coins needed)
 }
 
 /**
- * Interface untuk komentar pembaca pada novel
+ * Interface for reader comments on the novel
  */
 export interface CommentItem {
   id: string;
@@ -35,31 +35,31 @@ export interface CommentItem {
 }
 
 /**
- * Interface Utama untuk Data Satu Buah Buku / Novel (Sangat Lengkap)
+ * Main Interface for Data of a Single Book / Novel (Very Complete)
  */
 export interface BookItem {
   id: string;
   title: string;
   description: string;
-  genre: string[]; // Diubah jadi Array agar manipulasi filter kategori/chips lebih mudah & akurat
-  banner: string; // URL gambar lanskap untuk Hero Slider
-  cover: string; // URL gambar potret untuk Grid Card
-  isHot: boolean; // Penanda novel sedang tren
-  status: BookStatus; // Menggunakan tipe data khusus (Ongoing/Completed)
-  rating: number; // Diubah jadi Number agar bisa dihitung rata-ratanya matematik (misal: 4.85)
-  author: string; // Nama penulis novel
-  authorId: string; // ID penulis untuk sistem dompet koin
-  isFree: boolean; // Buku gratis (tidak perlu koin untuk membaca)
-  viewsCount: number; // Statistik total pembaca (misal: 15400)
-  favoritesCount: number; // Jumlah pengguna yang menyimpan ke pustaka
-  createdAt: string; // Tanggal rilis pertama
-  updatedAt: string; // Tanggal pembaruan bab terakhir
-  chaptersList?: ChapterItem[]; // Array berisi daftar bab di dalam novel ini
-  comments?: CommentItem[]; // Array komentar komunitas pembaca
+  genre: string[]; // Changed to Array for easier & more accurate category/chip filter manipulation
+  banner: string; // URL of landscape image for Hero Slider
+  cover: string; // URL of portrait image for Grid Card
+  isHot: boolean; // Trending novel flag
+  status: BookStatus; // Using special data type (Ongoing/Completed)
+  rating: number; // Changed to Number for mathematical average calculation (e.g.: 4.85)
+  author: string; // Novel author name
+  authorId: string; // Author ID for coin wallet system
+  isFree: boolean; // Free book (no coins needed to read)
+  viewsCount: number; // Total reader statistics (e.g.: 15400)
+  favoritesCount: number; // Number of users who saved to library
+  createdAt: string; // First release date
+  updatedAt: string; // Last chapter update date
+  chaptersList?: ChapterItem[]; // Array containing list of chapters in this novel
+  comments?: CommentItem[]; // Array of reader community comments
 }
 
 /**
- * Interface untuk Riwayat Baca Pengguna (History / Library)
+ * Interface for User Reading History (History / Library)
  */
 export interface ReadingHistoryItem {
   bookId: string;
@@ -68,16 +68,16 @@ export interface ReadingHistoryItem {
   lastReadChapterId: string;
   lastReadChapterNumber: number;
   lastReadChapterTitle: string;
-  progressPercentage: number; // Progres gulir layar terakhir pengguna (0 - 100)
+  progressPercentage: number; // User's last screen scroll progress (0 - 100)
   updatedAt: string;
 }
 
 // ==========================================
-// INTERFACE PROPS UNTUK KOMPONEN UI
+// INTERFACE PROPS FOR UI COMPONENTS
 // ==========================================
 
 /**
- * Props untuk komponen HeroSlider
+ * Props for HeroSlider component
  */
 export interface HeroSliderProps {
   data: BookItem[];
@@ -85,7 +85,7 @@ export interface HeroSliderProps {
 }
 
 /**
- * Props untuk komponen BookGridCard
+ * Props for BookGridCard component
  */
 export interface BookGridCardProps {
   item: BookItem;
@@ -93,18 +93,18 @@ export interface BookGridCardProps {
 }
 
 /**
- * Props untuk komponen ChapterNavigation (Layar Baca)
+ * Props for ChapterNavigation component (Reading Screen)
  */
 export interface ChapterNavigationProps {
   onPrev?: () => void;
   onNext?: () => void;
   hasPrev?: boolean;
   hasNext?: boolean;
-  currentChapterNumber: number; // Menampilkan angka bab aktif pada tombol
+  currentChapterNumber: number; // Displays the active chapter number on button
 }
 
 /**
- * Props untuk komponen CustomHeader
+ * Props for CustomHeader component
  */
 export interface CustomHeaderProps {
   showBack?: boolean;
