@@ -616,14 +616,9 @@ export const initializeChapterReleaseDates = async (
     if (book.chaptersList) {
       for (const chapter of book.chaptersList) {
         // Only set if not already in database
-        const existing = await database.getFirstAsync<{ released_at: string }>(
-          "SELECT released_at FROM chapter_metadata WHERE chapter_id = ?",
-          [chapter.id],
-        );
-
-        if (!existing && chapter.releasedAt) {
+        if (chapter.releasedAt) {
           await database.runAsync(
-            "INSERT INTO chapter_metadata (chapter_id, released_at) VALUES (?, ?)",
+            "INSERT OR REPLACE INTO chapter_metadata (chapter_id, released_at) VALUES (?, ?)",
             [chapter.id, chapter.releasedAt],
           );
         }

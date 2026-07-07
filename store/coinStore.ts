@@ -7,6 +7,8 @@ import { useChapterUnlockStore } from "./chapterUnlockStore";
 interface CoinState {
   balance: number;
   isLoading: boolean;
+  clerkUser: any;
+  setClerkUser: (user: any) => void;
   loadBalance: () => Promise<void>;
   addCoins: (amount: number, description: string) => Promise<void>;
   spendCoins: (amount: number, description: string) => Promise<boolean>;
@@ -19,27 +21,28 @@ interface CoinState {
     chapterId: string,
     authorId: string,
   ) => Promise<boolean>;
-  unlockChapterWithAd: (
-    bookId: string,
-    chapterId: string,
-  ) => Promise<boolean>;
+  unlockChapterWithAd: (bookId: string, chapterId: string) => Promise<boolean>;
   isChapterUnlocked: (chapterId: string) => Promise<boolean>;
 }
 
 export const useCoinStore = create<CoinState>((set, get) => ({
   balance: 0,
   isLoading: true,
+  clerkUser: null,
+
+  setClerkUser: (user: any) => {
+    set({ clerkUser: user });
+  },
 
   loadBalance: async () => {
-    const userId = getAuthUserIdOrNull();
-    if (!userId) {
+    const user = get().clerkUser;
+    if (!user) {
       set({ balance: 0, isLoading: false });
       return;
     }
 
     try {
-      await Database.getOrCreateUser(userId);
-      const balance = await Database.getUserBalance(userId);
+      const balance = (user.unsafeMetadata?.coins as number) || 0;
       set({ balance, isLoading: false });
     } catch (error) {
       console.error("Error loading balance:", error);
@@ -48,12 +51,15 @@ export const useCoinStore = create<CoinState>((set, get) => ({
   },
 
   addCoins: async (amount: number, description: string) => {
-    const userId = getAuthUserId();
+    const user = get().clerkUser;
+    if (!user) return;
 
     try {
-      await Database.updateUserCoins(userId, amount);
-      await Database.addCoinTransaction(userId, amount, "earned", description);
-      const newBalance = await Database.getUserBalance(userId);
+      const currentBalance = (user.unsafeMetadata?.coins as number) || 0;
+      const newBalance = currentBalance + amount;
+      await user.updateMetadata({
+        unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
+      });
       set({ balance: newBalance });
     } catch (error) {
       console.error("Error adding coins:", error);
@@ -61,15 +67,17 @@ export const useCoinStore = create<CoinState>((set, get) => ({
   },
 
   spendCoins: async (amount: number, description: string) => {
-    const userId = getAuthUserId();
+    const user = get().clerkUser;
+    if (!user) return false;
 
     try {
-      const currentBalance = get().balance;
+      const currentBalance = (user.unsafeMetadata?.coins as number) || 0;
       if (currentBalance < amount) return false;
 
-      await Database.updateUserCoins(userId, -amount);
-      await Database.addCoinTransaction(userId, -amount, "spent", description);
-      const newBalance = await Database.getUserBalance(userId);
+      const newBalance = currentBalance - amount;
+      await user.updateMetadata({
+        unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
+      });
       set({ balance: newBalance });
       return true;
     } catch (error) {
@@ -83,15 +91,7 @@ export const useCoinStore = create<CoinState>((set, get) => ({
   },
 
   getTransactions: async () => {
-    const userId = getAuthUserIdOrNull();
-    if (!userId) return [];
-
-    try {
-      return await Database.getCoinTransactions(userId);
-    } catch (error) {
-      console.error("Error getting transactions:", error);
-      return [];
-    }
+    return [];
   },
 
   watchRewardAd: async () => {
@@ -99,7 +99,6 @@ export const useCoinStore = create<CoinState>((set, get) => ({
 
     try {
       const coinsEarned = AD_REWARDS.REWARDED_COINS;
-      await Database.recordAdWatch(userId, "reward", coinsEarned);
       await get().addCoins(coinsEarned, "Watched reward ad");
       return true;
     } catch (error) {

@@ -1,4 +1,4 @@
-import { ClerkProvider } from "@clerk/expo";
+import { ClerkProvider, useUser } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Audiowide_400Regular, useFonts } from "@expo-google-fonts/audiowide";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 import { useCoinStore } from "../store/coinStore";
 import * as Database from "../utils/database";
 import { DUMMY_BOOKS } from "../utils/dummyData";
+import { AdProvider } from "../context/AdContext";
 
 // Only import NavigationBar on Android
 let NavigationBar: any;
@@ -35,16 +36,19 @@ function AppBootstrap() {
     Database.initializeChapterReleaseDates(DUMMY_BOOKS);
   }, []);
 
+  const { user } = useUser();
+
   useEffect(() => {
-    if (userId) {
+    if (userId && user) {
+      useCoinStore.getState().setClerkUser(user);
       loadBalance();
       hydrateUnlocks();
       return;
     }
 
-    useCoinStore.setState({ balance: 0, isLoading: false });
+    useCoinStore.setState({ balance: 0, isLoading: false, clerkUser: null });
     resetUnlocks();
-  }, [userId, loadBalance, hydrateUnlocks, resetUnlocks]);
+  }, [userId, user, loadBalance, hydrateUnlocks, resetUnlocks]);
 
   return (
     <Stack
@@ -104,11 +108,13 @@ export default function RootLayout() {
       >
         <QueryClientProvider client={queryClient}>
           <SecurityProvider>
-            <StatusBar style="light" />
-            <AppBootstrap />
-            {splashVisible && (
-              <SplashScreen onAnimationEnd={() => setAnimationDone(true)} />
-            )}
+            <AdProvider>
+              <StatusBar style="light" />
+              <AppBootstrap />
+              {splashVisible && (
+                <SplashScreen onAnimationEnd={() => setAnimationDone(true)} />
+              )}
+            </AdProvider>
           </SecurityProvider>
         </QueryClientProvider>
       </ClerkProvider>

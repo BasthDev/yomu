@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>YOMU — Request Account Deletion</title>
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
+      .container{max-width:800px;margin:40px auto;background:#fff;padding:32px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+      h1{color:#d32f2f;margin-bottom:8px}
+      p{margin-bottom:14px}
+      label{display:block;margin-bottom:6px;font-weight:600}
+      input[type=email],input[type=text],textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;margin-bottom:14px}
+      textarea{min-height:120px;resize:vertical}
+      .row{display:flex;gap:12px}
+      .small{flex:1}
+      .actions{display:flex;gap:12px;align-items:center}
+      .btn{background:#d32f2f;color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer}
+      .btn.secondary{background:#eee;color:#333}
+      .note{font-size:14px;color:#666;margin-top:8px}
+      .success{color:green;margin-top:12px}
+      .footer{margin-top:28px;text-align:center;color:#777;font-size:13px}
+    </style>
+  </head>
+  <body>
+    <main class="container" role="main">
+      <h1>Request Account Deletion</h1>
+      <p>
+        If you want your account removed, you can send a deletion request to the developer. Fill in your email and a short reason below — clicking "Send Deletion Request" will open your email client with a prefilled message addressed to the developer.
+      </p>
+
+      <form id="delForm" onsubmit="return handleSubmit(event)">
+        <label for="email">Your account email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+        <label for="username">Username (optional)</label>
+        <input id="username" name="username" type="text" placeholder="your username" />
+
+        <label for="reason">Reason for deletion (optional)</label>
+        <textarea id="reason" name="reason" placeholder="Please tell us why you want to delete your account (optional)"></textarea>
+
+        <label><input id="confirm" type="checkbox" required /> I confirm I want to request deletion of the account associated with the email above.</label>
+
+        <div class="actions">
+          <button class="btn" type="submit">Send Deletion Request</button>
+          <button class="btn secondary" type="button" onclick="clearForm()">Clear</button>
+        </div>
+
+        <p class="note">This page will open your email client to send an email to the developer. No data is stored or transmitted by this website — the email is sent from your email app.</p>
+
+        <p id="result" class="success" aria-live="polite"></p>
+      </form>
+
+      <div class="footer">Developer: Basth — Email: <a href="mailto:ws.basithachmed@gmail.com">ws.basithachmed@gmail.com</a></div>
+    </main>
+
+    <script>
+      function escapeForMail(text){
+        return encodeURIComponent(text || "");
+      }
+
+      function handleSubmit(e){
+        e.preventDefault();
+        var email = document.getElementById('email').value.trim();
+        var username = document.getElementById('username').value.trim();
+        var reason = document.getElementById('reason').value.trim();
+        var confirmed = document.getElementById('confirm').checked;
+        if(!email || !confirmed){
+          alert('Please provide your email and confirm the request.');
+          return false;
+        }
+
+        var subject = 'Request Account Deletion';
+        var bodyLines = [];
+        bodyLines.push('Hello,');
+        bodyLines.push('');
+        bodyLines.push('I would like to request deletion of my account.');
+        bodyLines.push('');
+        bodyLines.push('Account email: ' + email);
+        if(username) bodyLines.push('Username: ' + username);
+        if(reason) { bodyLines.push(''); bodyLines.push('Reason:'); bodyLines.push(reason); }
+        bodyLines.push('');
+        bodyLines.push('Please remove my account and confirm when completed.');
+        bodyLines.push('');
+        bodyLines.push('Thank you.');
+
+        var body = bodyLines.join('\n');
+
+        var mailto = 'mailto:ws.basithachmed@gmail.com'
+                  + '?subject=' + escapeForMail(subject)
+                  + '&body=' + escapeForMail(body);
+
+        // Open user's email client
+        window.location.href = mailto;
+
+        // Show a friendly on-page message (in case mail client does not open immediately)
+        var result = document.getElementById('result');
+        result.textContent = 'An email window should open in your email client. If it does not, please manually send an email to ws.basithachmed@gmail.com with subject "' + subject + '" and include your account email and details.';
+
+        return false;
+      }
+
+      function clearForm(){
+        document.getElementById('delForm').reset();
+        document.getElementById('result').textContent = '';
+      }
+    </script>
+  </body>
+</html>

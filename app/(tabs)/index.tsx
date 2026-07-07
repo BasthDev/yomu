@@ -1,12 +1,6 @@
 import { router } from "expo-router";
 import { useEffect, useMemo } from "react";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { BookGridCard } from "../../components/Card";
 import { Container } from "../../components/Container";
 import { CustomHeader } from "../../components/Header";
@@ -14,8 +8,8 @@ import { HeroSlider } from "../../components/HeroSlider";
 import { useAllBooks } from "../../hooks/queries/useBooks";
 import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useThemeStore } from "../../store/themeStore";
-import { BookItem } from "../../utils/books";
 import { getPopularBooks } from "../../utils/bookFilters";
+import { BookItem } from "../../utils/books";
 import { navigateToBook } from "../../utils/navigation";
 
 export default function Index() {
@@ -27,10 +21,7 @@ export default function Index() {
     () => allBooks.filter((book) => book.isHot),
     [allBooks],
   );
-  const popularBooks = useMemo(
-    () => getPopularBooks(allBooks, 8),
-    [allBooks],
-  );
+  const popularBooks = useMemo(() => getPopularBooks(allBooks, 8), [allBooks]);
 
   useEffect(() => {
     if (allBooks.length === 0) return;
@@ -52,7 +43,7 @@ export default function Index() {
         </Text>
         <Pressable onPress={() => router.push("/browse")}>
           <Text style={[styles.seeAll, { color: currentTheme.textSecondary }]}>
-            See all →
+            See all
           </Text>
         </Pressable>
       </View>

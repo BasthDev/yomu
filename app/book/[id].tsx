@@ -26,7 +26,7 @@ import {
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
-import { useRewardedAd } from "../../hooks/useRewardedAd";
+import { useGlobalRewardedAd } from "../../context/AdContext";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useCoinStore } from "../../store/coinStore";
@@ -62,7 +62,8 @@ export default function BookDetail() {
     useState<ChapterAccessResult | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
 
-  const { isLoaded, isLoading: isAdLoading, showAd } = useRewardedAd();
+  const { isRewardedLoaded, isRewardedLoading, showRewardedAd } =
+    useGlobalRewardedAd();
 
   const book = DUMMY_BOOKS.find((b) => b.id === id);
 
@@ -116,11 +117,11 @@ export default function BookDetail() {
   };
 
   const handleUnlockWithAd = async () => {
-    if (!isLoaded) return;
+    if (!isRewardedLoaded) return;
 
     setIsUnlocking(true);
     try {
-      const { earned } = await showAd();
+      const { earned } = await showRewardedAd();
       if (!earned) return;
 
       const success = await unlockWithAd(book!, selectedChapter);
@@ -332,7 +333,7 @@ export default function BookDetail() {
           </View>
 
           <Text style={[styles.sectionTitle, { color: currentTheme.text }]}>
-            DAFTAR CHAPTER
+            CHAPTER LIST
           </Text>
 
           <View style={styles.episodeListContainer}>
@@ -423,18 +424,23 @@ export default function BookDetail() {
                     {status === "unlocked" && (
                       <View
                         style={[
-                          styles.freeBadge,
+                          styles.openBadge,
                           { backgroundColor: currentTheme.success + "30" },
                         ]}
                       >
-                        <Text
+                        <Ionicons
+                          name="lock-open"
+                          size={14}
+                          color={currentTheme.success}
+                        />
+                        {/* <Text
                           style={[
-                            styles.freeBadgeText,
+                            styles.lockBadgeText,
                             { color: currentTheme.success },
                           ]}
                         >
                           UNLOCKED
-                        </Text>
+                        </Text> */}
                       </View>
                     )}
                     {status === "locked" && (
@@ -445,7 +451,7 @@ export default function BookDetail() {
                         ]}
                       >
                         <Ionicons
-                          name="lock-closed"
+                          name="disc-outline"
                           size={14}
                           color={currentTheme.warning}
                         />
@@ -457,6 +463,11 @@ export default function BookDetail() {
                         >
                           {chapterCost}
                         </Text>
+                        {/* <Ionicons
+                          name="disc-outline"
+                          size={14}
+                          color={currentTheme.warning}
+                        /> */}
                       </View>
                     )}
                     <Ionicons
@@ -480,7 +491,7 @@ export default function BookDetail() {
         chapterCost={chapterCost}
         balance={balance}
         isUnlocking={isUnlocking}
-        isAdLoading={isAdLoading || !isLoaded}
+        isAdLoading={isRewardedLoading || !isRewardedLoaded}
         daysUntilFree={chapterAccess?.daysUntilFree}
         theme={currentTheme}
       />
@@ -632,6 +643,13 @@ const styles = StyleSheet.create({
   },
   episodeTitle: { fontSize: 15, fontWeight: "600" },
   freeBadge: {
+    backgroundColor: "rgba(0, 255, 0, 0.2)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    display: "none",
+  },
+  openBadge: {
     backgroundColor: "rgba(0, 255, 0, 0.2)",
     paddingHorizontal: 8,
     paddingVertical: 4,

@@ -22,7 +22,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useRewardedAd } from "../../hooks/useRewardedAd";
+import { useGlobalRewardedAd } from "../../context/AdContext";
 import { useRewardedInterstitialAd } from "../../hooks/useRewardedInterstitialAd";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useCoinStore } from "../../store/coinStore";
@@ -51,8 +51,8 @@ export default function Read() {
     showAd: showInterstitialAd,
   } = useRewardedInterstitialAd();
 
-  const { isLoaded: isUnlockAdLoaded, isLoading: isUnlockAdLoading, showAd: showUnlockAd } =
-    useRewardedAd();
+  const { isRewardedLoaded: isUnlockAdLoaded, isRewardedLoading: isUnlockAdLoading, showRewardedAd: showUnlockAd } =
+    useGlobalRewardedAd();
 
   const match = useMemo(
     () => (chapterId ? findBookAndChapter(chapterId) : null),

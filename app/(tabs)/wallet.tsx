@@ -12,7 +12,7 @@ import {
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
-import { useRewardedAd } from "../../hooks/useRewardedAd";
+import { useGlobalRewardedAd } from "../../context/AdContext";
 import { useCoinStore } from "../../store/coinStore";
 import { useThemeStore } from "../../store/themeStore";
 
@@ -21,9 +21,8 @@ export default function Wallet() {
   const { balance, loadBalance, getTransactions } = useCoinStore();
   const { currentTheme } = useThemeStore();
   const watchRewardAd = useCoinStore((state) => state.watchRewardAd);
-  const { isLoaded, isLoading, isEarned, showAd } = useRewardedAd({
-    onRewardEarned: watchRewardAd,
-  });
+  const { isRewardedLoaded, isRewardedLoading, showRewardedAd } =
+    useGlobalRewardedAd();
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -39,12 +38,15 @@ export default function Wallet() {
   };
 
   const handleWatchAd = async () => {
-    const { earned } = await showAd();
-    if (!earned) return;
-
-    await loadBalance();
-    const txs = await getTransactions();
-    setTransactions(txs);
+    if (isRewardedLoaded) {
+      const { earned } = await showRewardedAd();
+      if (earned) {
+        await watchRewardAd();
+        await loadBalance();
+        const txs = await getTransactions();
+        setTransactions(txs);
+      }
+    }
   };
 
   const formatTransactionType = (type: string) => {
@@ -117,9 +119,9 @@ export default function Wallet() {
                 { backgroundColor: currentTheme.surface },
               ]}
               onPress={handleWatchAd}
-              disabled={!isLoaded || isLoading}
+              disabled={!isRewardedLoaded || isRewardedLoading}
             >
-              {isLoading ? (
+              {isRewardedLoading ? (
                 <ActivityIndicator color={currentTheme.primary} />
               ) : (
                 <>
@@ -148,78 +150,16 @@ export default function Wallet() {
             </Pressable>
           </View>
 
-          {/* Transaction History */}
-          <View style={styles.section}>
+          {/* Transaction History (Hidden for now) */}
+          {/* <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: currentTheme.text }]}>
               Transaction History
             </Text>
-            {transactions.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Ionicons name="receipt-outline" size={48} color="#333" />
-                <Text style={styles.emptyText}>No transactions yet</Text>
-              </View>
-            ) : (
-              <View style={styles.transactionList}>
-                {transactions.map((tx) => (
-                  <View
-                    key={tx.id}
-                    style={[
-                      styles.transactionItem,
-                      { backgroundColor: currentTheme.surface },
-                    ]}
-                  >
-                    <View style={styles.transactionLeft}>
-                      <Ionicons
-                        name={
-                          tx.amount > 0
-                            ? "arrow-up-circle"
-                            : "arrow-down-circle"
-                        }
-                        size={20}
-                        color={tx.amount > 0 ? "#4CAF50" : "#E50914"}
-                      />
-                      <View style={styles.transactionDetails}>
-                        <Text
-                          style={[
-                            styles.transactionDescription,
-                            { color: currentTheme.text },
-                          ]}
-                        >
-                          {tx.description}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.transactionType,
-                            { color: currentTheme.textSecondary },
-                          ]}
-                        >
-                          {formatTransactionType(tx.type)}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.transactionRight}>
-                      <Text
-                        style={[
-                          styles.transactionAmount,
-                          { color: tx.amount > 0 ? "#4CAF50" : "#E50914" },
-                        ]}
-                      >
-                        {formatAmount(tx.amount)}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.transactionDate,
-                          { color: currentTheme.textSecondary },
-                        ]}
-                      >
-                        {formatDate(tx.created_at)}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-          </View>
+            <View style={styles.emptyState}>
+              <Ionicons name="receipt-outline" size={48} color="#333" />
+              <Text style={styles.emptyText}>Transactions hidden</Text>
+            </View>
+          </View> */}
         </ContentWithPadding>
       </ScrollView>
     </Container>

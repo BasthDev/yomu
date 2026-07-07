@@ -35,12 +35,13 @@ function applyLockedChapterReleaseDates(books: BookItem[]): BookItem[] {
         return chapter;
       }
 
-      // Set release dates based on current time so chapters unlock as time passes
-      // Chapter 4+: released today (locked)
-      // Chapter 3: released 2 days ago (locked with WAIT_DAYS=3)
-      // Chapter 2: released 4 days ago (unlocked after 3 days)
-      // Chapter 1: released 6 days ago (unlocked after 3 days)
-      const daysAgo = Math.max(0, (7 - chapter.chapterNumber) * 2);
+      // Set release dates to show different states:
+      // Chapter 5+: released today (locked - needs coins)
+      // Chapter 4: released 1 day ago (locked - needs coins)
+      // Chapter 3: released 2 days ago (locked - needs coins, 1 day until free)
+      // Chapter 2: released 4 days ago (wait_available - auto-unlocked after 3 days)
+      // Chapter 1: released 6 days ago (wait_available - auto-unlocked after 3 days)
+      const daysAgo = Math.max(0, (5 - chapter.chapterNumber) * 2);
       const releaseDate = new Date(now);
       releaseDate.setUTCDate(releaseDate.getUTCDate() - daysAgo);
       releaseDate.setUTCHours(8, 0, 0, 0);

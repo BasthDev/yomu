@@ -129,7 +129,11 @@ export function CustomHeader({
               ]}
               onPress={handleWalletPress}
             >
-              <VectorIcons name="cash" size={16} color={currentTheme.warning} />
+              <VectorIcons
+                name="disc-outline"
+                size={16}
+                color={currentTheme.warning}
+              />
               <Text
                 style={[styles.balanceText, { color: currentTheme.warning }]}
               >

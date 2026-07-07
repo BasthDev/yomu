@@ -9,7 +9,7 @@ export const AD_UNIT_IDS = {
 
 export const AD_REWARDS = {
   REWARDED_COINS: 15,
-  INTERSTITIAL_COINS: 20,
+  INTERSTITIAL_COINS: 25,
 };
 
 export const CHAPTERS_PER_BONUS_AD = 3;
