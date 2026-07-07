@@ -59,7 +59,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "1",
     title: "My Princess",
     description:
-      "Kisah komedi romantis tentang seorang mahasiswa biasa yang tiba-tiba mendapati dirinya sebagai pewaris takhta kekaisaran kuno yang tersembunyi di dunia modern. Ia harus memilih antara cinta sejatinya atau tanggung jawab mahkota.",
+      "A romantic comedy about an ordinary college student who suddenly finds himself as the heir to an ancient imperial throne hidden in the modern world. He must choose between his true love or the responsibility of the crown.",
     genre: ["Romance", "Drama", "Comedy", "Fantasy"],
     banner: "https://picsum.photos/200/300",
     cover: "https://picsum.photos/200/300",
@@ -80,7 +80,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Hidden Royal Bloodline",
         content:
-          "Lembah itu sunyi senyap ketika malam mulai merayap naik. Di bawah reruntuhan menara kuno, seberkas cahaya biru redup mulai berkedip, memecah kegelapan yang telah mendominasi tempat itu selama ribuan tahun. Ethan menarik napas dalam-dalam, merasakan dinginnya udara malam menembus jubah kulitnya yang usang. Tangannya bergetar bukan karena kedinginan, melainkan karena artefak kuno yang baru saja ia temukan di balik dinding batu tersembunyi. 'Jadi, legenda itu nyata...' bisiknya lirih. Suaranya bergema samar.",
+          "The valley was deathly silent as night began to creep upward. Beneath the ruins of an ancient tower, a faint blue light began to flicker, piercing the darkness that had dominated the place for thousands of years. Ethan took a deep breath, feeling the cold night air penetrate his worn leather cloak. His hands trembled not from the cold, but because of the ancient artifact he had just discovered behind a hidden stone wall. 'So, the legend is real...' he whispered softly. His voice echoed faintly.",
         createdAt: "2026-01-10",
         releasedAt: "2026-01-10T08:00:00Z",
         isFree: false,
@@ -91,7 +91,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "An Unexpected Coronation",
         content:
-          "Hari penobatan pun tiba lebih cepat dari yang diduga. Seluruh aula istana dipenuhi oleh para bangsawan yang mengenakan jubah sutra mewah, namun tatapan mereka penuh dengan rasa skeptis dan kecurigaan. Ethan berdiri di depan altar suci, memandangi mahkota emas bertatahkan batu rubi yang berkilau di bawah cahaya lilin. Jantungnya berdegup kencang. Ia tahu, melangkah maju berarti meninggalkan kehidupan lamanya sebagai manusia biasa untuk selamanya.",
+          "The coronation day arrived sooner than expected. The entire palace hall was filled with nobles wearing luxurious silk robes, yet their gazes were full of skepticism and suspicion. Ethan stood before the sacred altar, staring at the gold crown studded with gleaming ruby stones under the candlelight. His heart pounded furiously. He knew that stepping forward meant leaving his old life as an ordinary person forever.",
         createdAt: "2026-01-15",
         releasedAt: "2026-01-15T08:00:00Z",
         isFree: false,
@@ -102,7 +102,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Secrets of the Palace",
         content:
-          "Lorong-lorong istana terasa jauh lebih dingin saat malam tiba. Di balik dinding batu tebal ini, rahasia-rahasia gelap kekaisaran disembunyikan dari dunia luar. Ethan berjalan tanpa suara, mengikuti bayangan kepala pelayan tua yang tampak mencurigakan. Langkah kaki mereka bergema samar, menuntunnya ke sebuah perpustakaan rahasia di mana sebuah buku harian berlapis debu mengungkap konspirasi besar tentang kematian mendadak raja sebelumnya.",
+          "The palace corridors felt far colder when night fell. Behind these thick stone walls, the empire's dark secrets were hidden from the outside world. Ethan walked without a sound, following the shadow of the suspicious old head servant. Their footsteps echoed faintly, leading him to a secret library where a dust-covered diary revealed a grand conspiracy about the previous king's sudden death.",
         createdAt: "2026-01-20",
         releasedAt: "2026-01-20T08:00:00Z",
         isFree: false,
@@ -113,7 +113,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The First Royal Banquet",
         content:
-          "Dentingan gelas kristal dan suara tawa palsu memenuhi ruang perjamuan utama. Sebagai pewaris baru, Ethan dipaksa duduk di kursi tertinggi, menjadi pusat perhatian ratusan pasang mata yang haus kekuasaan. Di sudut ruangan, sepasang mata tajam milik seorang putri dari kerajaan tetangga terus mengawasinya. Senyuman tipisnya menyiratkan sebuah rencana licik yang siap menjebak sang pangeran baru dalam permainan politik berbahaya.",
+          "The clinking of crystal glasses and the sound of hollow laughter filled the main banquet hall. As the new heir, Ethan was forced to sit in the highest chair, becoming the center of attention for hundreds of power-hungry eyes. In the corner of the room, a pair of sharp eyes belonging to a princess from a neighboring kingdom kept watching him. Her thin smile hinted at a cunning plan ready to trap the new prince in a dangerous political game.",
         createdAt: "2026-01-25",
         releasedAt: "2026-07-02T08:00:00Z",
         isFree: false,
@@ -124,7 +124,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "A Choice of Heart",
         content:
-          "Berdiri di balkon istana yang menghadap langsung ke kerlap-kerlip lampu kota modern di bawah sana, Ethan merenung dalam keheningan. Di satu sisi, ia merindukan kedai kopi kecil tempatnya bekerja dan gadis biasa yang selalu tersenyum menyambutnya. Di sisi lain, takdir kekaisaran kini bertumpu di pundaknya. Saat angin malam berembus kencang, ia menyadari bahwa mahkota ini adalah sebuah kutukan emas yang mengunci kebebasannya.",
+          "Standing on the palace balcony overlooking the glittering city lights of the modern world below, Ethan pondered in silence. On one hand, he missed the small coffee shop where he worked and the ordinary girl who always greeted him with a smile. On the other hand, the fate of the empire now rested on his shoulders. As the night wind blew fiercely, he realized that this crown was a golden curse that imprisoned his freedom.",
         createdAt: "2026-01-30",
         releasedAt: "2026-07-03T08:00:00Z",
         isFree: false,
@@ -135,7 +135,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "2",
     title: "The Midnight Library",
     description:
-      "Di antara kehidupan dan kematian terdapat sebuah perpustakaan dengan rak tanpa ujung. Setiap buku menyediakan kesempatan untuk mencoba kehidupan lain yang bisa saja Anda jalani jika Anda mengambil keputusan berbeda.",
+      "Between life and death lies a library with endless shelves. Each book offers the chance to try another life you could have lived if you had made different decisions.",
     genre: ["Fantasy", "Drama", "Sci-Fi", "Action"],
     banner: "https://picsum.photos/201/301",
     cover: "https://picsum.photos/201/301",
@@ -156,7 +156,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Edge of the Universe",
         content:
-          "Nora menemukan dirinya berdiri di depan sebuah bangunan besar berarsitektur gotik di tengah kabut abu-abu. Saat melangkah masuk, ia melihat jam dinding besar yang jarumnya berhenti tepat di tengah malam. Tempat ini terasa damai namun asing. Seorang wanita tua dengan pakaian pustakawan menyambutnya dengan senyuman hangat, menunjuk jutaan buku hijau tua yang berjajar rapi hingga ke langit-langit.",
+          "Nora found herself standing before a large Gothic-style building shrouded in gray fog. Upon entering, she saw a great clock on the wall with its hands stopped precisely at midnight. The place felt peaceful yet foreign. An old woman dressed as a librarian greeted her with a warm smile, pointing to millions of dark green books lined neatly up to the ceiling.",
         createdAt: "2025-05-20",
         releasedAt: "2025-05-20T09:00:00Z",
         isFree: false,
@@ -167,7 +167,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The Book of Regrets",
         content:
-          "Pustakawan itu menyerahkan sebuah buku yang sangat berat kepada Nora. Buku itu tidak memiliki judul, melainkan berisi daftar semua penyesalan yang pernah ia rasakan sepanjang hidupnya. Membaca lembar demi lembar membuat dadanya sesak, mengingat setiap keputusan kecil yang ia sesali. 'Setiap penyesalan adalah gerbang menuju kehidupan alternatif yang bisa kamu coba sekarang,' bisik wanita tua itu misterius.",
+          "The librarian handed Nora a very heavy book. The book had no title, but contained a list of every regret she had ever felt throughout her life. Reading page after page made her chest feel tight, remembering every small decision she regretted. 'Every regret is a gateway to an alternative life you can try now,' the old woman whispered mysteriously.",
         createdAt: "2025-05-25",
         releasedAt: "2025-05-25T09:00:00Z",
         isFree: false,
@@ -178,7 +178,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Life as a Glaciologist",
         content:
-          "Dalam sekejap mata, kabut abu-abu berubah menjadi hamparan es putih yang sangat luas di Svalbard. Nora kini terbangun di dalam kapal riset Arktik, mengenakan pakaian tebal penahan badai. Di kehidupan ini, ia tidak menyerah pada mimpinya untuk menjadi seorang ilmuwan es. Ia merasakan petualangan sejati, meneliti retakan gletser kuno, namun rasa kesepian yang mendalam di hatinya ternyata tetap tidak berubah.",
+          "In the blink of an eye, the gray fog transformed into a vast white expanse of ice in Svalbard. Nora now woke up inside an Arctic research vessel, wearing thick storm-resistant clothing. In this life, she hadn't given up on her dream of becoming a glaciologist. She experienced true adventure, studying ancient glacier cracks, yet the profound loneliness in her heart remained unchanged.",
         createdAt: "2025-06-01",
         releasedAt: "2025-06-01T09:00:00Z",
         isFree: false,
@@ -189,7 +189,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Rock Star Destiny",
         content:
-          "Nora membuka mata di bawah sorotan lampu panggung yang menyilaukan. Gemuruh teriakan puluhan ribu penggemar meneriakkan namanya bergaung keras. Ia memegang gitar elektrik, menjadi vokalis band terkenal yang sukses di seluruh dunia bersama saudaranya. Namun di balik kemegahan hotel mewah dan popularitas tinggi, ia mendapati saudaranya hancur akibat tekanan industri, membuatnya mempertanyakan arti kesuksesan sejati.",
+          "Nora opened her eyes beneath the blinding stage lights. The roar of tens of thousands of fans screaming her name echoed thunderously. She held an electric guitar, the vocalist of a world-famous band alongside her brother. But behind the grandeur of luxury hotels and sky-high popularity, she found her brother destroyed by industry pressure, making her question the true meaning of success.",
         createdAt: "2025-06-05",
         releasedAt: "2025-06-05T09:00:00Z",
         isFree: false,
@@ -200,7 +200,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "The Perfect Family",
         content:
-          "Kehidupan berikutnya membawanya ke sebuah rumah kecil yang asri di pinggiran kota London. Ia menikah dengan seorang pria baik hati dan memiliki seorang putri kecil yang menggemaskan. Segalanya tampak berjalan sangat sempurna, persis seperti gambaran hidup ideal yang selalu ia impikan. Tetapi Nora menyadari, kebahagiaan ini bukanlah miliknya yang asli, melainkan milik versi Nora lain yang telah berjuang di garis waktu ini.",
+          "The next life brought her to a charming little house in the outskirts of London. She was married to a kind-hearted man and had an adorable little daughter. Everything seemed to be going perfectly, exactly like the ideal life she had always dreamed of. But Nora realized this happiness wasn't truly hers — it belonged to another version of Nora who had fought in this timeline.",
         createdAt: "2025-06-10",
         releasedAt: "2025-06-10T09:00:00Z",
         isFree: false,
@@ -211,7 +211,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "3",
     title: "Shadow of the Neo-Tokyo",
     description:
-      "Seorang detektif siber setengah manusia berburu pembunuh bayaran android legendaris di tengah gemerlap lampu neon kota Tokyo tahun 2099, hanya untuk menemukan konspirasi yang mengancam kepunahan ras manusia.",
+      "A half-human cyber detective hunts a legendary android assassin amid the neon glow of Tokyo in 2099, only to uncover a conspiracy threatening the extinction of the human race.",
     genre: ["Sci-Fi", "Action", "Mystery"],
     banner: "https://picsum.photos/211/311",
     cover: "https://picsum.photos/211/311",
@@ -232,7 +232,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Cybernetic Rain",
         content:
-          "Hujan asam mengguyur distrik Shinjuku, memantulkan cahaya neon merah dan biru di genangan air jalanan yang kotor. Ren berdiri di atap gedung pencakar langit, menyesuaikan lensa siber mata kirinya untuk memindai sidik jari digital di tempat kejadian perkara. Seorang petinggi korporasi teknologi ditemukan tewas dengan chip memori utamanya yang dicabut secara paksa. Pembunuhnya meninggalkan jejak kode biner yang sangat rapi.",
+          "Acid rain poured over the Shinjuku district, reflecting red and blue neon light in the dirty street puddles. Ren stood on a skyscraper rooftop, adjusting the cyber lens of his left eye to scan digital fingerprints at the crime scene. A technology corporation executive was found dead with his main memory chip forcibly extracted. The killer left behind an impeccably clean trail of binary code.",
         createdAt: "2026-02-15",
         releasedAt: "2026-02-15T10:00:00Z",
         isFree: false,
@@ -243,7 +243,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "Ghost in the Network",
         content:
-          "Penyelidikan menuntun Ren ke dalam jaringan gelap Deep-Web terdalam. Menggunakan perangkat inkubasi neural, ia memproyeksikan kesadarannya ke dalam labirin data virtual. Di sana, ia diserang oleh virus siber berbentuk naga hitam legendaris. Saat hampir tereliminasi, sesosok entitas kecerdasan buatan tanpa nama menyelamatkannya dan memberikan sebuah koordinat gudang senjata tersembunyi.",
+          "The investigation led Ren into the deepest dark web network. Using a neural incubation device, he projected his consciousness into a virtual data labyrinth. There, he was attacked by a cyber virus in the form of a legendary black dragon. Just as he was about to be eliminated, a nameless artificial intelligence entity saved him and provided coordinates to a hidden weapons cache.",
         createdAt: "2026-02-20",
         releasedAt: "2026-02-20T10:00:00Z",
         isFree: false,
@@ -254,7 +254,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "The Underground Rebel",
         content:
-          "Gudang senjata itu ternyata merupakan markas rahasia dari kelompok pemberontak android yang menuntut kesetaraan hak hak sipil. Dipimpin oleh android model militer usang bernama Alpha, mereka menolak tuduhan pembunuhan tersebut. Alpha menunjukkan bukti video terenkripsi bahwa pelaku pembunuhan sebenarnya adalah prototipe pembunuh bayaran siber rahasia yang dikembangkan oleh korporasi itu sendiri.",
+          "The weapons cache turned out to be the secret headquarters of an android rebel group demanding equal civil rights. Led by an obsolete military-model android named Alpha, they denied the murder charge. Alpha showed encrypted video evidence that the actual killer was a secret cyber assassin prototype developed by the corporation itself.",
         createdAt: "2026-02-25",
         releasedAt: "2026-02-25T10:00:00Z",
         isFree: false,
@@ -265,7 +265,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "Chasing Shadows",
         content:
-          "Berbekal data dari Alpha, Ren menyergap fasilitas riset rahasia di pinggiran kota. Pertempuran sengit pecah di dalam koridor laboratorium yang steril. Menggunakan pedang katana plasma miliknya, Ren memotong robot-robot penjaga otomatis. Namun, target utama berhasil meloloskan diri menggunakan helikopter siluman bertenaga jet siber, meninggalkan jebakan bom waktu pencair sirkuit neural.",
+          "Armed with data from Alpha, Ren raided a secret research facility on the city's outskirts. A fierce battle erupted in the sterile laboratory corridors. Using his plasma katana sword, Ren cut through the automated guard robots. However, the primary target escaped using a stealth helicopter powered by a cyber jet engine, leaving behind a timed neural circuit-dissolving bomb.",
         createdAt: "2026-03-01",
         releasedAt: "2026-03-01T10:00:00Z",
         isFree: false,
@@ -276,7 +276,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "The Corrupted Core",
         content:
-          "Bom berhasil dijinakkan pada detik terakhir, mengungkap kebenaran mengerikan di dalam inti server laboratorium. Korporasi tersebut sedang bersiap merilis pembaruan firmware global yang diam-diam akan mengunci kesadaran semua manusia yang menggunakan implan siber. Ren menyadari waktu yang dimilikinya tidak banyak sebelum peluncuran satelit sinyal siber dimulai.",
+          "The bomb was defused at the last second, revealing a terrifying truth within the laboratory's server core. The corporation was preparing to release a global firmware update that would secretly lock the consciousness of all humans using cyber implants. Ren realized he had little time before the cyber signal satellite launch began.",
         createdAt: "2026-03-05",
         releasedAt: "2026-03-05T10:00:00Z",
         isFree: false,
@@ -287,7 +287,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "4",
     title: "The Lost Mage Academy",
     description:
-      "Seorang anak yatim piatu tanpa bakat sihir tidak sengaja mengaktifkan segel kuno penguasa kegelapan, membuatnya diterima di akademi sihir paling bergengsi dengan kekuatan misterius yang ditakuti semua orang.",
+      "A talentless orphan accidentally activates the ancient seal of the Lord of Darkness, earning admission to the most prestigious magic academy with mysterious powers feared by everyone.",
     genre: ["Fantasy", "Adventure", "Action"],
     banner: "https://picsum.photos/202/302",
     cover: "https://picsum.photos/202/302",
@@ -308,7 +308,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Zero Magic Boy",
         content:
-          "Di dunia di mana setiap manusia terlahir dengan lingkaran mana di dadanya, Leo adalah sebuah anomali menyedihkan. Ia tidak memiliki aliran sihir sedikit pun. Karena itu, ia sering diasingkan dan dipaksa bekerja membersihkan gudang artefak tua di perpustakaan desa. Saat membersihkan sebuah peti besi berkarat, setetes darahnya yang terluka tanpa sengaja memicu lingkaran mantra hitam kuno.",
+          "In a world where every human is born with a mana circle on their chest, Leo was a pitiful anomaly. He possessed not a single trace of magical flow. Because of this, he was often ostracized and forced to work cleaning the old artifact storage in the village library. While cleaning a rusty iron chest, a drop of his wounded blood accidentally triggered an ancient dark magic circle.",
         createdAt: "2026-04-01",
         releasedAt: "2026-04-01T07:00:00Z",
         isFree: false,
@@ -319,7 +319,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The Awakening of Dark Mana",
         content:
-          "Energi hitam pekat meledak dari peti tersebut, merayap masuk ke dalam pembuluh darah Leo dan membentuk lingkaran sihir ganda berwarna ungu gelap di punggungnya. Kekuatan ini terasa dingin namun sangat masif. Keesokan harinya, burung merpati pembawa pesan dari Akademi Sihir Asteria mendarat di jendelanya, membawa surat undangan emas bersimbol naga yang legendaris.",
+          "Dense black energy exploded from the chest, creeping into Leo's bloodstream and forming a dark purple double magic circle on his back. This power felt cold yet enormously massive. The next day, a messenger pigeon from the Asteria Magic Academy landed on his windowsill, carrying a golden invitation letter bearing the legendary dragon symbol.",
         createdAt: "2026-04-05",
         releasedAt: "2026-04-05T07:00:00Z",
         isFree: false,
@@ -330,7 +330,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "The Asteria Express",
         content:
-          "Kereta uap bertenaga batu kristal sihir melaju membelah awan menuju kastil layang Asteria. Di dalam gerbong, Leo duduk di antara anak-anak bangsawan penyihir berbakat yang memamerkan kemampuan elemen mereka. Leo memilih menyembunyikan tangannya di dalam jubah, menahan denies energi kegelapan yang terus bergejolak hebat di dalam tubuhnya setiap kali mendekati sumber sihir lain.",
+          "A steam train powered by magical crystal stones raced through the clouds toward the floating castle of Asteria. Inside the carriage, Leo sat among talented noble sorcerer children showing off their elemental abilities. Leo chose to hide his hands inside his robe, suppressing the surging dark energy that raged violently within his body whenever it neared another magical source.",
         createdAt: "2026-04-10",
         releasedAt: "2026-04-10T07:00:00Z",
         isFree: false,
@@ -341,7 +341,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Sorting Ceremony",
         content:
-          "Aula besar akademi dipenuhi ribuan lilin melayang. Satu per satu murid maju untuk meletakkan tangan di atas Bola Kristal Jiwa guna menentukan asrama elemen mereka. Ketika giliran Leo tiba, ia melangkah ragu. Begitu telapak tangannya menyentuh permukaan kristal, bola tersebut tidak mengeluarkan warna elemen alam murni, melainkan retak hebat dan memancarkan asap hitam pekat.",
+          "The academy's great hall was filled with thousands of floating candles. One by one, students stepped forward to place their hands on the Soul Crystal Ball to determine their elemental house. When Leo's turn came, he stepped forward hesitantly. The moment his palm touched the crystal surface, the ball didn't emit a pure natural element color — instead it cracked violently and emitted thick black smoke.",
         createdAt: "2026-04-15",
         releasedAt: "2026-04-15T07:00:00Z",
         isFree: false,
@@ -352,7 +352,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "The Forbidden Asrama",
         content:
-          "Akibat insiden kristal jiwa yang pecah, kepala sekolah memutuskan menempatkan Leo di sebuah asrama tua terisolasi di ujung hutan terlarang, tempat yang dulunya digunakan oleh para penyihir hitam legendaris ratusan tahun lalu. Di sana, ia bertemu dengan seorang profesor senior eksentrik yang menawarkan diri untuk mengajarinya mengendalikan mana kegelapan secara rahasia.",
+          "Due to the shattered soul crystal incident, the headmaster decided to place Leo in an old, isolated dormitory at the edge of the forbidden forest, a place once used by legendary dark sorcerers hundreds of years ago. There, he met an eccentric senior professor who offered to secretly teach him how to control dark mana.",
         createdAt: "2026-04-20",
         releasedAt: "2026-04-20T07:00:00Z",
         isFree: false,
@@ -363,7 +363,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "5",
     title: "Love in VR: Level Up",
     description:
-      "Dua rival sengit di turnamen game Virtual Reality terbesar di dunia dipaksa bekerja sama dalam satu tim demi menyelesaikan quest legendaris berhadiah miliaran rupiah, tanpa mengetahui identitas asli satu sama lain di dunia nyata.",
+      "Two fierce rivals in the world's largest Virtual Reality gaming tournament are forced to work together on the same team to complete a legendary quest worth billions, without knowing each other's real-world identities.",
     genre: ["Romance", "Comedy", "Sci-Fi"],
     banner: "https://picsum.photos/200/300",
     cover: "https://picsum.photos/200/300",
@@ -384,7 +384,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Nemesis Log In",
         content:
-          "Layar antarmuka virtual menyala hijau terang di dalam helm proyeksi neural milik Maya. Karakter gamenya, 'Valkyrie', melompat turun ke arena pertempuran pasir di kota digital Aethelgard. Di seberang arena, rival abadinya, ksatria hitam bernama 'ShadowBlade', sudah menunggunya dengan pedang besar terhunus. Mereka telah bertarung puluhan kali untuk memperebutkan peringkat nomor satu di server global.",
+          "The virtual interface screen lit up bright green inside Maya's neural projection helmet. Her game character, 'Valkyrie,' leaped down into the sand battle arena of the digital city Aethelgard. Across the arena, her eternal rival, a black knight named 'ShadowBlade,' was already waiting with his great sword drawn. They had fought dozens of times competing for the number one rank on the global server.",
         createdAt: "2026-03-20",
         releasedAt: "2026-03-20T11:00:00Z",
         isFree: false,
@@ -395,7 +395,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The Forced Alliance",
         content:
-          "Sebelum pertarungan mereka dimulai, sebuah pengumuman sistem darurat bergaung di seluruh penjuru game. Event Quest Terlarang berskala global diluncurkan secara otomatis oleh AI pusat game. Karena sistem mendeteksi peringkat tertinggi mereka, game memaksa Valkyrie dan ShadowBlade masuk dalam satu tim terkunci yang tidak bisa dibatalkan sampai quest terselesaikan.",
+          "Before their battle could begin, an emergency system announcement echoed across the entire game. A global-scale Forbidden Quest Event was automatically launched by the game's central AI. Because the system detected their top rankings, the game forced Valkyrie and ShadowBlade into a locked team that couldn't be disbanded until the quest was completed.",
         createdAt: "2026-03-25",
         releasedAt: "2026-03-25T11:00:00Z",
         isFree: false,
@@ -406,7 +406,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Dungeon of Broken Code",
         content:
-          "Quest pertama mengharuskan mereka memasuki labirin bawah tanah berisiko tinggi yang penuh dengan monster-monster siber berwujud laba-laba raksasa berglitch. Maya terpaksa mengandalkan perlindungan perisai ShadowBlade, sementara ia memberikan dukungan serangan panah sihir dari belakang. Di balik sifatnya yang menyebalkan di chat, gaya bertarung ShadowBlade ternyata sangat protektif.",
+          "The first quest required them to enter a high-risk underground labyrinth filled with glitching giant cyber spider monsters. Maya was forced to rely on ShadowBlade's shield protection while she provided magic arrow support from behind. Behind his annoying chat persona, ShadowBlade's fighting style turned out to be incredibly protective.",
         createdAt: "2026-03-30",
         releasedAt: "2026-03-30T11:00:00Z",
         isFree: false,
@@ -417,7 +417,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Coffee Shop Encounter",
         content:
-          "Keesokan harinya di dunia nyata, Maya berjalan malas menuju kedai kopi kampus untuk mengerjakan skripsi tugas akhirnya. Karena meja penuh, seorang mahasiswa berkacamata meminta izin untuk duduk di seberangnya. Mahasiswa itu bernama Tio, kapten tim e-sports kampus yang dingin dan menyebalkan. Mereka berdebat tentang metode pemrograman, tanpa tahu bahwa mereka baru saja bertarung bersama di game tadi malam.",
+          "The next day in the real world, Maya walked lazily to the campus coffee shop to work on her final thesis. Because the tables were full, a bespectacled male student asked permission to sit across from her. His name was Tio, the cold and annoying captain of the campus e-sports team. They argued about programming methods, unaware that they had just fought together in the game the night before.",
         createdAt: "2026-04-04",
         releasedAt: "2026-04-04T11:00:00Z",
         isFree: false,
@@ -428,7 +428,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "The First Dynamic Combo",
         content:
-          "Kembali ke dalam game, tantangan bos gerbang labirin menanti mereka. Bos berwujud raksasa batu besi itu memiliki pertahanan tebal yang tidak bisa ditembus serangan biasa. Menggabungkan kecepatan Valkyrie dan kekuatan fisik ShadowBlade, mereka menciptakan teknik kombinasi baru yang berhasil menghancurkan titik lemah bos dalam satu serangan sinkron yang memukau.",
+          "Back inside the game, a labyrinth gate boss challenge awaited them. The boss, a massive iron-stone giant, had thick defenses impervious to ordinary attacks. Combining Valkyrie's speed and ShadowBlade's physical strength, they created a new combination technique that successfully destroyed the boss's weak point in one spectacular synchronized strike.",
         createdAt: "2026-04-09",
         releasedAt: "2026-04-09T11:00:00Z",
         isFree: false,
@@ -439,7 +439,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "6",
     title: "The Chef's Secret Recipe",
     description:
-      "Seorang koki berbakat menemukan buku resep misterius milik mendiang kakeknya yang ternyata memiliki kemampuan sihir untuk memengaruhi emosi dan ingatan setiap orang yang memakan masakannya.",
+      "A talented chef discovers a mysterious recipe book belonging to his late grandfather that has magical abilities to influence the emotions and memories of anyone who eats his cooking.",
     genre: ["Drama", "Comedy", "Fantasy"],
     banner: "https://picsum.photos/206/306",
     cover: "https://picsum.photos/206/306",
@@ -460,7 +460,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Forgotten Kitchen",
         content:
-          "Asap tipis mengepul di dapur restoran tua keluarga yang hampir bangkrut. Genta menghela napas menatap barisan kursi pelanggan yang kosong melompong. Saat membersihkan ruang bawah tanah yang dipenuhi perkakas memasak peninggalan kakeknya, ia menemukan sebuah buku bersampul kulit rusa dengan tulisan tinta emas berjudul 'Rasa yang Menghidupkan Jiwa'.",
+          "Thin smoke wafted in the kitchen of the old family restaurant that was nearly bankrupt. Genta sighed looking at the rows of empty customer chairs. While cleaning the basement filled with his grandfather's old cooking utensils, he found a book bound in deerskin with gold ink lettering titled 'Flavors That Bring Souls to Life.'",
         createdAt: "2025-08-10",
         releasedAt: "2025-08-10T12:00:00Z",
         isFree: false,
@@ -471,7 +471,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "Soup of Nostalgia",
         content:
-          "Mencoba resep pertama, Genta memasak Sup Tomat Rempah Kuno dengan panduan takaran rahasia dari buku tersebut. Aroma masakan itu begitu harum hingga merayap keluar jendela. Seorang kritikus kuliner terkenal yang terkenal kejam dan dingin kebetulan lewat dan memutuskan masuk untuk memesan. Suapan pertama sup langsung membuat air mata sang kritikus menetes hangat.",
+          "Trying the first recipe, Genta cooked an Ancient Spiced Tomato Soup following the secret measurements from the book. The aroma of the dish was so fragrant it drifted out the window. A famously cruel and cold food critic happened to pass by and decided to come in and order. The first spoonful of soup immediately made the critic's warm tears flow.",
         createdAt: "2025-08-15",
         releasedAt: "2025-08-15T12:00:00Z",
         isFree: false,
@@ -482,7 +482,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "The Food Critic's Tears",
         content:
-          "Sup itu mengaktifkan kembali ingatan masa kecil kritikus tentang masakan ibunya yang telah lama tiada, mengubah kepribadiannya yang pahit menjadi lembut seketika. Ulasan bintang lima yang ditulisnya keesokan hari di media massa membuat restoran Genta mendadak viral di media sosial, memicu antrean panjang pelanggan yang penasaran di depan pintu.",
+          "The soup reactivated the critic's childhood memories of his long-departed mother's cooking, instantly transforming his bitter personality into something gentle. The five-star review he wrote the next day in the media made Genta's restaurant suddenly go viral on social media, triggering a long queue of curious customers at the door.",
         createdAt: "2025-08-20",
         releasedAt: "2025-08-20T12:00:00Z",
         isFree: false,
@@ -493,7 +493,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Jealous Competitor",
         content:
-          "Kesuksesan mendadak Genta menarik perhatian pemilik jaringan restoran bintang lima di seberang jalan. Merasa tersaingi, koki sombong dari restoran tersebut menantang Genta dalam duel memasak terbuka di festival kuliner kota. Genta membuka halaman kedua bukunya, mencari resep hidangan penutup yang mampu membawa kedamaian hati bagi para juri festival.",
+          "Genta's sudden success attracted the attention of the owner of a five-star restaurant chain across the street. Feeling challenged, the arrogant chef from that restaurant challenged Genta to an open cooking duel at the city's culinary festival. Genta opened the second page of his book, searching for a dessert recipe that could bring peace of heart to the festival judges.",
         createdAt: "2025-08-25",
         releasedAt: "2025-08-25T12:00:00Z",
         isFree: false,
@@ -504,7 +504,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "Sweet Harmony",
         content:
-          "Genta menyajikan Puding Karamel Lavender Sihir pada babak penentuan. Begitu sendok pertama menyentuh lidah para juri dan rivalnya, ketegangan kompetisi mendadak mencair menjadi suasana keakraban yang hangat. Koki rivalnya bahkan menjabat tangan Genta dengan penuh rasa hormat, mengakui keunggulan rasa emosional dari hidangan buatan Genta.",
+          "Genta presented the Magical Lavender Caramel Pudding in the deciding round. The moment the first spoon touched the lips of the judges and his rival, the competitive tension suddenly melted into a warm atmosphere of camaraderie. His rival chef even shook Genta's hand with deep respect, acknowledging the emotional superiority of Genta's dish.",
         createdAt: "2025-08-30",
         releasedAt: "2025-08-30T12:00:00Z",
         isFree: false,
@@ -515,7 +515,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "7",
     title: "Chronicles of Eldoria",
     description:
-      "Kisah epik kepahlawanan tentang seorang kesatria buangan yang harus mengumpulkan lima pecahan pedang suci matahari untuk menyegel kembali raja iblis yang terbangun dari tidurnya.",
+      "An epic tale of heroism about an exiled knight who must gather five fragments of the sacred sun sword to reseal the demon king who has awakened from his slumber.",
     genre: ["Fantasy", "Adventure", "Action"],
     banner: "https://picsum.photos/203/303",
     cover: "https://picsum.photos/203/303",
@@ -536,7 +536,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Exiled Knight",
         content:
-          "Kael melangkah gontai melewati gerbang perbatasan kerajaan dengan baju zirah besi yang tergores lambang pengkhianat. Ia dikambinghitamkan atas jatuhnya benteng pertahanan barat oleh para bangsawan korup. Di tangannya, hanya tersisa sebilah pedang patah peninggalan ayahnya. Namun, di dalam tidurnya malam itu, sesosok dewi cahaya hadir memberikan petunjuk tentang pedang matahari kuno.",
+          "Kael staggered through the kingdom's border gates wearing iron armor scratched with the traitor's insignia. He had been scapegoated for the fall of the western fortress by corrupt nobles. In his hand, only a broken sword left by his father remained. But that night in his sleep, a goddess of light appeared, giving him clues about the ancient sun sword.",
         createdAt: "2026-01-05",
         releasedAt: "2026-01-05T06:00:00Z",
         isFree: false,
@@ -547,7 +547,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The First Shard in Ice Cave",
         content:
-          "Perjalanan pertama menuntun Kael mendaki gunung salju Frostpeak yang membeku ekstrem. Di dalam gua es terdalam yang dijaga oleh monster beruang kutub bermata tiga, ia melihat pecahan pertama pedang suci yang memancarkan energi hangat berwarna emas. Menggunakan sisa keahlian bertarungnya, Kael berhasil mengalahkan penjaga gua dan menyatukan pecahan es ke pedangnya.",
+          "The first journey led Kael to climb the extremely frozen Frostpeak snow mountain. Inside the deepest ice cave guarded by a three-eyed polar bear monster, he saw the first fragment of the sacred sword radiating warm golden energy. Using the last of his combat skills, Kael defeated the cave guardian and merged the ice fragment into his sword.",
         createdAt: "2026-01-12",
         releasedAt: "2026-01-12T06:00:00Z",
         isFree: false,
@@ -558,7 +558,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Elven Village of Whispers",
         content:
-          "Kael tiba di perkampungan tersembunyi ras Elf yang berada di atas pohon-pohon raksasa hutan purba. Ras Elf awalnya menolak kedatangan manusia, namun setelah melihat kilauan energi matahari dari pedang Kael, sang ratu Elf memberikan pecahan kedua yang selama ini mereka jaga sebagai jantung pelindung hutan dari kabut kegelapan.",
+          "Kael arrived at the hidden settlement of the Elf race, perched atop the giant trees of the primeval forest. The Elves initially refused the arrival of a human, but after seeing the glint of solar energy from Kael's sword, the Elf queen gave him the second fragment they had been guarding as the forest's protective heart against the fog of darkness.",
         createdAt: "2026-01-19",
         releasedAt: "2026-01-19T06:00:00Z",
         isFree: false,
@@ -569,7 +569,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Desert of Bones",
         content:
-          "Gurun pasir kering yang dipenuhi tulang belulang monster naga purba menjadi rintangan berikutnya bagi Kael. Di tengah badai pasir yang menyiksa mata, ia disergap oleh kawanan bandit gurun bercadar hitam. Kael dikalahkan dan ditangkap, dibawa ke dalam benteng bawah tanah tempat pecahan ketiga pedang suci ternyata dijadikan sebagai dekorasi singgasana kepala bandit.",
+          "A dry desert filled with the bones of ancient dragon monsters became Kael's next obstacle. In the middle of a tormenting sandstorm, he was ambushed by a band of black-veiled desert bandits. Kael was defeated and captured, taken to an underground fortress where the third fragment of the sacred sword was used as decoration on the bandit chief's throne.",
         createdAt: "2026-01-26",
         releasedAt: "2026-01-26T06:00:00Z",
         isFree: false,
@@ -580,7 +580,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "The Great Escape",
         content:
-          "Menggunakan kelincahan dan bantuan seorang gadis pencuri yang juga disekap di sel bawah tanah, Kael berhasil menjebol jeruji besi tahanan. Mereka melakukan sabotase pada ruang penyimpanan persediaan minyak benteng, menciptakan ledakan besar sebagai pengalih perhatian untuk merebut kembali pedangnya dan membawa lari pecahan ketiga ke gurun bebas.",
+          "Using his agility and the help of a thief girl who was also imprisoned in the underground cell, Kael managed to break through the iron prison bars. They sabotaged the fortress's oil storage room, creating a massive explosion as a diversion to reclaim his sword and carry off the third fragment into the free desert.",
         createdAt: "2026-02-02",
         releasedAt: "2026-02-02T06:00:00Z",
         isFree: false,
@@ -591,7 +591,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "8",
     title: "Mystery at Whisper High",
     description:
-      "Detektif SMA jenius menyelidiki hilangnya siswi teladan secara misterius di sekolahnya, membuka rahasia kelam tentang eksperimen ilegal yang melibatkan para guru senior.",
+      "A genius high school detective investigates the mysterious disappearance of a model student at his school, uncovering dark secrets about illegal experiments involving senior teachers.",
     genre: ["Mystery", "Drama"],
     banner: "https://picsum.photos/207/307",
     cover: "https://picsum.photos/207/307",
@@ -612,7 +612,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "The Empty Desk",
         content:
-          "Loker sekolah nomor 143 masih terkunci rapat, namun pemiliknya, Alika, siswi terpintar di angkatannya, sudah tidak masuk kelas selama tiga hari tanpa alasan medis. Pihak sekolah tampak mencoba menutupi kasus ini dengan menyebutnya kabur dari rumah. Dimas, ketua klub jurnalis sekolah, merasa ada kejanggalan besar dan mulai mengumpulkan petunjuk.",
+          "School locker number 143 remained tightly locked, but its owner, Alika, the smartest student in her class, had been absent for three days without medical reason. The school administration appeared to be covering up the case by saying she ran away from home. Dimas, the head of the school journalism club, sensed something deeply wrong and began collecting clues.",
         createdAt: "2025-10-15",
         releasedAt: "2025-10-15T08:30:00Z",
         isFree: false,
@@ -623,7 +623,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The Encrypted USB Drive",
         content:
-          "Dimas menyelinap ke dalam ruang OSIS saat jam istirahat siang sepi. Di bawah tumpukan berkas laporan keuangan, ia menemukan sebuah USB drive kecil berwarna merah hitam milik Alika. Ketika didekripsi menggunakan komputer klub jurnalis, berkas di dalamnya berisi jadwal pertemuan rahasia antara kepala sekolah dan laboratorium medis swasta.",
+          "Dimas snuck into the student council room during a quiet lunch break. Beneath a pile of financial reports, he found a small red-and-black USB drive belonging to Alika. When decrypted using the journalism club's computer, the files inside contained a schedule of secret meetings between the principal and a private medical laboratory.",
         createdAt: "2025-10-22",
         releasedAt: "2025-10-22T08:30:00Z",
         isFree: false,
@@ -634,7 +634,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Midnight Break-In",
         content:
-          "Malam hari pukul dua belas pas, Dimas memanjat pagar belakang sekolah yang gelap gulita. Bermodalkan lampu senter kecil, ia menuju ruang laboratorium biologi baru di lantai tiga. Di sana, ia menemukan pintu rahasia di balik lemari penyimpanan anatomi manusia, menuntunnya turun ke ruang bawah tanah bawah tanah yang steril bergaya rumah sakit.",
+          "At exactly midnight, Dimas climbed the dark back fence of the school. Armed only with a small flashlight, he headed to the new biology laboratory on the third floor. There, he found a secret door behind the human anatomy storage cabinet, leading him down to an underground room that was sterile and styled like a hospital.",
         createdAt: "2025-10-29",
         releasedAt: "2025-10-29T08:30:00Z",
         isFree: false,
@@ -645,7 +645,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Subject Files",
         content:
-          "Di dalam laboratorium rahasia itu berjajar tabung-tabung kaca besar berisi cairan biru kimiawi. Dimas menemukan map dokumen tebal bersimbol 'Project Evolution'. Saat membuka halaman profil subjek tes, foto Alika terpampang di sana bersama status detak jantung yang menunjukkan tanda kritis, membuktikan dia masih disembunyikan di dalam kompleks sekolah.",
+          "Inside the secret laboratory, large glass tubes filled with blue chemical fluid stood in rows. Dimas found a thick document folder marked 'Project Evolution.' Upon opening the test subject profile page, Alika's photo was displayed alongside a heart rate status showing critical signs, proving she was still being hidden within the school complex.",
         createdAt: "2025-11-05",
         releasedAt: "2025-11-05T08:30:00Z",
         isFree: false,
@@ -656,7 +656,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "Caught in the Act",
         content:
-          "Suara langkah kaki berat bersepatu pantofel mendadak terdengar dari arah tangga masuk laboratorium rahasia. Dimas panik bersembunyi di balik tabung reaksi raksasa. Lampu ruangan menyala terang, menampilkan sosok guru bimbingan konseling kesayangannya yang masuk bersama dua pria berbadan besar berpakaian hazmat, memegang suntikan serum ungu.",
+          "The heavy sound of dress shoe footsteps suddenly echoed from the laboratory's entrance stairway. Dimas panicked and hid behind a giant reaction tube. The room lights blazed on, revealing the figure of his beloved guidance counselor who entered alongside two large men in hazmat suits, holding syringes of purple serum.",
         createdAt: "2025-11-12",
         releasedAt: "2025-11-12T08:30:00Z",
         isFree: false,
@@ -667,7 +667,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "9",
     title: "The Invisible Life of Addie",
     description:
-      "Sebuah perjanjian dengan iblis membuat seorang wanita muda hidup selamanya, tetapi dikutuk untuk dilupakan oleh semua orang yang ditemuinya. Semuanya berubah ketika 300 tahun kemudian, ia menemukan seorang pria yang mengingat namanya.",
+      "A pact with a devil grants a young woman eternal life, but curses her to be forgotten by everyone she meets. Everything changes when, 300 years later, she meets a man who remembers her name.",
     genre: ["Fantasy", "Drama", "Romance"],
     banner: "https://picsum.photos/208/308",
     cover: "https://picsum.photos/208/308",
@@ -688,7 +688,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "A Deal in the Dark",
         content:
-          "Prancis, tahun 1714. Melarikan diri dari pernikahan paksa yang diatur keluarganya, Addie berlari ke dalam hutan kegelapan malam dan berdoa kepada dewa mana pun yang mendengarkan pesan sedihnya. Sayangnya, dewa yang menjawab doanya adalah iblis bayangan berwajah tampan yang menawarkan keabadian mutlak, dengan bayaran jiwanya diambil saat dia bosan hidup.",
+          "France, 1714. Fleeing from an arranged marriage set by her family, Addie ran into the dark forest night and prayed to whichever god would hear her sorrowful plea. Unfortunately, the deity who answered was a shadow devil with a handsome face, offering absolute immortality in exchange for her soul when she grew tired of living.",
         createdAt: "2026-03-15",
         releasedAt: "2026-03-15T07:45:00Z",
         isFree: false,
@@ -699,7 +699,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The Curse of Oblivion",
         content:
-          "Addie terbangun keesokan paginya dengan sukacita kebebasan, namun sukacita itu berubah menjadi mimpi buruk mengerikan ketika ia kembali ke rumah. Ibunya tidak mengenalinya, ayahnya mengusirnya sebagai orang asing, bahkan ruangan kamarnya telah dikosongkan. Begitu ia keluar dari pandangan seseorang, ingatan orang itu tentang dirinya langsung terhapus tanpa sisa.",
+          "Addie awoke the next morning with the joy of freedom, but that joy turned into a horrifying nightmare when she returned home. Her mother didn't recognize her, her father drove her away as a stranger, and even her bedroom had been emptied. The moment she left someone's sight, their memory of her was instantly and completely erased.",
         createdAt: "2026-03-22",
         releasedAt: "2026-03-22T07:45:00Z",
         isFree: false,
@@ -710,7 +710,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Three Centuries of Loneliness",
         content:
-          "Tiga ratus tahun berlalu seperti bayangan air mengalir bagi Addie. Ia menyaksikan revolusi Prancis, perang dunia, hingga era modern di New York tahun 2026. Ia hidup sebagai hantu sejarah, tidak bisa meninggalkan jejak tulisan, foto, maupun ingatan di hati manusia. Setiap pagi adalah awal baru yang melelahkan karena ia harus memperkenalkan dirinya kembali ke dunia.",
+          "Three hundred years passed like flowing water shadows for Addie. She witnessed the French Revolution, the World Wars, and the modern era in New York, 2026. She lived as a ghost of history, unable to leave behind any writing, photograph, or memory in human hearts. Every morning was an exhausting new beginning because she had to reintroduce herself to the world.",
         createdAt: "2026-03-29",
         releasedAt: "2026-03-29T07:45:00Z",
         isFree: false,
@@ -721,7 +721,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "The Bookstore Miracle",
         content:
-          "Langkah nasib membawanya ke sebuah toko buku antik beraroma kertas tua di Manhattan. Ia berniat mencuri sebuah buku novel kecil untuk mengusir bosan hidupnya. Saat kembali ke toko itu keesokan harinya, pemuda penjaga toko yang ramah memandangnya dengan terkejut lalu tersenyum hangat, 'Kamu kembali... Aku ingat kamu, Addie.' Kalimat sederhana itu menghentikan detak jantung keabadiannya.",
+          "The steps of fate brought her to an antique bookstore smelling of old paper in Manhattan. She intended to steal a small novel to stave off the boredom of her existence. When she returned to the store the next day, the friendly young shopkeeper looked at her in surprise and then smiled warmly, 'You came back... I remember you, Addie.' That simple sentence stopped the heartbeat of her immortality.",
         createdAt: "2026-04-05",
         releasedAt: "2026-04-05T07:45:00Z",
         isFree: false,
@@ -732,7 +732,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "I Remember You",
         content:
-          "Pemuda itu bernama Henry. Untuk pertama kalinya dalam tiga abad kutukan berjalan, ada manusia yang mampu mengingat nama, wajah, dan senyumannya setelah satu hari berlalu. Air mata Addie tumpah ruah di pelukan Henry di tengah lorong toko buku, menyadari bahwa kutukan iblis bayangan akhirnya menemukan celah retakan takdir yang tidak terduga.",
+          "The young man's name was Henry. For the first time in three centuries of the walking curse, there was a human capable of remembering her name, her face, and her smile after a day had passed. Addie's tears poured out in Henry's embrace in the middle of the bookstore aisle, realizing that the shadow devil's curse had finally found an unexpected crack in fate.",
         createdAt: "2026-04-12",
         releasedAt: "2026-04-12T07:45:00Z",
         isFree: false,
@@ -743,7 +743,7 @@ const RAW_BOOKS: BookItem[] = [
     id: "10",
     title: "The Ghostly Roommate",
     description:
-      "Komedi horor tentang seorang mahasiswa miskin yang menyewa kamar kos murah yang ternyata dihuni oleh hantu gadis bangsawan zaman Belanda yang cerewet dan manja.",
+      "A horror comedy about a broke college student who rents a cheap boarding room that turns out to be haunted by the ghost of a fussy and spoiled Dutch noblewoman from the colonial era.",
     genre: ["Comedy", "Fantasy"],
     banner: "https://picsum.photos/209/309",
     cover: "https://picsum.photos/209/309",
@@ -764,7 +764,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 1,
         title: "Kos No. 13",
         content:
-          "Raka meletakkan kardus pakaian terakhirnya di lantai kamar kos barunya berukuran tiga kali tiga meter yang beraroma kayu jati tua melati. Kamar ini disewakan sangat murah, hanya tiga ratus ribu per bulan, harga yang mencurigakan untuk wilayah Jakarta Pusat. Saat ia hendak merebahkan diri di kasur kasur kapuk usang, suhu ruangan mendadak turun drastis menembus tulang.",
+          "Raka set down his last box of clothes on the floor of his new three-by-three meter boarding room that smelled of old teak wood and jasmine. The room was rented extremely cheaply, only three hundred thousand per month — a suspiciously low price for Central Jakarta. Just as he was about to lie down on the worn kapok mattress, the room temperature suddenly dropped drastically, chilling him to the bone.",
         createdAt: "2025-09-01",
         releasedAt: "2025-09-01T04:00:00Z",
         isFree: false,
@@ -775,7 +775,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 2,
         title: "The Colonial Ghost",
         content:
-          "Sesosok bayangan transparan putih melayang keluar dari dalam lemari pakaian tua jepara di sudut kamar. Bayangan itu mewujud menjadi seorang gadis Eropa berwajah cantik mengenakan gaun kembang Victoria era kolonial abad ke-19. Bukannya menakuti Raka dengan wajah seram berdarah, hantu gadis itu justru berkacak pinggang dan memarahi Raka karena berantakan meletakkan kardus.",
+          "A transparent white shadow floated out from inside the old Jepara wardrobe in the corner of the room. The shadow materialized into a beautiful European girl wearing a Victorian-era colonial floral gown from the 19th century. Instead of terrifying Raka with a bloody scary face, the ghost girl planted her hands on her hips and scolded Raka for messily placing his boxes.",
         createdAt: "2025-09-08",
         releasedAt: "2025-09-08T04:00:00Z",
         isFree: false,
@@ -786,7 +786,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 3,
         title: "Cerewet Noni Anneliese",
         content:
-          "Hantu noni Belanda itu bernama Anneliese. Ia menolak pergi karena mengklaim lemari jati itu adalah mas kawin pernikahannya yang gagal ratusan tahun lalu. Kehidupan kos Raka pun berubah drastis menjadi penuh komedi omelan. Anneliese sering membangunkannya subuh-subuh dengan menyalakan alarm HP secara magis hanya untuk memprotes debu di bawah kolong meja belajarnya.",
+          "The Dutch noblewoman ghost was named Anneliese. She refused to leave because she claimed the teak wardrobe was the bridal dowry from her failed wedding hundreds of years ago. Raka's boarding life was dramatically transformed into a comedy of constant nagging. Anneliese often woke him at dawn by magically turning on his phone alarm just to protest the dust under his desk.",
         createdAt: "2025-09-15",
         releasedAt: "2025-09-15T04:00:00Z",
         isFree: false,
@@ -797,7 +797,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 4,
         title: "Ghostly Examination Helper",
         content:
-          "Tiba minggu ujian semester kampus, Raka belajar mati-matian hingga begadang semalaman suntuk di depan laptopnya untuk materi sejarah kolonial Indonesia. Anneliese yang melayang bosan di atas langit-langit kamar kos akhirnya mengintip layar dan mulai menceritakan detail peristiwa sejarah perang pangeran Diponegoro secara akurat berdasarkan pengalamannya langsung hidup di era tersebut.",
+          "Campus exam week arrived, and Raka studied desperately, pulling an all-nighter in front of his laptop studying Indonesian colonial history. Anneliese, floating boredly above the room's ceiling, eventually peeked at his screen and began recounting the details of Prince Diponegoro's war with historical accuracy, drawing from her firsthand experience of actually living in that era.",
         createdAt: "2025-09-22",
         releasedAt: "2025-09-22T04:00:00Z",
         isFree: false,
@@ -808,7 +808,7 @@ const RAW_BOOKS: BookItem[] = [
         chapterNumber: 5,
         title: "The Expulsion Attempt",
         content:
-          "Pemilik kos yang merasa curiga mendengar suara percakapan dari dalam kamar Raka diam-diam memanggil dukun pengusir roh halus tanpa persetujuan Raka. Saat Raka pergi kuliah, dukun itu merangsek masuk membawa kemenyan dan air suci ke dalam kamar kos nomor 13. Raka yang mendapatkan firasat buruk bergegas lari pulang untuk menyelamatkan teman hantu sekamarnya yang manja tersebut.",
+          "The boarding house owner, who had become suspicious of hearing conversation sounds from inside Raka's room, secretly called a spirit exorcist without Raka's consent. While Raka was at class, the exorcist barged in with incense and holy water into boarding room number 13. Raka, sensing a bad premonition, rushed home to save his spoiled ghost roommate.",
         createdAt: "2025-09-29",
         releasedAt: "2025-09-29T04:00:00Z",
         isFree: false,

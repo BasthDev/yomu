@@ -13,20 +13,32 @@ import { navigateToComments } from "@/utils/navigation";
 import { getRouteParam } from "@/utils/routeParams";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { useGlobalRewardedAd } from "../../context/AdContext";
 import { useRewardedInterstitialAd } from "../../hooks/useRewardedInterstitialAd";
 import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useCoinStore } from "../../store/coinStore";
 import { useCommentStore } from "../../store/commentStore";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 
 export default function Read() {
   const { chapterId: chapterIdParam } = useLocalSearchParams<{
@@ -44,6 +56,10 @@ export default function Read() {
 
   const [pendingUnlock, setPendingUnlock] = useState<ChapterItem | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
+
+  // Swipe animation state
+  const translateX = useSharedValue(0);
+  const [swipeHint, setSwipeHint] = useState<"left" | "right" | null>(null);
 
   const {
     isLoaded: isInterstitialLoaded,
@@ -121,7 +137,9 @@ export default function Read() {
   useEffect(() => {
     setPendingUnlock(null);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
-  }, [chapterId]);
+    // Reset swipe position on chapter change
+    translateX.value = 0;
+  }, [chapterId, translateX]);
 
   const handleUnlockWithCoins = async () => {
     if (!activeMatch || !unlockTarget) return;
@@ -193,7 +211,7 @@ export default function Read() {
     router.setParams({ chapterId: targetChapter.id });
   };
 
-  const goToNextChapter = async (chapter: ChapterItem) => {
+  const goToNextChapter = useCallback(async (chapter: ChapterItem) => {
     if (!activeMatch) return;
     const nextAccess = await checkAccess(activeMatch.book, chapter);
     if (nextAccess.canAccess) {
@@ -202,9 +220,9 @@ export default function Read() {
       return;
     }
     setPendingUnlock(chapter);
-  };
+  }, [activeMatch, checkAccess, router]);
 
-  const goToPrevChapter = async (chapter: ChapterItem) => {
+  const goToPrevChapter = useCallback(async (chapter: ChapterItem) => {
     if (!activeMatch) return;
     const prevAccess = await checkAccess(activeMatch.book, chapter);
     if (!prevAccess.canAccess) {
@@ -214,13 +232,83 @@ export default function Read() {
 
     setPendingUnlock(null);
     router.setParams({ chapterId: chapter.id });
-  };
+  }, [activeMatch, checkAccess, router]);
 
   const handleGoBack = () => {
     if (router.canGoBack()) {
       router.back();
     }
   };
+
+  // Swipe handlers called from gesture worklet via runOnJS
+  const handleSwipeNext = useCallback(() => {
+    if (!activeMatch?.book.chaptersList) return;
+    const { chapterIndex, book } = activeMatch;
+    const hasNextChapter = book.chaptersList ? chapterIndex < book.chaptersList.length - 1 : false;
+    if (hasNextChapter && book.chaptersList) {
+      goToNextChapter(book.chaptersList[chapterIndex + 1]);
+    }
+  }, [activeMatch, goToNextChapter]);
+
+  const handleSwipePrev = useCallback(() => {
+    if (!activeMatch?.book.chaptersList) return;
+    const { chapterIndex, book } = activeMatch;
+    const hasPrevChapter = chapterIndex > 0;
+    if (hasPrevChapter && book.chaptersList) {
+      goToPrevChapter(book.chaptersList[chapterIndex - 1]);
+    }
+  }, [activeMatch, goToPrevChapter]);
+
+  const updateSwipeHint = useCallback((direction: "left" | "right" | null) => {
+    setSwipeHint(direction);
+  }, []);
+
+  // Pan gesture for swipe navigation
+  const panGesture = useMemo(() => {
+    return Gesture.Pan()
+      .activeOffsetX([-20, 20])
+      .failOffsetY([-10, 10])
+      .onUpdate((event) => {
+        // Only allow horizontal swipes
+        if (Math.abs(event.translationX) > Math.abs(event.translationY)) {
+          // Clamp the translation with rubber-band effect
+          const clampedTranslation = event.translationX * 0.4;
+          translateX.value = clampedTranslation;
+
+          if (event.translationX < -30) {
+            runOnJS(updateSwipeHint)("left");
+          } else if (event.translationX > 30) {
+            runOnJS(updateSwipeHint)("right");
+          } else {
+            runOnJS(updateSwipeHint)(null);
+          }
+        }
+      })
+      .onEnd((event) => {
+        runOnJS(updateSwipeHint)(null);
+
+        if (event.translationX < -SWIPE_THRESHOLD && Math.abs(event.velocityX) > 200) {
+          // Swiped left → next chapter
+          translateX.value = withTiming(-SCREEN_WIDTH * 0.15, { duration: 150 }, () => {
+            translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
+          });
+          runOnJS(handleSwipeNext)();
+        } else if (event.translationX > SWIPE_THRESHOLD && Math.abs(event.velocityX) > 200) {
+          // Swiped right → prev chapter
+          translateX.value = withTiming(SCREEN_WIDTH * 0.15, { duration: 150 }, () => {
+            translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
+          });
+          runOnJS(handleSwipePrev)();
+        } else {
+          // Snap back
+          translateX.value = withSpring(0, { damping: 20, stiffness: 300 });
+        }
+      });
+  }, [translateX, handleSwipeNext, handleSwipePrev, updateSwipeHint]);
+
+  const animatedContentStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
 
   if (!chapterId) {
     return (
@@ -238,7 +326,7 @@ export default function Read() {
       <Container>
         <CustomHeader showBack onBack={handleGoBack} />
         <View style={styles.centered}>
-          <Text style={{ color: "#fff" }}>Konten bab tidak ditemukan.</Text>
+          <Text style={{ color: "#fff" }}>Chapter content not found.</Text>
         </View>
       </Container>
     );
@@ -307,76 +395,116 @@ export default function Read() {
         forceBackPath={`/book/${book.id}`}
       />
 
-      <ScrollView
-        ref={scrollRef}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator
-      >
-        <ContentWithPadding>
-          <View style={styles.novelContainer}>
-            <Text
-              style={[styles.chapterTitle, { color: currentTheme.primary }]}
-            >
-              CHAPTER {chapter.chapterNumber}
-            </Text>
-            <Text
-              style={[styles.chapterSubtitle, { color: currentTheme.text }]}
-            >
-              {chapter.title}
-            </Text>
-            <View
-              style={[styles.divider, { backgroundColor: currentTheme.border }]}
-            />
-            <Text
-              style={[styles.paragraph, { color: currentTheme.textSecondary }]}
-            >
-              {chapter.content}
-            </Text>
+      {/* Swipe hint indicators */}
+      {swipeHint === "right" && hasPrev && (
+        <View style={[styles.swipeHint, styles.swipeHintLeft]}>
+          <Ionicons name="chevron-back" size={24} color={currentTheme.primary} />
+          <Text style={[styles.swipeHintText, { color: currentTheme.primary }]}>
+            Prev
+          </Text>
+        </View>
+      )}
+      {swipeHint === "left" && hasNext && (
+        <View style={[styles.swipeHint, styles.swipeHintRight]}>
+          <Text style={[styles.swipeHintText, { color: currentTheme.primary }]}>
+            Next
+          </Text>
+          <Ionicons name="chevron-forward" size={24} color={currentTheme.primary} />
+        </View>
+      )}
 
-            <ChapterNavigation
-              onNext={() =>
-                hasNext && book.chaptersList
-                  ? goToNextChapter(book.chaptersList[chapterIndex + 1])
-                  : undefined
-              }
-              onPrev={() =>
-                hasPrev && book.chaptersList
-                  ? goToPrevChapter(book.chaptersList[chapterIndex - 1])
-                  : undefined
-              }
-              hasNext={hasNext}
-              hasPrev={hasPrev}
-              currentChapterNumber={chapter.chapterNumber}
-            />
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[{ flex: 1 }, animatedContentStyle]}>
+          <ScrollView
+            ref={scrollRef}
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator
+          >
+            <ContentWithPadding>
+              <View style={styles.novelContainer}>
+                <Text
+                  style={[styles.chapterTitle, { color: currentTheme.primary }]}
+                >
+                  CHAPTER {chapter.chapterNumber}
+                </Text>
+                <Text
+                  style={[styles.chapterSubtitle, { color: currentTheme.text }]}
+                >
+                  {chapter.title}
+                </Text>
+                <View
+                  style={[styles.divider, { backgroundColor: currentTheme.border }]}
+                />
+                <Text
+                  style={[styles.paragraph, { color: currentTheme.textSecondary }]}
+                >
+                  {chapter.content}
+                </Text>
 
-            <View style={styles.commentsSection}>
-              <TouchableOpacity
-                style={styles.commentsHeader}
-                onPress={() => navigateToComments(router, chapter.id)}
-              >
-                <View style={styles.commentsTitleContainer}>
+                {/* Swipe instruction hint */}
+                <View style={styles.swipeInstructionContainer}>
                   <Ionicons
-                    name="chatbubble-outline"
-                    size={20}
-                    color={currentTheme.primary}
+                    name="swap-horizontal-outline"
+                    size={16}
+                    color={currentTheme.textSecondary}
+                    style={{ opacity: 0.5 }}
                   />
                   <Text
-                    style={[styles.commentsTitle, { color: currentTheme.text }]}
+                    style={[
+                      styles.swipeInstructionText,
+                      { color: currentTheme.textSecondary },
+                    ]}
                   >
-                    Comments ({comments.length})
+                    Swipe left or right to change chapter
                   </Text>
                 </View>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={currentTheme.textSecondary}
+
+                <ChapterNavigation
+                  onNext={() =>
+                    hasNext && book.chaptersList
+                      ? goToNextChapter(book.chaptersList[chapterIndex + 1])
+                      : undefined
+                  }
+                  onPrev={() =>
+                    hasPrev && book.chaptersList
+                      ? goToPrevChapter(book.chaptersList[chapterIndex - 1])
+                      : undefined
+                  }
+                  hasNext={hasNext}
+                  hasPrev={hasPrev}
+                  currentChapterNumber={chapter.chapterNumber}
                 />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ContentWithPadding>
-      </ScrollView>
+
+                <View style={styles.commentsSection}>
+                  <TouchableOpacity
+                    style={styles.commentsHeader}
+                    onPress={() => navigateToComments(router, chapter.id)}
+                  >
+                    <View style={styles.commentsTitleContainer}>
+                      <Ionicons
+                        name="chatbubble-outline"
+                        size={20}
+                        color={currentTheme.primary}
+                      />
+                      <Text
+                        style={[styles.commentsTitle, { color: currentTheme.text }]}
+                      >
+                        Comments ({comments.length})
+                      </Text>
+                    </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color={currentTheme.textSecondary}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </ContentWithPadding>
+          </ScrollView>
+        </Animated.View>
+      </GestureDetector>
 
       <UnlockModal
         visible={pendingUnlock !== null}
@@ -434,6 +562,41 @@ const styles = StyleSheet.create({
     marginBottom: 22,
     textAlign: "justify",
     letterSpacing: 0.3,
+  },
+  swipeInstructionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 8,
+    marginBottom: 4,
+    opacity: 0.5,
+  },
+  swipeInstructionText: {
+    fontSize: 12,
+    fontStyle: "italic",
+  },
+  swipeHint: {
+    position: "absolute",
+    top: "50%",
+    zIndex: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 4,
+  },
+  swipeHintLeft: {
+    left: 8,
+  },
+  swipeHintRight: {
+    right: 8,
+  },
+  swipeHintText: {
+    fontSize: 13,
+    fontWeight: "600",
   },
   commentsSection: {
     marginTop: 40,
