@@ -65,21 +65,38 @@ export default function Read() {
   }
   const activeMatch = match ?? lastMatchRef.current;
 
-  const access: ChapterAccessResult | null = useMemo(
-    () =>
-      activeMatch ? checkAccess(activeMatch.book, activeMatch.chapter) : null,
-    [activeMatch, checkAccess],
-  );
+  const [access, setAccess] = useState<ChapterAccessResult | null>(null);
+  const [unlockAccess, setUnlockAccess] = useState<ChapterAccessResult | null>(null);
 
-  const isUnlockModalVisible = pendingUnlock !== null || !access?.canAccess;
+  useEffect(() => {
+    let isMounted = true;
+    if (activeMatch) {
+      checkAccess(activeMatch.book, activeMatch.chapter).then((res) => {
+        if (isMounted) setAccess(res);
+      });
+    } else {
+      setAccess(null);
+    }
+    return () => { isMounted = false; };
+  }, [activeMatch, checkAccess]);
+
+  const isUnlockModalVisible = pendingUnlock !== null || (access ? !access.canAccess : false);
 
   const { showPrompt, recordChapterRead, skipBonus, completeBonus } =
     useBonusCoinsPrompt(isInterstitialLoaded, isUnlockModalVisible);
 
   const unlockTarget = pendingUnlock ?? activeMatch?.chapter ?? null;
-  const unlockAccess: ChapterAccessResult | null = useMemo(() => {
-    if (!activeMatch || !unlockTarget) return null;
-    return checkAccess(activeMatch.book, unlockTarget);
+  
+  useEffect(() => {
+    let isMounted = true;
+    if (activeMatch && unlockTarget) {
+      checkAccess(activeMatch.book, unlockTarget).then((res) => {
+        if (isMounted) setUnlockAccess(res);
+      });
+    } else {
+      setUnlockAccess(null);
+    }
+    return () => { isMounted = false; };
   }, [activeMatch, unlockTarget, checkAccess]);
 
   useEffect(() => {
@@ -176,9 +193,9 @@ export default function Read() {
     router.setParams({ chapterId: targetChapter.id });
   };
 
-  const goToNextChapter = (chapter: ChapterItem) => {
+  const goToNextChapter = async (chapter: ChapterItem) => {
     if (!activeMatch) return;
-    const nextAccess = checkAccess(activeMatch.book, chapter);
+    const nextAccess = await checkAccess(activeMatch.book, chapter);
     if (nextAccess.canAccess) {
       setPendingUnlock(null);
       router.setParams({ chapterId: chapter.id });
@@ -187,9 +204,9 @@ export default function Read() {
     setPendingUnlock(chapter);
   };
 
-  const goToPrevChapter = (chapter: ChapterItem) => {
+  const goToPrevChapter = async (chapter: ChapterItem) => {
     if (!activeMatch) return;
-    const prevAccess = checkAccess(activeMatch.book, chapter);
+    const prevAccess = await checkAccess(activeMatch.book, chapter);
     if (!prevAccess.canAccess) {
       setPendingUnlock(chapter);
       return;
@@ -233,7 +250,18 @@ export default function Read() {
     ? chapterIndex < book.chaptersList.length - 1
     : false;
 
-  if (!access?.canAccess) {
+  if (access === null) {
+    return (
+      <Container>
+        <CustomHeader showBack onBack={handleGoBack} />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={currentTheme.primary} />
+        </View>
+      </Container>
+    );
+  }
+
+  if (!access.canAccess) {
     return (
       <Container>
         <CustomHeader
@@ -264,7 +292,7 @@ export default function Read() {
           balance={balance}
           isUnlocking={isUnlocking}
           isAdLoading={isUnlockAdLoading || !isUnlockAdLoaded}
-          daysUntilFree={access?.daysUntilFree}
+          daysUntilFree={access.daysUntilFree}
           theme={currentTheme}
         />
       </Container>

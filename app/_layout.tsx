@@ -9,10 +9,12 @@ import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SplashScreen } from "../components/SplashScreen";
 import { SecurityProvider } from "../context/SecurityContext";
+import { queryClient } from "../lib/queryClient";
 import { useAuthStore, useClerkAuthSync } from "../store/authStore";
 import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 import { useCoinStore } from "../store/coinStore";
-import { queryClient } from "../lib/queryClient";
+import * as Database from "../utils/database";
+import { DUMMY_BOOKS } from "../utils/dummyData";
 
 // Only import NavigationBar on Android
 let NavigationBar: any;
@@ -27,6 +29,11 @@ function AppBootstrap() {
   const loadBalance = useCoinStore((s) => s.loadBalance);
   const hydrateUnlocks = useChapterUnlockStore((s) => s.hydrate);
   const resetUnlocks = useChapterUnlockStore((s) => s.reset);
+
+  useEffect(() => {
+    // Initialize chapter release dates in database
+    Database.initializeChapterReleaseDates(DUMMY_BOOKS);
+  }, []);
 
   useEffect(() => {
     if (userId) {

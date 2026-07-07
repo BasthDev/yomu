@@ -32,7 +32,7 @@ export default function History() {
     navigateToBook(router, bookId);
   };
 
-  const handleContinueReading = (historyItem: any) => {
+  const handleContinueReading = async (historyItem: any) => {
     const book = DUMMY_BOOKS.find((b) => b.id === historyItem.bookId);
     const chapter = book?.chaptersList?.find(
       (ch) => ch.id === historyItem.chapterId,
@@ -43,7 +43,7 @@ export default function History() {
       return;
     }
 
-    const access = checkAccess(book, chapter);
+    const access = await checkAccess(book, chapter);
     if (access.canAccess) {
       navigateToRead(router, historyItem.chapterId);
     } else {

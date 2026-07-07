@@ -174,6 +174,11 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
           UNIQUE(user_id, chapter_id)
         );
         
+        CREATE TABLE IF NOT EXISTS chapter_metadata (
+          chapter_id TEXT PRIMARY KEY,
+          released_at TEXT NOT NULL
+        );
+        
         CREATE TABLE IF NOT EXISTS comments (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           chapter_id TEXT NOT NULL,
@@ -578,6 +583,55 @@ export const getPurchasedChapterIds = async (
   return rows.map((row) => row.chapter_id);
 };
 
+// Chapter metadata operations for release dates
+export const setChapterReleaseDate = async (
+  chapterId: string,
+  releasedAt: string,
+): Promise<void> => {
+  const database = await getDatabase();
+  await database.runAsync(
+    "INSERT OR REPLACE INTO chapter_metadata (chapter_id, released_at) VALUES (?, ?)",
+    [chapterId, releasedAt],
+  );
+};
+
+export const getChapterReleaseDate = async (
+  chapterId: string,
+): Promise<string | null> => {
+  const database = await getDatabase();
+  const result = await database.getFirstAsync<{ released_at: string }>(
+    "SELECT released_at FROM chapter_metadata WHERE chapter_id = ?",
+    [chapterId],
+  );
+  return result?.released_at || null;
+};
+
+// Initialize chapter release dates from book data
+export const initializeChapterReleaseDates = async (
+  books: any[],
+): Promise<void> => {
+  const database = await getDatabase();
+
+  for (const book of books) {
+    if (book.chaptersList) {
+      for (const chapter of book.chaptersList) {
+        // Only set if not already in database
+        const existing = await database.getFirstAsync<{ released_at: string }>(
+          "SELECT released_at FROM chapter_metadata WHERE chapter_id = ?",
+          [chapter.id],
+        );
+
+        if (!existing && chapter.releasedAt) {
+          await database.runAsync(
+            "INSERT INTO chapter_metadata (chapter_id, released_at) VALUES (?, ?)",
+            [chapter.id, chapter.releasedAt],
+          );
+        }
+      }
+    }
+  }
+};
+
 // Comment operations
 export const addComment = async (
   chapterId: string,
@@ -615,9 +669,10 @@ export const getCommentCountsByChapter = async (): Promise<
   Record<string, number>
 > => {
   const database = await getDatabase();
-  const rows = await database.getAllAsync<{ chapter_id: string; count: number }>(
-    "SELECT chapter_id, COUNT(*) as count FROM comments GROUP BY chapter_id",
-  );
+  const rows = await database.getAllAsync<{
+    chapter_id: string;
+    count: number;
+  }>("SELECT chapter_id, COUNT(*) as count FROM comments GROUP BY chapter_id");
   const counts: Record<string, number> = {};
   for (const row of rows) {
     counts[row.chapter_id] = row.count;

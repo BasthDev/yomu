@@ -90,8 +90,8 @@ export default function BookDetail() {
     }
   };
 
-  const handleChapterPress = (chapter: any) => {
-    const access = checkAccess(book!, chapter);
+  const handleChapterPress = async (chapter: any) => {
+    const access = await checkAccess(book!, chapter);
 
     if (access.canAccess) {
       navigateToRead(router, chapter.id);

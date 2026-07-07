@@ -1,8 +1,8 @@
-import { BookItem, ChapterItem } from "./books";
 import { getAuthUserIdOrNull } from "./authUser";
+import { BookItem, ChapterItem } from "./books";
 import * as Database from "./database";
 export const CHAPTER_COST = 15;
-export const WAIT_DAYS = 2;
+export const WAIT_DAYS = 3;
 export const FREE_CHAPTER_COUNT = 3;
 
 export interface ChapterAccessResult {
@@ -33,12 +33,13 @@ function getDaysSinceRelease(releasedAt: string): number {
 /**
  * Single source of truth for lock badges AND navigation access.
  * Uses the zustand purchasedChapterIds map (hydrated from SQLite).
+ * Uses database-stored release dates for accurate time-based unlocking.
  */
-export function resolveChapterAccess(
+export async function resolveChapterAccess(
   book: BookItem,
   chapter: ChapterItem,
   purchasedChapterIds: Record<string, true>,
-): ChapterAccessResult {
+): Promise<ChapterAccessResult> {
   if (book.isFree || !chapter.isLocked) {
     return { canAccess: true, reason: "free" };
   }
@@ -47,7 +48,11 @@ export function resolveChapterAccess(
     return { canAccess: true, reason: "unlocked" };
   }
 
-  const daysSinceRelease = getDaysSinceRelease(chapter.releasedAt);
+  // Check database for stored release date, fall back to chapter data
+  const dbReleaseDate = await Database.getChapterReleaseDate(chapter.id);
+  const releaseDateToUse = dbReleaseDate || chapter.releasedAt;
+
+  const daysSinceRelease = getDaysSinceRelease(releaseDateToUse);
   if (daysSinceRelease >= WAIT_DAYS) {
     return { canAccess: true, reason: "wait_available" };
   }
@@ -98,15 +103,39 @@ export function isChapterLockedInData(
   return chapter.isLocked === true;
 }
 
+export async function getChapterDisplayStatus(
+  book: BookItem,
+  chapter: ChapterItem,
+  purchasedChapterIds: Record<string, true>,
+): Promise<ChapterDisplayStatus> {
+  const access = await resolveChapterAccess(book, chapter, purchasedChapterIds);
+
+  if (access.reason === "free") return "free";
+  if (access.reason === "unlocked") return "unlocked";
+  if (access.reason === "wait_available") return "wait_available";
+  return "locked";
+}
+
+/** @deprecated Use getChapterDisplayStatus (async version) */
 export function getChapterDisplayStatusSync(
   book: BookItem,
   chapter: ChapterItem,
   purchasedChapterIds: Record<string, true>,
 ): ChapterDisplayStatus {
-  const access = resolveChapterAccess(book, chapter, purchasedChapterIds);
+  // Fallback sync version for components that haven't been updated yet
+  // This uses chapter.releasedAt without database check
+  if (book.isFree || !chapter.isLocked) {
+    return "free";
+  }
 
-  if (access.reason === "free") return "free";
-  if (access.reason === "unlocked") return "unlocked";
-  if (access.reason === "wait_available") return "wait_available";
+  if (purchasedChapterIds[chapter.id]) {
+    return "unlocked";
+  }
+
+  const daysSinceRelease = getDaysSinceRelease(chapter.releasedAt);
+  if (daysSinceRelease >= WAIT_DAYS) {
+    return "wait_available";
+  }
+
   return "locked";
 }

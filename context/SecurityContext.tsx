@@ -1,21 +1,21 @@
 import { useChapterUnlockStore } from "@/store/chapterUnlockStore";
 import { useCoinStore } from "@/store/coinStore";
-import {
-  CHAPTER_COST,
-  ChapterAccessResult,
-  ChapterDisplayStatus,
-  getChapterDisplayStatusSync,
-  getTimeUntilFree,
-  resolveChapterAccess,
-} from "@/utils/chapterAccess";
 import { BookItem, ChapterItem } from "@/utils/books";
+import {
+    CHAPTER_COST,
+    ChapterAccessResult,
+    ChapterDisplayStatus,
+    getChapterDisplayStatusSync,
+    getTimeUntilFree,
+    resolveChapterAccess,
+} from "@/utils/chapterAccess";
 import { DUMMY_BOOKS } from "@/utils/dummyData";
 import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
 } from "react";
 
 interface BookChapterMatch {
@@ -27,11 +27,17 @@ interface BookChapterMatch {
 interface SecurityContextValue {
   isReady: boolean;
   chapterCost: number;
-  checkAccess: (book: BookItem, chapter: ChapterItem) => ChapterAccessResult;
+  checkAccess: (
+    book: BookItem,
+    chapter: ChapterItem,
+  ) => Promise<ChapterAccessResult>;
   unlockWithCoins: (book: BookItem, chapter: ChapterItem) => Promise<boolean>;
   unlockWithAd: (book: BookItem, chapter: ChapterItem) => Promise<boolean>;
   isChapterUnlockedInDb: (chapterId: string) => Promise<boolean>;
-  isChapterAccessible: (book: BookItem, chapter: ChapterItem) => boolean;
+  isChapterAccessible: (
+    book: BookItem,
+    chapter: ChapterItem,
+  ) => Promise<boolean>;
   getChapterDisplayStatus: (
     book: BookItem,
     chapter: ChapterItem,
@@ -61,15 +67,19 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
   }, [hydrate]);
 
   const checkAccess = useCallback(
-    (book: BookItem, chapter: ChapterItem): ChapterAccessResult => {
-      return resolveChapterAccess(book, chapter, purchasedChapterIds);
+    async (
+      book: BookItem,
+      chapter: ChapterItem,
+    ): Promise<ChapterAccessResult> => {
+      return await resolveChapterAccess(book, chapter, purchasedChapterIds);
     },
     [purchasedChapterIds],
   );
 
   const isChapterAccessible = useCallback(
-    (book: BookItem, chapter: ChapterItem) => {
-      return checkAccess(book, chapter).canAccess;
+    async (book: BookItem, chapter: ChapterItem) => {
+      const access = await checkAccess(book, chapter);
+      return access.canAccess;
     },
     [checkAccess],
   );
@@ -141,7 +151,9 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <SecurityContext.Provider value={value}>{children}</SecurityContext.Provider>
+    <SecurityContext.Provider value={value}>
+      {children}
+    </SecurityContext.Provider>
   );
 }
 

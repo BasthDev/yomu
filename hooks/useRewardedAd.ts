@@ -32,8 +32,8 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
 
   useEffect(() => {
     const ad = RewardedAd.createForAdRequest(AD_UNIT_IDS.REWARDED, {
-      requestNonPersonalizedAdsOnly: true,
-      keywords: ["games", "entertainment", "books", "reading"],
+      requestNonPersonalizedAdsOnly: false,
+      keywords: ["games", "entertainment", "books", "reading", "manga", "comics"],
     });
 
     const unsubscribeLoaded = ad.addAdEventListener(
@@ -68,6 +68,7 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
         showAdPromiseRef.current = null;
       }
 
+      setIsLoading(true);
       ad.load();
     });
 
