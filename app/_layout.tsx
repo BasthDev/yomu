@@ -111,7 +111,7 @@ export default function RootLayout() {
               <StatusBar style="light" />
               <AppBootstrap />
               {splashVisible && (
-                <SplashScreen onAnimationEnd={() => setAnimationDone(true)} />
+                <SplashScreen fontsLoaded={fontsLoaded} onAnimationEnd={() => setAnimationDone(true)} />
               )}
             </AdProvider>
           </SecurityProvider>

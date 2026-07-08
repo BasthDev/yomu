@@ -1,6 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface UnlockModalProps {
   visible: boolean;
@@ -33,6 +40,8 @@ export function UnlockModal({
   daysUntilFree,
   theme,
 }: UnlockModalProps) {
+  const canAfford = balance >= chapterCost;
+
   return (
     <Modal
       visible={visible}
@@ -44,6 +53,21 @@ export function UnlockModal({
         <View
           style={[styles.modalContent, { backgroundColor: theme.background }]}
         >
+          {/* Loading overlay while unlocking */}
+          {isUnlocking && (
+            <View
+              style={[
+                styles.loadingOverlay,
+                { backgroundColor: theme.background },
+              ]}
+            >
+              <ActivityIndicator size="large" color={theme.primary} />
+              <Text style={[styles.loadingText, { color: theme.text }]}>
+                Unlocking chapter...
+              </Text>
+            </View>
+          )}
+
           <Text style={[styles.modalTitle, { color: theme.text }]}>
             Chapter Locked
           </Text>
@@ -52,12 +76,22 @@ export function UnlockModal({
           </Text>
 
           <View style={styles.unlockOptions}>
+            {/* Coin unlock */}
             <TouchableOpacity
-              style={[styles.unlockOption, { backgroundColor: theme.surface }]}
+              style={[
+                styles.unlockOption,
+                { backgroundColor: theme.surface },
+                !canAfford && styles.unlockOptionDisabled,
+              ]}
               onPress={onUnlock}
-              disabled={isUnlocking || balance < chapterCost}
+              disabled={isUnlocking || !canAfford}
+              activeOpacity={0.7}
             >
-              <Ionicons name="wallet" size={24} color={theme.primary} />
+              <Ionicons
+                name="wallet"
+                size={24}
+                color={canAfford ? theme.primary : theme.textSecondary}
+              />
               <View style={styles.unlockOptionText}>
                 <Text style={[styles.unlockOptionTitle, { color: theme.text }]}>
                   Unlock with Coins
@@ -65,26 +99,42 @@ export function UnlockModal({
                 <Text
                   style={[
                     styles.unlockOptionSubtitle,
-                    { color: theme.textSecondary },
+                    {
+                      color: canAfford ? theme.textSecondary : "#e53935",
+                    },
                   ]}
                 >
-                  {balance >= chapterCost
+                  {canAfford
                     ? `${chapterCost} coins (You have ${balance})`
-                    : `Need ${chapterCost} coins (You have ${balance})`}
+                    : `Need ${chapterCost} coins (You only have ${balance})`}
                 </Text>
               </View>
+              {canAfford && (
+                <Ionicons
+                  name="chevron-forward"
+                  size={18}
+                  color={theme.textSecondary}
+                />
+              )}
             </TouchableOpacity>
 
+            {/* Ad unlock */}
             {onUnlockWithAd && (
               <TouchableOpacity
                 style={[
                   styles.unlockOption,
                   { backgroundColor: theme.surface },
+                  (isAdLoading || isUnlocking) && styles.unlockOptionDisabled,
                 ]}
                 onPress={onUnlockWithAd}
                 disabled={isAdLoading || isUnlocking}
+                activeOpacity={0.7}
               >
-                <Ionicons name="play-circle" size={24} color="#ff6b6b" />
+                <Ionicons
+                  name="play-circle"
+                  size={24}
+                  color={isAdLoading ? theme.textSecondary : "#ff6b6b"}
+                />
                 <View style={styles.unlockOptionText}>
                   <Text
                     style={[styles.unlockOptionTitle, { color: theme.text }]}
@@ -99,12 +149,22 @@ export function UnlockModal({
                   >
                     {isAdLoading
                       ? "Loading ad..."
-                      : "Watch ad to unlock for free"}
+                      : "Watch a short ad to unlock for free"}
                   </Text>
                 </View>
+                {isAdLoading ? (
+                  <ActivityIndicator size="small" color={theme.textSecondary} />
+                ) : (
+                  <Ionicons
+                    name="chevron-forward"
+                    size={18}
+                    color={theme.textSecondary}
+                  />
+                )}
               </TouchableOpacity>
             )}
 
+            {/* Wait for free */}
             {daysUntilFree && daysUntilFree > 0 && (
               <View
                 style={[
@@ -136,6 +196,7 @@ export function UnlockModal({
           <TouchableOpacity
             style={[styles.closeButton, { backgroundColor: theme.surface }]}
             onPress={onClose}
+            disabled={isUnlocking}
           >
             <Text
               style={[styles.closeButtonText, { color: theme.textSecondary }]}
@@ -152,12 +213,31 @@ export function UnlockModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
-  modalContent: { borderRadius: 16, padding: 24, width: "100%", maxWidth: 400 },
+  modalContent: {
+    borderRadius: 20,
+    padding: 24,
+    width: "100%",
+    maxWidth: 400,
+    overflow: "hidden",
+    position: "relative",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+    borderRadius: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -165,24 +245,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: { fontSize: 14, textAlign: "center", marginBottom: 24 },
-  unlockOptions: { marginBottom: 16 },
+  unlockOptions: { marginBottom: 16, gap: 12 },
   unlockOption: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderRadius: 12,
-    marginBottom: 12,
+    gap: 12,
+  },
+  unlockOptionDisabled: {
+    opacity: 0.5,
   },
   unlockOptionText: { flex: 1 },
   unlockOptionTitle: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
-    marginLeft: 12,
   },
   unlockOptionSubtitle: {
-    fontSize: 14,
-    marginLeft: 12,
+    fontSize: 13,
   },
   closeButton: {
     padding: 14,

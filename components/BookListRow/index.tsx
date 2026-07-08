@@ -51,7 +51,7 @@ export function BookListRow({
           style={[styles.author, { color: currentTheme.textSecondary }]}
           numberOfLines={1}
         >
-          {book.author} · {book.genre[0]}
+          {book.author} · {book.genre.join(", ")}
         </Text>
         <View style={styles.stats}>
           <View style={styles.stat}>
