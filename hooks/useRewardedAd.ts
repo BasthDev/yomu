@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import { AD_UNIT_IDS } from "../utils/adConfig";
 
@@ -7,8 +8,8 @@ type UseRewardedAdOptions = {
   onRewardEarned?: () => void | Promise<void>;
 };
 
-// Check if running in Expo Go (where native modules aren't available)
-const isExpoGo = __DEV__;
+// Only disable ads when actually running in Expo Go (not in prebuilt debug builds)
+const isExpoGo = Constants.appOwnership === "expo";
 
 export const useRewardedAd = (options?: UseRewardedAdOptions) => {
   // Return mock implementation in Expo Go

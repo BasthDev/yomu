@@ -113,21 +113,37 @@ export default function Read() {
     [checkAccess],
   );
 
-  // Preload access for current, prev, next whenever chapter changes
+  // On mount / when book loads: pre-check ALL chapters in background so swipe is instant
+  useEffect(() => {
+    if (!book?.chaptersList || !book) return;
+    let cancelled = false;
+    const preloadAll = async () => {
+      for (const ch of book.chaptersList!) {
+        if (cancelled) break;
+        // Skip if already have a result (not null/undefined)
+        if (accessMap[ch.id] !== undefined && accessMap[ch.id] !== null) continue;
+        setAccessMap((prev) => ({ ...prev, [ch.id]: null })); // mark checking
+        const res = await checkAccess(book, ch);
+        if (!cancelled) {
+          setAccessMap((prev) => ({ ...prev, [ch.id]: res }));
+        }
+      }
+    };
+    preloadAll();
+    return () => { cancelled = true; };
+  // Only re-run when book changes (not accessMap to avoid infinite loop)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [book, checkAccess]);
+
+  // Re-check current chapter specifically when chapterId changes (fast path)
   useEffect(() => {
     if (!activeMatch || !book) return;
+    // Only re-check if we don't already have a fresh result
+    const existing = accessMap[activeMatch.chapter.id];
+    if (existing === null) return; // already checking
     checkAndStoreAccess(book, activeMatch.chapter);
-  }, [activeMatch, book, checkAndStoreAccess]);
-
-  useEffect(() => {
-    if (!activeMatch || !book || !prevChapter) return;
-    checkAndStoreAccess(book, prevChapter);
-  }, [activeMatch, book, prevChapter, checkAndStoreAccess]);
-
-  useEffect(() => {
-    if (!activeMatch || !book || !nextChapter) return;
-    checkAndStoreAccess(book, nextChapter);
-  }, [activeMatch, book, nextChapter, checkAndStoreAccess]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMatch?.chapter.id]);
 
   // Current chapter access (for modal visibility)
   const access = chapterId ? accessMap[chapterId] : undefined;
@@ -162,19 +178,26 @@ export default function Read() {
   }, [nextChapter, loadComments]);
 
   useEffect(() => {
-    if (!match || !access?.canAccess || !chapterId) return;
+    if (!match || !chapterId) return;
 
-    updateReadingHistory(
-      match.book.id,
-      match.chapter.id,
-      match.chapter.chapterNumber,
-      match.chapter.title,
-    );
+    // Record reading history only when unlocked
+    if (access?.canAccess) {
+      updateReadingHistory(
+        match.book.id,
+        match.chapter.id,
+        match.chapter.chapterNumber,
+        match.chapter.title,
+      );
+    }
 
-    recordChapterRead(chapterId);
+    // Always record chapter read for bonus prompt counting
+    // (free chapters count too, locked chapters shouldn't count so skip if definitively locked)
+    const isDefinitelyLocked = access !== undefined && access !== null && !access.canAccess;
+    if (!isDefinitelyLocked) {
+      recordChapterRead(chapterId);
+    }
   }, [
     chapterId,
-    access?.canAccess,
     match,
     updateReadingHistory,
     recordChapterRead,
@@ -197,16 +220,16 @@ export default function Read() {
     }
   }, [chapterId, activeMatch, book, carouselIndex]);
 
-  // carouselData: re-reference whenever accessMap changes to force carousel re-render
+  // Keep accessMap in a ref so renderItem always reads latest without causing re-renders
+  const accessMapRef = useRef(accessMap);
+  useEffect(() => {
+    accessMapRef.current = accessMap;
+  });
+
+  // carouselData is STABLE - does NOT depend on accessMap to avoid remounting carousel items
   const carouselData = useMemo(() => {
-    return (book?.chaptersList || []).map((ch) => ({
-      ...ch,
-      _accessKey: accessMap[ch.id] === undefined ? "unchecked"
-        : accessMap[ch.id] === null ? "checking"
-        : accessMap[ch.id]?.canAccess ? "unlocked"
-        : "locked",
-    }));
-  }, [book?.chaptersList, accessMap]);
+    return (book?.chaptersList || []);
+  }, [book?.chaptersList]);
 
   const refreshAccessAfterUnlock = useCallback(async (unlockedChapterId: string) => {
     if (!activeMatch || !book) return;
@@ -329,12 +352,14 @@ export default function Read() {
     );
   }
 
-  const renderChapterContent = (
+  // Stable renderItem - reads accessMapRef.current (ref, not state) so it never causes re-renders
+  const renderChapterContent = useCallback((
     chItem: ChapterItem,
     scrollRefInstance: React.RefObject<ScrollView>,
   ) => {
-    const itemAccess = accessMap[chItem.id];
-    // undefined = not yet requested (shouldn't happen for cur/prev/next), null = checking
+    // Read from ref so this callback stays stable even as accessMap updates
+    const itemAccess = accessMapRef.current[chItem.id];
+    // undefined = not yet requested, null = checking
     const isLoadingAccess = itemAccess === undefined || itemAccess === null;
     const isChLocked = !isLoadingAccess && !itemAccess?.canAccess;
     const chapterComments = comments.filter((c) => c.chapter_id === chItem.id);
@@ -393,10 +418,8 @@ export default function Read() {
               />
 
               {isLoadingAccess ? (
-                /* Still checking — show spinner, no content shown */
-                <View style={[styles.centered, { marginTop: 60 }]}>
-                  <ActivityIndicator size="large" color={currentTheme.primary} />
-                </View>
+                /* Still checking — show nothing, content will appear once ready */
+                <View style={{ minHeight: 200 }} />
               ) : isChLocked ? (
                 /* Definitively locked — show lock card only */
                 <View
@@ -468,7 +491,8 @@ export default function Read() {
         </ContentWithPadding>
       </ScrollView>
     );
-  };
+  // Only stable deps - comments and theme (accessMap via ref, not state)
+  }, [comments, currentTheme, setPendingUnlock]);
 
   return (
     <Container>
@@ -485,9 +509,11 @@ export default function Read() {
         data={carouselData}
         defaultIndex={carouselIndex}
         onSnapToItem={handleCarouselIndexChange}
-        renderItem={({ item }: { item: ChapterItem }) =>
-          renderChapterContent(item, getScrollRef(item.id))
-        }
+        renderItem={useCallback(
+          ({ item }: { item: ChapterItem }) =>
+            renderChapterContent(item, getScrollRef(item.id)),
+          [renderChapterContent]
+        )}
       />
 
       <UnlockModal

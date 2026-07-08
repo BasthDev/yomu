@@ -4,8 +4,9 @@ import { useThemeStore } from "@/store/themeStore";
 import { navigateToWallet } from "@/utils/navigation";
 import { Ionicons as VectorIcons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Image,
   StyleSheet,
   Text,
@@ -53,6 +54,27 @@ export function CustomHeader({
   const balance = useCoinStore((state) => state.balance);
   const balanceLoading = useCoinStore((state) => state.isLoading);
   const { firstName, email, imageUrl } = useAuthStore();
+
+  // Animated crossfade for title changes
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const [displayedTitle, setDisplayedTitle] = useState(title);
+
+  useEffect(() => {
+    if (title === displayedTitle) return;
+    // Fade out, swap text, fade in
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 120,
+      useNativeDriver: true,
+    }).start(() => {
+      setDisplayedTitle(title);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 180,
+        useNativeDriver: true,
+      }).start();
+    });
+  }, [title]);
 
   const handleLogoPress = () => {
     if (pathname !== "/") {
@@ -107,13 +129,16 @@ export function CustomHeader({
         */}
         {title && (
           <View style={styles.titleContainer}>
-            <Text
-              style={[styles.title, { color: currentTheme.text }]}
+            <Animated.Text
+              style={[
+                styles.title,
+                { color: currentTheme.text, opacity: fadeAnim },
+              ]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {title}
-            </Text>
+              {displayedTitle}
+            </Animated.Text>
           </View>
         )}
 

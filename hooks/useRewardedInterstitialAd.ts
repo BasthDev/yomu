@@ -1,11 +1,12 @@
+import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import { useCoinStore } from "../store/coinStore";
 import { AD_UNIT_IDS } from "../utils/adConfig";
 
 type ShowAdResult = { earned: boolean };
 
-// Check if running in Expo Go (where native modules aren't available)
-const isExpoGo = __DEV__;
+// Only disable ads when actually running in Expo Go (not in prebuilt debug builds)
+const isExpoGo = Constants.appOwnership === "expo";
 
 export const useRewardedInterstitialAd = () => {
   // Return mock implementation in Expo Go
