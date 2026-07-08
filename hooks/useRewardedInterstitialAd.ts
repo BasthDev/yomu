@@ -1,17 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  AdEventType,
-  RewardedAdEventType,
-  RewardedInterstitialAd,
-} from "react-native-google-mobile-ads";
 import { useCoinStore } from "../store/coinStore";
 import { AD_UNIT_IDS } from "../utils/adConfig";
 
 type ShowAdResult = { earned: boolean };
 
+// Check if running in Expo Go (where native modules aren't available)
+const isExpoGo = __DEV__;
+
 export const useRewardedInterstitialAd = () => {
+  // Return mock implementation in Expo Go
+  if (isExpoGo) {
+    return {
+      isLoaded: false,
+      isEarned: false,
+      isLoading: false,
+      error: null,
+      showAd: async () => ({ earned: false }),
+    };
+  }
+
+  // Dynamic import to prevent loading in Expo Go
   const [rewardedInterstitialAd, setRewardedInterstitialAd] =
-    useState<RewardedInterstitialAd | null>(null);
+    useState<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEarned, setIsEarned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,76 +37,97 @@ export const useRewardedInterstitialAd = () => {
   );
 
   useEffect(() => {
-    const ad = RewardedInterstitialAd.createForAdRequest(
-      AD_UNIT_IDS.REWARDED_INTERSTITIAL,
-      {
-        requestNonPersonalizedAdsOnly: false,
-        keywords: ["books", "reading", "manga", "comics"],
-      },
-    );
+    let isMounted = true;
 
-    setRewardedInterstitialAd(ad);
+    // Dynamic import
+    import("react-native-google-mobile-ads")
+      .then((module) => {
+        if (!isMounted) return;
 
-    const unsubscribeLoaded = ad.addAdEventListener(
-      RewardedAdEventType.LOADED,
-      () => {
-        setIsLoaded(true);
-        setIsLoading(false);
-        setError(null);
-      },
-    );
+        const { RewardedInterstitialAd, RewardedAdEventType, AdEventType } =
+          module;
+        const ad = RewardedInterstitialAd.createForAdRequest(
+          AD_UNIT_IDS.REWARDED_INTERSTITIAL,
+          {
+            requestNonPersonalizedAdsOnly: false,
+            keywords: ["books", "reading", "manga", "comics"],
+          },
+        );
 
-    const unsubscribeEarned = ad.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      async () => {
-        if (!userInitiatedShowRef.current) return;
+        setRewardedInterstitialAd(ad);
 
-        setIsEarned(true);
-        earnedThisShowRef.current = true;
-        await watchInterstitialAd();
-      },
-    );
+        const unsubscribeLoaded = ad.addAdEventListener(
+          RewardedAdEventType.LOADED,
+          () => {
+            setIsLoaded(true);
+            setIsLoading(false);
+            setError(null);
+          },
+        );
 
-    const unsubscribeClosed = ad.addAdEventListener(AdEventType.CLOSED, () => {
-      setIsLoaded(false);
-      setIsEarned(false);
+        const unsubscribeEarned = ad.addAdEventListener(
+          RewardedAdEventType.EARNED_REWARD,
+          async () => {
+            if (!userInitiatedShowRef.current) return;
 
-      if (userInitiatedShowRef.current) {
-        const earned = earnedThisShowRef.current;
-        userInitiatedShowRef.current = false;
-        earnedThisShowRef.current = false;
-        showAdPromiseRef.current?.({ earned });
-        showAdPromiseRef.current = null;
-      }
+            setIsEarned(true);
+            earnedThisShowRef.current = true;
+            await watchInterstitialAd();
+          },
+        );
 
-      setIsLoading(true);
-      ad.load();
-    });
+        const unsubscribeClosed = ad.addAdEventListener(
+          AdEventType.CLOSED,
+          () => {
+            setIsLoaded(false);
+            setIsEarned(false);
 
-    const unsubscribeError = ad.addAdEventListener(
-      AdEventType.ERROR,
-      (adError) => {
-        console.error("Rewarded interstitial ad error:", adError);
-        setError("Failed to load ad");
-        setIsLoading(false);
+            if (userInitiatedShowRef.current) {
+              const earned = earnedThisShowRef.current;
+              userInitiatedShowRef.current = false;
+              earnedThisShowRef.current = false;
+              showAdPromiseRef.current?.({ earned });
+              showAdPromiseRef.current = null;
+            }
 
-        if (userInitiatedShowRef.current) {
-          userInitiatedShowRef.current = false;
-          earnedThisShowRef.current = false;
-          showAdPromiseRef.current?.({ earned: false });
-          showAdPromiseRef.current = null;
-        }
-      },
-    );
+            setIsLoading(true);
+            ad.load();
+          },
+        );
 
-    setIsLoading(true);
-    ad.load();
+        const unsubscribeError = ad.addAdEventListener(
+          AdEventType.ERROR,
+          (adError) => {
+            console.error("Rewarded interstitial ad error:", adError);
+            setError("Failed to load ad");
+            setIsLoading(false);
+
+            if (userInitiatedShowRef.current) {
+              userInitiatedShowRef.current = false;
+              earnedThisShowRef.current = false;
+              showAdPromiseRef.current?.({ earned: false });
+              showAdPromiseRef.current = null;
+            }
+          },
+        );
+
+        setIsLoading(true);
+        ad.load();
+
+        return () => {
+          unsubscribeLoaded();
+          unsubscribeEarned();
+          unsubscribeClosed();
+          unsubscribeError();
+        };
+      })
+      .catch((err) => {
+        console.error("Failed to load ads module:", err);
+        setError("Failed to load ads");
+      });
 
     return () => {
-      unsubscribeLoaded();
-      unsubscribeEarned();
-      unsubscribeClosed();
-      unsubscribeError();
+      isMounted = false;
     };
   }, [watchInterstitialAd]);
 

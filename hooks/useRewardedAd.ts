@@ -1,9 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  AdEventType,
-  RewardedAd,
-  RewardedAdEventType,
-} from "react-native-google-mobile-ads";
 import { AD_UNIT_IDS } from "../utils/adConfig";
 
 type ShowAdResult = { earned: boolean };
@@ -12,8 +7,24 @@ type UseRewardedAdOptions = {
   onRewardEarned?: () => void | Promise<void>;
 };
 
+// Check if running in Expo Go (where native modules aren't available)
+const isExpoGo = __DEV__;
+
 export const useRewardedAd = (options?: UseRewardedAdOptions) => {
-  const [rewardedAd, setRewardedAd] = useState<RewardedAd | null>(null);
+  // Return mock implementation in Expo Go
+  if (isExpoGo) {
+    return {
+      isLoaded: false,
+      isLoading: false,
+      isEarned: false,
+      error: null,
+      showAd: async () => ({ earned: false }),
+      loadAd: () => {},
+    };
+  }
+
+  // Dynamic import to prevent loading in Expo Go
+  const [rewardedAd, setRewardedAd] = useState<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEarned, setIsEarned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,72 +42,99 @@ export const useRewardedAd = (options?: UseRewardedAdOptions) => {
   }, [options?.onRewardEarned]);
 
   useEffect(() => {
-    const ad = RewardedAd.createForAdRequest(AD_UNIT_IDS.REWARDED, {
-      requestNonPersonalizedAdsOnly: false,
-      keywords: ["games", "entertainment", "books", "reading", "manga", "comics"],
-    });
+    let isMounted = true;
 
-    const unsubscribeLoaded = ad.addAdEventListener(
-      RewardedAdEventType.LOADED,
-      () => {
-        setIsLoaded(true);
-        setIsLoading(false);
-        setError(null);
-      },
-    );
+    // Dynamic import
+    import("react-native-google-mobile-ads")
+      .then((module) => {
+        if (!isMounted) return;
 
-    const unsubscribeEarned = ad.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      async () => {
-        if (!userInitiatedShowRef.current) return;
+        const { RewardedAd, RewardedAdEventType, AdEventType } = module;
+        const ad = RewardedAd.createForAdRequest(AD_UNIT_IDS.REWARDED, {
+          requestNonPersonalizedAdsOnly: false,
+          keywords: [
+            "games",
+            "entertainment",
+            "books",
+            "reading",
+            "manga",
+            "comics",
+          ],
+        });
 
-        setIsEarned(true);
-        earnedThisShowRef.current = true;
-        await onRewardEarnedRef.current?.();
-      },
-    );
+        const unsubscribeLoaded = ad.addAdEventListener(
+          RewardedAdEventType.LOADED,
+          () => {
+            setIsLoaded(true);
+            setIsLoading(false);
+            setError(null);
+          },
+        );
 
-    const unsubscribeClosed = ad.addAdEventListener(AdEventType.CLOSED, () => {
-      setIsLoaded(false);
-      setIsEarned(false);
+        const unsubscribeEarned = ad.addAdEventListener(
+          RewardedAdEventType.EARNED_REWARD,
+          async () => {
+            if (!userInitiatedShowRef.current) return;
 
-      if (userInitiatedShowRef.current) {
-        const earned = earnedThisShowRef.current;
-        userInitiatedShowRef.current = false;
-        earnedThisShowRef.current = false;
-        showAdPromiseRef.current?.({ earned });
-        showAdPromiseRef.current = null;
-      }
+            setIsEarned(true);
+            earnedThisShowRef.current = true;
+            await onRewardEarnedRef.current?.();
+          },
+        );
 
-      setIsLoading(true);
-      ad.load();
-    });
+        const unsubscribeClosed = ad.addAdEventListener(
+          AdEventType.CLOSED,
+          () => {
+            setIsLoaded(false);
+            setIsEarned(false);
 
-    const unsubscribeError = ad.addAdEventListener(
-      AdEventType.ERROR,
-      (adError) => {
-        console.error("Rewarded ad error:", adError);
-        setError("Failed to load ad");
-        setIsLoading(false);
+            if (userInitiatedShowRef.current) {
+              const earned = earnedThisShowRef.current;
+              userInitiatedShowRef.current = false;
+              earnedThisShowRef.current = false;
+              showAdPromiseRef.current?.({ earned });
+              showAdPromiseRef.current = null;
+            }
 
-        if (userInitiatedShowRef.current) {
-          userInitiatedShowRef.current = false;
-          earnedThisShowRef.current = false;
-          showAdPromiseRef.current?.({ earned: false });
-          showAdPromiseRef.current = null;
-        }
-      },
-    );
+            setIsLoading(true);
+            ad.load();
+          },
+        );
 
-    setIsLoading(true);
-    ad.load();
-    setRewardedAd(ad);
+        const unsubscribeError = ad.addAdEventListener(
+          AdEventType.ERROR,
+          (adError) => {
+            console.error("Rewarded ad error:", adError);
+            setError("Failed to load ad");
+            setIsLoading(false);
+
+            if (userInitiatedShowRef.current) {
+              userInitiatedShowRef.current = false;
+              earnedThisShowRef.current = false;
+              showAdPromiseRef.current?.({ earned: false });
+              showAdPromiseRef.current = null;
+            }
+          },
+        );
+
+        setIsLoading(true);
+        ad.load();
+        setRewardedAd(ad);
+
+        return () => {
+          unsubscribeLoaded();
+          unsubscribeEarned();
+          unsubscribeClosed();
+          unsubscribeError();
+        };
+      })
+      .catch((err) => {
+        console.error("Failed to load ads module:", err);
+        setError("Failed to load ads");
+      });
 
     return () => {
-      unsubscribeLoaded();
-      unsubscribeEarned();
-      unsubscribeClosed();
-      unsubscribeError();
+      isMounted = false;
     };
   }, []);
 

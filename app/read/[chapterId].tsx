@@ -12,13 +12,7 @@ import { navigateToComments } from "@/utils/navigation";
 import { getRouteParam } from "@/utils/routeParams";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -28,13 +22,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Carousel from "react-native-reanimated-carousel";
 import { useGlobalRewardedAd } from "../../context/AdContext";
 import { useRewardedInterstitialAd } from "../../hooks/useRewardedInterstitialAd";
 import { useBookmarkStore } from "../../store/bookmarkStore";
@@ -49,10 +37,14 @@ export default function Read() {
   }>();
   const chapterId = getRouteParam(chapterIdParam);
   const router = useRouter();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRefs = useRef<Record<string, React.RefObject<ScrollView>>>({});
 
-  const prevScrollRef = useRef<ScrollView>(null);
-  const nextScrollRef = useRef<ScrollView>(null);
+  const getScrollRef = (chapterId: string) => {
+    if (!scrollRefs.current[chapterId]) {
+      scrollRefs.current[chapterId] = React.createRef<ScrollView>();
+    }
+    return scrollRefs.current[chapterId];
+  };
 
   const { updateReadingHistory } = useBookmarkStore();
   const { currentTheme } = useThemeStore();
@@ -68,11 +60,7 @@ export default function Read() {
 
   const [pendingUnlock, setPendingUnlock] = useState<ChapterItem | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
-
-  const translateX = useSharedValue(0);
-  const [swipingDirection, setSwipingDirection] = useState<
-    "left" | "right" | null
-  >(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const {
     isLoaded: isInterstitialLoaded,
@@ -225,10 +213,22 @@ export default function Read() {
 
   useEffect(() => {
     setPendingUnlock(null);
-    scrollRef.current?.scrollTo({ y: 0, animated: false });
-    prevScrollRef.current?.scrollTo({ y: 0, animated: false });
-    nextScrollRef.current?.scrollTo({ y: 0, animated: false });
+    // Reset scroll position for current chapter
+    const currentScrollRef = getScrollRef(chapterId);
+    currentScrollRef.current?.scrollTo({ y: 0, animated: false });
   }, [chapterId]);
+
+  // Sync carousel index with current chapter
+  useEffect(() => {
+    if (activeMatch && book?.chaptersList) {
+      const currentIndex = book.chaptersList.findIndex(
+        (ch) => ch.id === chapterId,
+      );
+      if (currentIndex !== -1 && currentIndex !== carouselIndex) {
+        setCarouselIndex(currentIndex);
+      }
+    }
+  }, [chapterId, activeMatch, book, carouselIndex]);
 
   const handleUnlockWithCoins = async () => {
     if (!activeMatch || !unlockTarget) return;
@@ -239,11 +239,23 @@ export default function Read() {
       if (!success) return;
 
       setPendingUnlock(null);
+
+      // Force refresh access for the current chapter
+      const res = await checkAccess(activeMatch.book, activeMatch.chapter);
+      setAccess(res);
+
+      // Also refresh prev/next access if needed
+      if (prevChapter) {
+        const prevRes = await checkAccess(activeMatch.book, prevChapter);
+        setPrevAccess(prevRes);
+      }
+      if (nextChapter) {
+        const nextRes = await checkAccess(activeMatch.book, nextChapter);
+        setNextAccess(nextRes);
+      }
+
       if (unlockTarget.id !== chapterId) {
-        navigateToUnlockedChapter(unlockTarget);
-      } else {
-        const res = await checkAccess(activeMatch.book, activeMatch.chapter);
-        setAccess(res);
+        router.setParams({ chapterId: unlockTarget.id });
       }
     } finally {
       setIsUnlocking(false);
@@ -262,11 +274,23 @@ export default function Read() {
       if (!success) return;
 
       setPendingUnlock(null);
+
+      // Force refresh access for the current chapter
+      const res = await checkAccess(activeMatch.book, activeMatch.chapter);
+      setAccess(res);
+
+      // Also refresh prev/next access if needed
+      if (prevChapter) {
+        const prevRes = await checkAccess(activeMatch.book, prevChapter);
+        setPrevAccess(prevRes);
+      }
+      if (nextChapter) {
+        const nextRes = await checkAccess(activeMatch.book, nextChapter);
+        setNextAccess(nextRes);
+      }
+
       if (unlockTarget.id !== chapterId) {
-        navigateToUnlockedChapter(unlockTarget);
-      } else {
-        const res = await checkAccess(activeMatch.book, activeMatch.chapter);
-        setAccess(res);
+        router.setParams({ chapterId: unlockTarget.id });
       }
     } finally {
       setIsUnlocking(false);
@@ -285,133 +309,19 @@ export default function Read() {
     skipBonus();
   };
 
-  const navigateToUnlockedChapter = (targetChapter: ChapterItem) => {
-    if (!activeMatch?.book.chaptersList) return;
-
-    const targetIndex = activeMatch.book.chaptersList.findIndex(
-      (ch) => ch.id === targetChapter.id,
-    );
-    if (targetIndex === -1) return;
-
-    if (targetIndex > activeMatch.chapterIndex) {
-      router.setParams({ chapterId: targetChapter.id });
-      return;
-    }
-
-    if (targetIndex < activeMatch.chapterIndex && router.canGoBack()) {
-      router.back();
-      return;
-    }
-
-    router.setParams({ chapterId: targetChapter.id });
-  };
-
-  const goToNextChapter = useCallback(
-    async (chapterItem: ChapterItem) => {
-      if (!activeMatch) return;
-      // Always navigate to the chapter, even if locked
-      setPendingUnlock(null);
-      translateX.value = 0;
-      router.setParams({ chapterId: chapterItem.id });
-    },
-    [activeMatch, router, translateX],
-  );
-
-  const goToPrevChapter = useCallback(
-    async (chapterItem: ChapterItem) => {
-      if (!activeMatch) return;
-      // Always navigate to the chapter, even if locked
-      setPendingUnlock(null);
-      translateX.value = 0;
-      router.setParams({ chapterId: chapterItem.id });
-    },
-    [activeMatch, router, translateX],
-  );
-
   const handleGoBack = () => {
     if (router.canGoBack()) {
       router.back();
     }
   };
 
-  const executeSwipeAction = useCallback(
-    (direction: "next" | "prev") => {
-      if (direction === "next" && nextChapter) {
-        goToNextChapter(nextChapter);
-      } else if (direction === "prev" && prevChapter) {
-        goToPrevChapter(prevChapter);
-      }
-    },
-    [nextChapter, prevChapter, goToNextChapter, goToPrevChapter],
-  );
-
-  const updateSwipingDirection = useCallback((dir: "left" | "right" | null) => {
-    setSwipingDirection(dir);
-  }, []);
-
-  const panGesture = useMemo(() => {
-    return Gesture.Pan()
-      .activeOffsetX([-20, 20])
-      .failOffsetY([-10, 10])
-      .onUpdate((event) => {
-        translateX.value = event.translationX;
-        if (event.translationX < -20) {
-          runOnJS(updateSwipingDirection)("left");
-        } else if (event.translationX > 20) {
-          runOnJS(updateSwipingDirection)("right");
-        } else {
-          runOnJS(updateSwipingDirection)(null);
-        }
-      })
-      .onEnd((event) => {
-        runOnJS(updateSwipingDirection)(null);
-        const swipeThreshold = SCREEN_WIDTH * 0.35;
-        const velocityThreshold = 300;
-
-        if (
-          (event.translationX < -swipeThreshold ||
-            (event.translationX < -50 &&
-              event.velocityX < -velocityThreshold)) &&
-          hasNext
-        ) {
-          translateX.value = withTiming(
-            -SCREEN_WIDTH,
-            { duration: 200 },
-            () => {
-              runOnJS(executeSwipeAction)("next");
-            },
-          );
-        } else if (
-          (event.translationX > swipeThreshold ||
-            (event.translationX > 50 && event.velocityX > velocityThreshold)) &&
-          hasPrev
-        ) {
-          translateX.value = withTiming(SCREEN_WIDTH, { duration: 200 }, () => {
-            runOnJS(executeSwipeAction)("prev");
-          });
-        } else {
-          translateX.value = withTiming(0, { duration: 150 });
-        }
-      });
-  }, [
-    translateX,
-    hasNext,
-    hasPrev,
-    executeSwipeAction,
-    updateSwipingDirection,
-  ]);
-
-  const mainAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
-
-  const prevAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value - SCREEN_WIDTH }],
-  }));
-
-  const nextAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value + SCREEN_WIDTH }],
-  }));
+  const handleCarouselIndexChange = (index: number) => {
+    if (book?.chaptersList && book.chaptersList[index]) {
+      const targetChapter = book.chaptersList[index];
+      setCarouselIndex(index);
+      router.setParams({ chapterId: targetChapter.id });
+    }
+  };
 
   if (!chapterId) {
     return (
@@ -622,113 +532,25 @@ export default function Read() {
         forceBackPath={`/book/${book.id}`}
       />
 
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.sliderViewport}>
-          {hasPrev && prevChapter && (
-            <Animated.View style={[styles.sliderView, prevAnimatedStyle]}>
-              {renderChapterContent(prevChapter, prevScrollRef, prevAccess)}
-            </Animated.View>
-          )}
-
-          <Animated.View style={[styles.sliderView, mainAnimatedStyle]}>
-            <ScrollView
-              ref={scrollRef}
-              style={styles.scrollView}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator
-            >
-              <ContentWithPadding style={{ flexGrow: 1 }}>
-                <View
-                  style={[
-                    styles.novelContainer,
-                    { flexGrow: 1, justifyContent: "space-between" },
-                  ]}
-                >
-                  <View>
-                    <View style={styles.headerRow}>
-                      <Text
-                        style={[
-                          styles.chapterTitle,
-                          { color: currentTheme.primary },
-                        ]}
-                      >
-                        CHAPTER {chapter.chapterNumber}
-                      </Text>
-
-                      {/* Header level Comment Button aligned on the right */}
-                      <TouchableOpacity
-                        style={styles.commentsHeaderIcon}
-                        onPress={() => navigateToComments(router, chapter.id)}
-                      >
-                        <Ionicons
-                          name="chatbubble-outline"
-                          size={18}
-                          color={currentTheme.primary}
-                        />
-                        <Text
-                          style={[
-                            styles.commentsTitleText,
-                            { color: currentTheme.text },
-                          ]}
-                        >
-                          ({comments.length})
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    <Text
-                      style={[
-                        styles.chapterSubtitle,
-                        { color: currentTheme.text },
-                      ]}
-                    >
-                      {chapter.title}
-                    </Text>
-                    <View
-                      style={[
-                        styles.divider,
-                        { backgroundColor: currentTheme.border },
-                      ]}
-                    />
-                    <Text
-                      style={[
-                        styles.paragraph,
-                        { color: currentTheme.textSecondary },
-                      ]}
-                    >
-                      {chapter.content}
-                    </Text>
-                  </View>
-
-                  {/* Swipe Instruction Footer pushed to absolute bottom */}
-                  <View style={styles.swipeInstructionContainer}>
-                    <Ionicons
-                      name="swap-horizontal-outline"
-                      size={16}
-                      color={currentTheme.textSecondary}
-                      style={{ opacity: 0.5 }}
-                    />
-                    <Text
-                      style={[
-                        styles.swipeInstructionText,
-                        { color: currentTheme.textSecondary },
-                      ]}
-                    >
-                      Swipe left or right to change chapter
-                    </Text>
-                  </View>
-                </View>
-              </ContentWithPadding>
-            </ScrollView>
-          </Animated.View>
-
-          {hasNext && nextChapter && (
-            <Animated.View style={[styles.sliderView, nextAnimatedStyle]}>
-              {renderChapterContent(nextChapter, nextScrollRef, nextAccess)}
-            </Animated.View>
-          )}
-        </View>
-      </GestureDetector>
+      <Carousel
+        loop={false}
+        width={SCREEN_WIDTH}
+        height={Dimensions.get("window").height - 100}
+        data={book?.chaptersList || []}
+        defaultIndex={carouselIndex}
+        onSnapToItem={handleCarouselIndexChange}
+        renderItem={({ item }: { item: ChapterItem }) => {
+          const itemAccess =
+            item.id === chapterId
+              ? access
+              : item.id === prevChapter?.id
+                ? prevAccess
+                : item.id === nextChapter?.id
+                  ? nextAccess
+                  : null;
+          return renderChapterContent(item, getScrollRef(item.id), itemAccess);
+        }}
+      />
 
       <UnlockModal
         visible={pendingUnlock !== null}

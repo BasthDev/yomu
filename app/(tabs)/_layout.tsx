@@ -7,7 +7,18 @@ import { useThemeStore } from "../../store/themeStore";
 
 export default function TabsLayout() {
   const { currentTheme, loadTheme } = useThemeStore();
-  const { isLoaded, isSignedIn } = useAuth();
+
+  let isLoaded = false;
+  let isSignedIn = false;
+
+  try {
+    const auth = useAuth();
+    isLoaded = auth.isLoaded;
+    isSignedIn = auth.isSignedIn;
+  } catch (error) {
+    // Auth context not available yet, return null
+    return null;
+  }
 
   // Sync Clerk auth state with our store
   useClerkAuthSync();

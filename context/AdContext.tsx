@@ -1,5 +1,10 @@
-import React, { createContext, useContext, ReactNode, useEffect, useState } from "react";
-import { useRewardedAd } from "../hooks/useRewardedAd";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type ShowAdResult = { earned: boolean };
 
@@ -12,17 +17,40 @@ interface AdContextValue {
 
 const AdContext = createContext<AdContextValue | null>(null);
 
+// Check if running in Expo Go (where native modules aren't available)
+const isExpoGo = __DEV__;
+
 export function AdProvider({ children }: { children: ReactNode }) {
-  const { isLoaded, isLoading, showAd, loadAd } = useRewardedAd();
+  const [adValue, setAdValue] = useState<AdContextValue>({
+    isRewardedLoaded: false,
+    isRewardedLoading: false,
+    showRewardedAd: async () => ({ earned: false }),
+    loadRewardedAd: () => {},
+  });
 
-  const value = {
-    isRewardedLoaded: isLoaded,
-    isRewardedLoading: isLoading,
-    showRewardedAd: showAd,
-    loadRewardedAd: loadAd,
-  };
+  useEffect(() => {
+    if (isExpoGo) {
+      // Mock implementation for Expo Go
+      return;
+    }
 
-  return <AdContext.Provider value={value}>{children}</AdContext.Provider>;
+    // Dynamic import to prevent loading in Expo Go
+    import("../hooks/useRewardedAd")
+      .then(({ useRewardedAd }) => {
+        const { isLoaded, isLoading, showAd, loadAd } = useRewardedAd();
+        setAdValue({
+          isRewardedLoaded: isLoaded,
+          isRewardedLoading: isLoading,
+          showRewardedAd: showAd,
+          loadRewardedAd: loadAd,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to load ads:", err);
+      });
+  }, []);
+
+  return <AdContext.Provider value={adValue}>{children}</AdContext.Provider>;
 }
 
 export function useGlobalRewardedAd() {

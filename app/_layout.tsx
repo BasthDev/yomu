@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SplashScreen } from "../components/SplashScreen";
+import { AdProvider } from "../context/AdContext";
 import { SecurityProvider } from "../context/SecurityContext";
 import { queryClient } from "../lib/queryClient";
 import { useAuthStore, useClerkAuthSync } from "../store/authStore";
@@ -15,7 +16,6 @@ import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 import { useCoinStore } from "../store/coinStore";
 import * as Database from "../utils/database";
 import { DUMMY_BOOKS } from "../utils/dummyData";
-import { AdProvider } from "../context/AdContext";
 
 // Only import NavigationBar on Android
 let NavigationBar: any;
@@ -63,7 +63,6 @@ function AppBootstrap() {
       <Stack.Screen name="book/[id]" />
       <Stack.Screen name="read/[chapterId]" />
       <Stack.Screen name="comments/[chapterId]" />
-      <Stack.Screen name="browse" />
     </Stack>
   );
 }
