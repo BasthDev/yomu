@@ -2,30 +2,30 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { BookListRow } from "../../components/BookListRow";
 import { Container } from "../../components/Container";
 import { CustomHeader } from "../../components/Header";
 import {
-  useAllBooks,
-  useBookCommentCounts,
+    useAllBooks,
+    useBookCommentCounts,
 } from "../../hooks/queries/useBooks";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { useThemeStore } from "../../store/themeStore";
 import {
-  BookSortKey,
-  filterAndSortBooks,
-  getAllGenres,
-  SORT_OPTIONS,
+    BookSortKey,
+    filterAndSortBooks,
+    getAllGenres,
+    SORT_OPTIONS,
 } from "../../utils/bookFilters";
 import { BookItem } from "../../utils/books";
 import { navigateToBook } from "../../utils/navigation";
@@ -71,10 +71,6 @@ export default function Browse() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onFilterPress={() => setSortModalVisible(true)}
-        selectedFilters={selectedGenre ? [selectedGenre] : []}
-        onRemoveFilter={(filter) => {
-          if (filter === selectedGenre) setSelectedGenre(null);
-        }}
       />
 
       <View style={styles.toolbar}>

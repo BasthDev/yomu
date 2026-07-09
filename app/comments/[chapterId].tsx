@@ -17,9 +17,9 @@ import { CustomHeader } from "../../components/Header";
 import { useAuthStore } from "../../store/authStore";
 import { useCommentStore } from "../../store/commentStore";
 import { useThemeStore } from "../../store/themeStore";
+import { DUMMY_BOOKS } from "../../utils/dummyData";
 import { getRouteParam } from "../../utils/routeParams";
 import { resolveCommentAuthor } from "../../utils/userDisplayName";
-
 export default function Comments() {
   const { chapterId: chapterIdParam } = useLocalSearchParams();
   const chapterId = getRouteParam(chapterIdParam);
@@ -39,6 +39,26 @@ export default function Comments() {
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [likedComments, setLikedComments] = useState<Set<number>>(new Set());
 
+  // Find chapter comments from dummy data
+  const chapterComments = React.useMemo(() => {
+    for (const book of DUMMY_BOOKS) {
+      const chapter = book.chaptersList?.find((ch) => ch.id === chapterId);
+      if (chapter && chapter.comments) {
+        return chapter.comments.map((comment, index) => ({
+          id: index + 1,
+          chapter_id: chapterId,
+          user_id: comment.userId,
+          display_name: comment.username,
+          content: comment.comment,
+          created_at: comment.createdAt,
+          likes_count: comment.likesCount,
+          parent_comment_id: null,
+        }));
+      }
+    }
+    return [];
+  }, [chapterId]);
+
   useEffect(() => {
     if (chapterId) {
       loadCommentsWithReplies(chapterId);
@@ -48,22 +68,16 @@ export default function Comments() {
   useEffect(() => {
     const checkLikes = async () => {
       const liked = new Set<number>();
-      for (const comment of comments) {
+      for (const comment of chapterComments) {
         const isLiked = await hasUserLikedComment(comment.id);
         if (isLiked) liked.add(comment.id);
-        if (comment.replies) {
-          for (const reply of comment.replies) {
-            const replyLiked = await hasUserLikedComment(reply.id);
-            if (replyLiked) liked.add(reply.id);
-          }
-        }
       }
       setLikedComments(liked);
     };
-    if (comments.length > 0) {
+    if (chapterComments.length > 0) {
       checkLikes();
     }
-  }, [comments, hasUserLikedComment]);
+  }, [chapterComments, hasUserLikedComment]);
 
   const handleSubmitComment = async () => {
     if (!newComment.trim() || !chapterId) return;
@@ -132,6 +146,11 @@ export default function Comments() {
             ]}
           >
             {resolveCommentAuthor(comment, currentUserId)}
+          </Text>
+          <Text
+            style={[styles.commentId, { color: currentTheme.textSecondary }]}
+          >
+            #{comment.id}
           </Text>
           <Text
             style={[styles.timestamp, { color: currentTheme.textSecondary }]}
@@ -228,7 +247,7 @@ export default function Comments() {
               Loading comments...
             </Text>
           </View>
-        ) : comments.length === 0 ? (
+        ) : chapterComments.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons
               name="chatbubble-outline"
@@ -249,7 +268,7 @@ export default function Comments() {
           </View>
         ) : (
           <View style={styles.commentsList}>
-            {comments.map((comment) => renderComment(comment))}
+            {chapterComments.map((comment) => renderComment(comment))}
           </View>
         )}
       </ScrollView>
@@ -348,6 +367,7 @@ const styles = StyleSheet.create({
   },
   username: { fontSize: 14, fontWeight: "700" },
   replyUsername: { fontSize: 13, fontWeight: "600" },
+  commentId: { fontSize: 11, marginLeft: 4, opacity: 0.7 },
   timestamp: { fontSize: 12, marginLeft: 4 },
   commentText: { fontSize: 15, lineHeight: 22, marginBottom: 6 },
   replyText: { fontSize: 14, lineHeight: 20, marginBottom: 4 },

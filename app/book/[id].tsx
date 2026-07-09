@@ -3,8 +3,8 @@ import { useSecurity } from "@/context/SecurityContext";
 import { useChapterUnlockStore } from "@/store/chapterUnlockStore";
 import { useThemeStore } from "@/store/themeStore";
 import {
-    ChapterAccessResult,
-    getChapterDisplayStatusSync,
+  ChapterAccessResult,
+  getChapterDisplayStatusSync,
 } from "@/utils/chapterAccess";
 import { navigateToRead } from "@/utils/navigation";
 import { getRouteParam } from "@/utils/routeParams";
@@ -13,16 +13,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    Image,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
@@ -72,6 +72,12 @@ export default function BookDetail() {
     useGlobalRewardedAd();
 
   const book = DUMMY_BOOKS.find((b) => b.id === id);
+
+  // Calculate total comments from all chapters
+  const totalChapterComments =
+    book?.chaptersList?.reduce((total, chapter) => {
+      return total + (chapter.comments?.length || 0);
+    }, 0) || 0;
 
   useEffect(() => {
     loadData();
@@ -297,6 +303,18 @@ export default function BookDetail() {
                 style={[styles.statText, { color: currentTheme.textSecondary }]}
               >
                 {formatCount(book.favoritesCount)}
+              </Text>
+            </View>
+            <View style={styles.statItem}>
+              <Ionicons
+                name="chatbubble-outline"
+                size={16}
+                color={currentTheme.textSecondary}
+              />
+              <Text
+                style={[styles.statText, { color: currentTheme.textSecondary }]}
+              >
+                {formatCount(totalChapterComments)}
               </Text>
             </View>
           </View>

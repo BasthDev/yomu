@@ -18,6 +18,7 @@ export interface ChapterItem {
   releasedAt: string; // Release date for auto-unlock calculation (2 days)
   isLocked?: boolean; // Set on each chapter in data; true = needs coins or 2-day wait
   isFree?: boolean; // Free chapter (no coins needed)
+  comments?: CommentItem[]; // Comments specific to this chapter
 }
 
 /**

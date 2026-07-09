@@ -1,16 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
-    Dimensions,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
-// 1. Mengimpor tipe data resmi terpusat dari proyek Anda
 import { useThemeStore } from "../../store/themeStore";
 import { BookItem, HeroSliderProps } from "../../utils/books";
 
@@ -20,8 +18,10 @@ export function HeroSlider({ data, onPress }: HeroSliderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const { currentTheme } = useThemeStore();
 
+  const CARD_WIDTH = (width - 52) / 3;
+  const COVER_HEIGHT = CARD_WIDTH * 1.3;
   const ITEM_WIDTH = width;
-  const ITEM_HEIGHT = 350;
+  const ITEM_HEIGHT = COVER_HEIGHT + 20;
 
   return (
     <View style={styles.container}>
@@ -36,76 +36,118 @@ export function HeroSlider({ data, onPress }: HeroSliderProps) {
         snapEnabled
         mode="parallax"
         modeConfig={{
-          parallaxScrollingScale: 0.95,
+          parallaxScrollingScale: 1,
           parallaxScrollingOffset: 40,
           parallaxAdjacentItemScale: 0.85,
         }}
         onSnapToItem={(index) => setActiveIndex(index)}
         renderItem={({ item }: { item: BookItem }) => (
-          <View style={styles.card}>
-            <Image
-              source={{ uri: item.banner }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-
-            {/* Gradien pelindung teks agar kontras */}
-            <LinearGradient
-              colors={[
-                "transparent",
-                "rgba(0, 0, 0, 0.4)",
-                "rgba(0, 0, 0, 0.85)",
-              ]}
-              locations={[0, 0.4, 1]}
-              style={styles.overlayGradient}
-            />
-
-            {/* Konten Informasi Novel */}
-            <View style={styles.content}>
-              <View style={styles.topMeta}>
-                {item.isHot && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>HOT NOVEL</Text>
-                  </View>
-                )}
-              </View>
-
-              <Text
+          <Pressable style={styles.card} onPress={() => onPress?.(item)}>
+            <View style={styles.coverWrapper}>
+              <Image
+                source={{ uri: item.cover }}
                 style={[
-                  styles.title,
-                  item.title.length > 16 && styles.titleMedium,
-                  item.title.length > 28 && styles.titleSmall,
+                  styles.cover,
+                  { width: CARD_WIDTH, height: COVER_HEIGHT },
                 ]}
+                resizeMode="cover"
+              />
+            </View>
+
+            <View style={styles.details}>
+              {item.isHot && (
+                <View style={styles.hotBadge}>
+                  <Ionicons name="flame" size={16} color="#fff" />
+                  <Text style={styles.hotBadgeText}>HOT</Text>
+                </View>
+              )}
+              <Text
+                style={[styles.title, { color: currentTheme.text }]}
                 numberOfLines={2}
               >
                 {item.title}
               </Text>
-
-              {/* 2. Diperbarui: Melakukan map langsung dari array genre bawaan tipe baru */}
+              <Text
+                style={[styles.author, { color: currentTheme.textSecondary }]}
+                numberOfLines={1}
+              >
+                {item.author}
+              </Text>
               <View style={styles.genreRow}>
-                {item.genre.map((g, idx) => (
-                  <View key={idx} style={styles.genreTag}>
-                    <Text style={styles.genreText}>{g.trim()}</Text>
+                {item.genre.slice(0, 2).map((g, idx) => (
+                  <View
+                    key={idx}
+                    style={[
+                      styles.genreTag,
+                      { borderColor: currentTheme.border },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.genreText,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      {g.trim()}
+                    </Text>
                   </View>
                 ))}
               </View>
-
-              <Pressable
+              <View style={styles.statsRow}>
+                <View style={styles.stat}>
+                  <Ionicons
+                    name="eye-outline"
+                    size={14}
+                    color={currentTheme.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.statText,
+                      { color: currentTheme.textSecondary },
+                    ]}
+                  >
+                    {formatCount(item.viewsCount || 0)}
+                  </Text>
+                </View>
+                <View style={styles.stat}>
+                  <Ionicons
+                    name="heart-outline"
+                    size={14}
+                    color={currentTheme.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.statText,
+                      { color: currentTheme.textSecondary },
+                    ]}
+                  >
+                    {formatCount(item.favoritesCount || 0)}
+                  </Text>
+                </View>
+              </View>
+              <View
                 style={[
-                  styles.playButton,
-                  { backgroundColor: currentTheme.primary },
+                  styles.divider,
+                  { backgroundColor: currentTheme.border },
                 ]}
-                onPress={() => onPress?.(item)}
-              >
-                <Ionicons name="book" size={18} color="#fff" />
-                <Text style={styles.playButtonText}>Read Now</Text>
-              </Pressable>
+              />
+              <View style={styles.chaptersInfo}>
+                <Ionicons
+                  name="book-outline"
+                  size={14}
+                  color={currentTheme.primary}
+                />
+                <Text
+                  style={[styles.chaptersText, { color: currentTheme.text }]}
+                >
+                  {item.chaptersList?.length || 0} Chapters
+                </Text>
+              </View>
             </View>
-          </View>
+          </Pressable>
         )}
       />
 
-      {/* Indikator Halaman (Dots) */}
       <View style={styles.pagination}>
         {data.map((_, index) => {
           const active = index === activeIndex;
@@ -116,6 +158,9 @@ export function HeroSlider({ data, onPress }: HeroSliderProps) {
                 styles.dot,
                 active && styles.activeDot,
                 active && { backgroundColor: currentTheme.primary },
+                !active && {
+                  backgroundColor: currentTheme.textSecondary + "40",
+                },
               ]}
             />
           );
@@ -125,127 +170,122 @@ export function HeroSlider({ data, onPress }: HeroSliderProps) {
   );
 }
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
+
 const styles = StyleSheet.create({
   container: {
     marginTop: 0,
-    marginBottom: 25,
+    // marginBottom: 25,
   },
 
   card: {
-    flex: 1,
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#1e1e1e",
-  },
-
-  image: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-  },
-
-  overlayGradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
-
-  content: {
-    flex: 1,
-    justifyContent: "flex-end",
-    padding: 20,
-    paddingBottom: 25,
-  },
-
-  topMeta: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    gap: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
 
-  badge: {
+  coverWrapper: {
+    position: "relative",
+  },
+
+  cover: {
+    borderRadius: 6,
+  },
+
+  hotBadge: {
     alignSelf: "flex-start",
-    backgroundColor: "red",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#E50914",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
 
-  badgeText: {
+  hotBadgeText: {
     color: "#fff",
     fontSize: 9,
-    fontWeight: "900",
-    letterSpacing: 1.5,
+    fontWeight: "800",
+    letterSpacing: 1,
+  },
+
+  details: {
+    flex: 1,
+    gap: 6,
   },
 
   title: {
     fontFamily: "Lora-Bold",
-    color: "#fff",
-    fontSize: 26,
-    letterSpacing: 0.5,
-    lineHeight: 34,
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    fontSize: 16,
+    fontWeight: "600",
+    lineHeight: 22,
   },
 
-  titleMedium: {
-    fontSize: 22,
-    lineHeight: 28,
-  },
-
-  titleSmall: {
-    fontSize: 18,
-    lineHeight: 24,
+  author: {
+    fontSize: 13,
   },
 
   genreRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    alignItems: "center",
     gap: 6,
-    marginTop: 10,
-    marginBottom: 16,
   },
 
   genreTag: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    borderWidth: 0.5,
-    borderColor: "rgba(255, 255, 255, 0.25)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
   },
 
   genreText: {
-    color: "red",
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: "500",
   },
 
-  playButton: {
-    backgroundColor: "red",
+  statsRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  stat: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 11,
-    borderRadius: 12,
-    gap: 8,
-    elevation: 2,
+    gap: 4,
   },
 
-  playButtonText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+  statText: {
+    fontSize: 12,
+  },
+
+  divider: {
+    height: 1,
+    marginVertical: 4,
+  },
+
+  chaptersInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+
+  chaptersText: {
+    fontSize: 13,
+    fontWeight: "600",
   },
 
   pagination: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
-    bottom: -12,
-    width: "100%",
+    marginTop: 12,
     gap: 6,
   },
 
@@ -253,11 +293,9 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
   },
 
   activeDot: {
     width: 18,
-    backgroundColor: "red",
   },
 });

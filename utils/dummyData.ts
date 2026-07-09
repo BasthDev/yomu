@@ -61,11 +61,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "A romantic comedy about an ordinary college student who suddenly finds himself as the heir to an ancient imperial throne hidden in the modern world. He must choose between his true love or the responsibility of the crown.",
     genre: ["Romance", "Drama", "Comedy", "Fantasy"],
-    banner: "https://picsum.photos/200/300",
-    cover: "https://picsum.photos/200/300",
+    banner:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=600&fit=crop",
     isHot: true,
     status: "Ongoing",
-    rating: 0,
+    rating: 4.8,
     author: "Lee Min-Ho",
     authorId: "author_1",
     isFree: false,
@@ -73,6 +75,28 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 8900,
     createdAt: "2026-01-10T08:00:00Z",
     updatedAt: "2026-07-02T12:30:00Z",
+    comments: [
+      {
+        id: "c1_1",
+        bookId: "1",
+        userId: "user_1",
+        username: "Reader123",
+        comment:
+          "This story is absolutely amazing! Can't wait for the next chapter.",
+        createdAt: "2026-07-01T10:00:00Z",
+        likesCount: 45,
+      },
+      {
+        id: "c1_2",
+        bookId: "1",
+        userId: "user_2",
+        username: "NovelFan",
+        comment:
+          "The character development is incredible. Ethan's struggle feels so real.",
+        createdAt: "2026-07-02T14:30:00Z",
+        likesCount: 32,
+      },
+    ],
     chaptersList: [
       {
         id: "ch1_1",
@@ -84,6 +108,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-10",
         releasedAt: "2026-01-10T08:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch1_1_1",
+            bookId: "1",
+            userId: "user_12",
+            username: "ChapterReader",
+            comment:
+              "What an incredible opening! The atmosphere is so mysterious.",
+            createdAt: "2026-07-01T11:00:00Z",
+            likesCount: 23,
+          },
+        ],
       },
       {
         id: "ch1_2",
@@ -95,6 +131,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-15",
         releasedAt: "2026-01-15T08:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch1_2_1",
+            bookId: "1",
+            userId: "user_13",
+            username: "RoyalFan",
+            comment:
+              "The tension in this chapter is amazing! Can't wait to see what happens next.",
+            createdAt: "2026-07-02T12:00:00Z",
+            likesCount: 18,
+          },
+        ],
       },
       {
         id: "ch1_3",
@@ -106,6 +154,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-20",
         releasedAt: "2026-01-20T08:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch1_3_1",
+            bookId: "1",
+            userId: "user_14",
+            username: "MysteryLover",
+            comment:
+              "The conspiracy plot is getting so interesting! Love the mystery elements.",
+            createdAt: "2026-07-02T15:30:00Z",
+            likesCount: 15,
+          },
+        ],
       },
       {
         id: "ch1_4",
@@ -117,6 +177,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-25",
         releasedAt: "2026-07-02T08:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch1_4_1",
+            bookId: "1",
+            userId: "user_15",
+            username: "DramaFan",
+            comment:
+              "The political intrigue is fantastic! That princess seems dangerous.",
+            createdAt: "2026-07-02T16:00:00Z",
+            likesCount: 21,
+          },
+        ],
       },
       {
         id: "ch1_5",
@@ -128,6 +200,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-30",
         releasedAt: "2026-07-03T08:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch1_5_1",
+            bookId: "1",
+            userId: "user_16",
+            username: "RomanticReader",
+            comment:
+              "This emotional conflict is so well written! Really feeling for Ethan.",
+            createdAt: "2026-07-03T10:00:00Z",
+            likesCount: 27,
+          },
+        ],
       },
     ],
   },
@@ -137,11 +221,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "Between life and death lies a library with endless shelves. Each book offers the chance to try another life you could have lived if you had made different decisions.",
     genre: ["Fantasy", "Drama", "Sci-Fi", "Action"],
-    banner: "https://picsum.photos/201/301",
-    cover: "https://picsum.photos/201/301",
+    banner:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&h=600&fit=crop",
     isHot: true,
     status: "Completed",
-    rating: 0,
+    rating: 4.9,
     author: "Matt Haig",
     authorId: "author_2",
     isFree: false,
@@ -149,6 +235,28 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 24100,
     createdAt: "2025-05-20T09:00:00Z",
     updatedAt: "2026-02-14T15:00:00Z",
+    comments: [
+      {
+        id: "c2_1",
+        bookId: "2",
+        userId: "user_3",
+        username: "BookLover",
+        comment:
+          "The concept of exploring alternative lives is so thought-provoking.",
+        createdAt: "2026-02-10T11:00:00Z",
+        likesCount: 67,
+      },
+      {
+        id: "c2_2",
+        bookId: "2",
+        userId: "user_4",
+        username: "Dreamer",
+        comment:
+          "Nora's journey really makes you think about your own choices in life.",
+        createdAt: "2026-02-12T16:20:00Z",
+        likesCount: 54,
+      },
+    ],
     chaptersList: [
       {
         id: "ch2_1",
@@ -160,6 +268,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-05-20",
         releasedAt: "2025-05-20T09:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch2_1_1",
+            bookId: "2",
+            userId: "user_17",
+            username: "FantasyReader",
+            comment:
+              "The midnight library concept is so creative! Love the atmosphere.",
+            createdAt: "2026-02-10T10:00:00Z",
+            likesCount: 34,
+          },
+        ],
       },
       {
         id: "ch2_2",
@@ -171,6 +291,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-05-25",
         releasedAt: "2025-05-25T09:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch2_2_1",
+            bookId: "2",
+            userId: "user_18",
+            username: "DeepThinker",
+            comment:
+              "The concept of regrets being gateways to other lives is profound.",
+            createdAt: "2026-02-12T14:00:00Z",
+            likesCount: 29,
+          },
+        ],
       },
       {
         id: "ch2_3",
@@ -182,6 +314,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-06-01",
         releasedAt: "2025-06-01T09:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch2_3_1",
+            bookId: "2",
+            userId: "user_19",
+            username: "AdventureLover",
+            comment:
+              "The Arctic setting is beautifully described! The loneliness theme is powerful.",
+            createdAt: "2026-02-14T11:30:00Z",
+            likesCount: 22,
+          },
+        ],
       },
       {
         id: "ch2_4",
@@ -193,6 +337,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-06-05",
         releasedAt: "2025-06-05T09:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch2_4_1",
+            bookId: "2",
+            userId: "user_20",
+            username: "MusicFan",
+            comment:
+              "The contrast between fame and personal tragedy is so well portrayed.",
+            createdAt: "2026-02-15T16:45:00Z",
+            likesCount: 31,
+          },
+        ],
       },
       {
         id: "ch2_5",
@@ -204,6 +360,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-06-10",
         releasedAt: "2025-06-10T09:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch2_5_1",
+            bookId: "2",
+            userId: "user_21",
+            username: "PhilosopherReader",
+            comment:
+              "The existential question about whether happiness can belong to someone else is deep.",
+            createdAt: "2026-02-16T09:00:00Z",
+            likesCount: 26,
+          },
+        ],
       },
     ],
   },
@@ -213,11 +381,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "A half-human cyber detective hunts a legendary android assassin amid the neon glow of Tokyo in 2099, only to uncover a conspiracy threatening the extinction of the human race.",
     genre: ["Sci-Fi", "Action", "Mystery"],
-    banner: "https://picsum.photos/211/311",
-    cover: "https://picsum.photos/211/311",
+    banner:
+      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=600&fit=crop",
     isHot: true,
     status: "Ongoing",
-    rating: 0,
+    rating: 4.7,
     author: "Kenji Sato",
     authorId: "author_3",
     isFree: false,
@@ -225,6 +395,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 12300,
     createdAt: "2026-02-15T10:00:00Z",
     updatedAt: "2026-06-30T14:20:00Z",
+    comments: [
+      {
+        id: "c3_1",
+        bookId: "3",
+        userId: "user_5",
+        username: "CyberPunk",
+        comment:
+          "The cyberpunk setting is incredibly detailed. Love the neon atmosphere!",
+        createdAt: "2026-06-25T09:15:00Z",
+        likesCount: 89,
+      },
+    ],
     chaptersList: [
       {
         id: "ch3_1",
@@ -236,6 +418,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-02-15",
         releasedAt: "2026-02-15T10:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch3_1_1",
+            bookId: "3",
+            userId: "user_22",
+            username: "CyberPunkFan",
+            comment:
+              "The cyberpunk atmosphere is incredible! Love the neon descriptions.",
+            createdAt: "2026-06-25T10:00:00Z",
+            likesCount: 35,
+          },
+        ],
       },
       {
         id: "ch3_2",
@@ -247,6 +441,17 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-02-20",
         releasedAt: "2026-02-20T10:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch3_2_1",
+            bookId: "3",
+            userId: "user_23",
+            username: "TechEnthusiast",
+            comment: "The virtual reality hacking scenes are so well written!",
+            createdAt: "2026-06-26T12:00:00Z",
+            likesCount: 28,
+          },
+        ],
       },
       {
         id: "ch3_3",
@@ -258,6 +463,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-02-25",
         releasedAt: "2026-02-25T10:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch3_3_1",
+            bookId: "3",
+            userId: "user_24",
+            username: "RebelSupporter",
+            comment:
+              "The android rights theme is so relevant and well handled!",
+            createdAt: "2026-06-27T14:30:00Z",
+            likesCount: 33,
+          },
+        ],
       },
       {
         id: "ch3_4",
@@ -269,6 +486,17 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-01",
         releasedAt: "2026-03-01T10:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch3_4_1",
+            bookId: "3",
+            userId: "user_25",
+            username: "ActionFan",
+            comment: "The action sequence with the plasma katana was epic!",
+            createdAt: "2026-06-28T11:00:00Z",
+            likesCount: 40,
+          },
+        ],
       },
       {
         id: "ch3_5",
@@ -280,6 +508,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-05",
         releasedAt: "2026-03-05T10:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch3_5_1",
+            bookId: "3",
+            userId: "user_26",
+            username: "ThrillerFan",
+            comment:
+              "The conspiracy plot twist is mind-blowing! Can't wait to see how this ends.",
+            createdAt: "2026-06-29T13:00:00Z",
+            likesCount: 45,
+          },
+        ],
       },
     ],
   },
@@ -289,11 +529,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "A talentless orphan accidentally activates the ancient seal of the Lord of Darkness, earning admission to the most prestigious magic academy with mysterious powers feared by everyone.",
     genre: ["Fantasy", "Adventure", "Action"],
-    banner: "https://picsum.photos/202/302",
-    cover: "https://picsum.photos/202/302",
+    banner:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=600&fit=crop",
     isHot: false,
     status: "Ongoing",
-    rating: 0,
+    rating: 4.5,
     author: "Arthur Pendelton",
     authorId: "author_4",
     isFree: false,
@@ -301,6 +543,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 3900,
     createdAt: "2026-04-01T07:00:00Z",
     updatedAt: "2026-07-01T16:00:00Z",
+    comments: [
+      {
+        id: "c4_1",
+        bookId: "4",
+        userId: "user_6",
+        username: "MagicFan",
+        comment:
+          "Dark magic academy trope but executed so well! Leo is an amazing protagonist.",
+        createdAt: "2026-06-28T12:45:00Z",
+        likesCount: 41,
+      },
+    ],
     chaptersList: [
       {
         id: "ch4_1",
@@ -312,6 +566,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-01",
         releasedAt: "2026-04-01T07:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch4_1_1",
+            bookId: "4",
+            userId: "user_27",
+            username: "FantasyLover2",
+            comment:
+              "The underdog trope is classic but this execution is amazing!",
+            createdAt: "2026-06-28T13:00:00Z",
+            likesCount: 25,
+          },
+        ],
       },
       {
         id: "ch4_2",
@@ -323,6 +589,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-05",
         releasedAt: "2026-04-05T07:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch4_2_1",
+            bookId: "4",
+            userId: "user_28",
+            username: "DarkMagicFan",
+            comment:
+              "The dark magic awakening scene was so intense! Love the visual descriptions.",
+            createdAt: "2026-06-29T10:30:00Z",
+            likesCount: 22,
+          },
+        ],
       },
       {
         id: "ch4_3",
@@ -334,6 +612,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-10",
         releasedAt: "2026-04-10T07:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch4_3_1",
+            bookId: "4",
+            userId: "user_29",
+            username: "MagicWorldFan",
+            comment:
+              "The magical train concept is so creative! Love the world-building.",
+            createdAt: "2026-06-30T11:00:00Z",
+            likesCount: 19,
+          },
+        ],
       },
       {
         id: "ch4_4",
@@ -345,6 +635,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-15",
         releasedAt: "2026-04-15T07:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch4_4_1",
+            bookId: "4",
+            userId: "user_30",
+            username: "AcademyFan",
+            comment:
+              "The sorting ceremony scene was epic! The crystal cracking was so dramatic.",
+            createdAt: "2026-07-01T09:00:00Z",
+            likesCount: 28,
+          },
+        ],
       },
       {
         id: "ch4_5",
@@ -356,6 +658,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-20",
         releasedAt: "2026-04-20T07:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch4_5_1",
+            bookId: "4",
+            userId: "user_31",
+            username: "DarkArtsFan",
+            comment:
+              "The forbidden dormitory setting is perfect for dark magic training!",
+            createdAt: "2026-07-01T14:00:00Z",
+            likesCount: 24,
+          },
+        ],
       },
     ],
   },
@@ -365,11 +679,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "Two fierce rivals in the world's largest Virtual Reality gaming tournament are forced to work together on the same team to complete a legendary quest worth billions, without knowing each other's real-world identities.",
     genre: ["Romance", "Comedy", "Sci-Fi"],
-    banner: "https://picsum.photos/200/300",
-    cover: "https://picsum.photos/200/300",
+    banner:
+      "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=600&fit=crop",
     isHot: false,
     status: "Ongoing",
-    rating: 0,
+    rating: 4.6,
     author: "Clarissa Utama",
     authorId: "author_5",
     isFree: false,
@@ -377,6 +693,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 7600,
     createdAt: "2026-03-20T11:00:00Z",
     updatedAt: "2026-07-02T10:15:00Z",
+    comments: [
+      {
+        id: "c5_1",
+        bookId: "5",
+        userId: "user_7",
+        username: "GamerGirl",
+        comment:
+          "The VR romance trope is so cute! Love the enemies-to-lovers dynamic.",
+        createdAt: "2026-06-30T15:30:00Z",
+        likesCount: 56,
+      },
+    ],
     chaptersList: [
       {
         id: "ch5_1",
@@ -388,6 +716,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-20",
         releasedAt: "2026-03-20T11:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch5_1_1",
+            bookId: "5",
+            userId: "user_32",
+            username: "GamerPro",
+            comment:
+              "The VR gaming setting is so immersive! Love the rival dynamic.",
+            createdAt: "2026-06-30T16:00:00Z",
+            likesCount: 31,
+          },
+        ],
       },
       {
         id: "ch5_2",
@@ -399,6 +739,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-25",
         releasedAt: "2026-03-25T11:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch5_2_1",
+            bookId: "5",
+            userId: "user_33",
+            username: "MMOFan",
+            comment:
+              "The forced team mechanic is classic gaming trope but so well executed!",
+            createdAt: "2026-07-01T10:00:00Z",
+            likesCount: 27,
+          },
+        ],
       },
       {
         id: "ch5_3",
@@ -410,6 +762,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-30",
         releasedAt: "2026-03-30T11:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch5_3_1",
+            bookId: "5",
+            userId: "user_34",
+            username: "DungeonCrawler",
+            comment:
+              "The dungeon raid was so exciting! Love the glitch monster concept.",
+            createdAt: "2026-07-01T12:00:00Z",
+            likesCount: 23,
+          },
+        ],
       },
       {
         id: "ch5_4",
@@ -421,6 +785,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-04",
         releasedAt: "2026-04-04T11:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch5_4_1",
+            bookId: "5",
+            userId: "user_35",
+            username: "RomComFan",
+            comment:
+              "The real-world meeting scene is so cute! The irony is perfect.",
+            createdAt: "2026-07-01T14:00:00Z",
+            likesCount: 29,
+          },
+        ],
       },
       {
         id: "ch5_5",
@@ -432,6 +808,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-09",
         releasedAt: "2026-04-09T11:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch5_5_1",
+            bookId: "5",
+            userId: "user_36",
+            username: "ComboMaster",
+            comment:
+              "The combo attack was so cool! Their teamwork is developing nicely.",
+            createdAt: "2026-07-02T10:00:00Z",
+            likesCount: 26,
+          },
+        ],
       },
     ],
   },
@@ -441,11 +829,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "A talented chef discovers a mysterious recipe book belonging to his late grandfather that has magical abilities to influence the emotions and memories of anyone who eats his cooking.",
     genre: ["Drama", "Comedy", "Fantasy"],
-    banner: "https://picsum.photos/206/306",
-    cover: "https://picsum.photos/206/306",
+    banner:
+      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=600&fit=crop",
     isHot: false,
     status: "Completed",
-    rating: 0,
+    rating: 4.4,
     author: "Andi Wijaya",
     authorId: "author_6",
     isFree: false,
@@ -453,6 +843,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 2800,
     createdAt: "2025-08-10T12:00:00Z",
     updatedAt: "2026-01-20T17:00:00Z",
+    comments: [
+      {
+        id: "c6_1",
+        bookId: "6",
+        userId: "user_8",
+        username: "Foodie",
+        comment:
+          "The magical cooking concept is so unique! Makes me hungry reading it.",
+        createdAt: "2026-01-15T14:00:00Z",
+        likesCount: 38,
+      },
+    ],
     chaptersList: [
       {
         id: "ch6_1",
@@ -464,6 +866,17 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-08-10",
         releasedAt: "2025-08-10T12:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch6_1_1",
+            bookId: "6",
+            userId: "user_37",
+            username: "CookingFan",
+            comment: "The magical recipe book discovery is such a great hook!",
+            createdAt: "2026-01-15T15:00:00Z",
+            likesCount: 21,
+          },
+        ],
       },
       {
         id: "ch6_2",
@@ -475,6 +888,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-08-15",
         releasedAt: "2025-08-15T12:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch6_2_1",
+            bookId: "6",
+            userId: "user_38",
+            username: "EmotionalEater",
+            comment:
+              "The food critic crying from the soup was so touching! Beautiful writing.",
+            createdAt: "2026-01-16T11:00:00Z",
+            likesCount: 24,
+          },
+        ],
       },
       {
         id: "ch6_3",
@@ -486,6 +911,17 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-08-20",
         releasedAt: "2025-08-20T12:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch6_3_1",
+            bookId: "6",
+            userId: "user_39",
+            username: "ViralSuccess",
+            comment: "The viral success moment was so satisfying to read!",
+            createdAt: "2026-01-17T13:00:00Z",
+            likesCount: 19,
+          },
+        ],
       },
       {
         id: "ch6_4",
@@ -497,6 +933,17 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-08-25",
         releasedAt: "2025-08-25T12:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch6_4_1",
+            bookId: "6",
+            userId: "user_40",
+            username: "CompetitionFan",
+            comment: "The cooking duel setup is classic but so engaging!",
+            createdAt: "2026-01-18T10:00:00Z",
+            likesCount: 22,
+          },
+        ],
       },
       {
         id: "ch6_5",
@@ -508,6 +955,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-08-30",
         releasedAt: "2025-08-30T12:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch6_5_1",
+            bookId: "6",
+            userId: "user_41",
+            username: "SweetEnding",
+            comment:
+              "The ending with the rival respecting him was so heartwarming!",
+            createdAt: "2026-01-19T12:00:00Z",
+            likesCount: 26,
+          },
+        ],
       },
     ],
   },
@@ -517,11 +976,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "An epic tale of heroism about an exiled knight who must gather five fragments of the sacred sun sword to reseal the demon king who has awakened from his slumber.",
     genre: ["Fantasy", "Adventure", "Action"],
-    banner: "https://picsum.photos/203/303",
-    cover: "https://picsum.photos/203/303",
+    banner:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=600&fit=crop",
     isHot: true,
     status: "Ongoing",
-    rating: 0,
+    rating: 4.8,
     author: "R.M. Roffen",
     authorId: "author_7",
     isFree: false,
@@ -529,6 +990,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 19800,
     createdAt: "2026-01-05T06:00:00Z",
     updatedAt: "2026-07-01T21:40:00Z",
+    comments: [
+      {
+        id: "c7_1",
+        bookId: "7",
+        userId: "user_9",
+        username: "FantasyLover",
+        comment:
+          "Classic hero journey but with amazing world-building. The sword fragments quest is so engaging!",
+        createdAt: "2026-06-29T11:20:00Z",
+        likesCount: 72,
+      },
+    ],
     chaptersList: [
       {
         id: "ch7_1",
@@ -540,6 +1013,17 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-05",
         releasedAt: "2026-01-05T06:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch7_1_1",
+            bookId: "7",
+            userId: "user_42",
+            username: "KnightFan",
+            comment: "The exiled knight beginning is so classic and well done!",
+            createdAt: "2026-06-29T12:00:00Z",
+            likesCount: 33,
+          },
+        ],
       },
       {
         id: "ch7_2",
@@ -551,6 +1035,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-12",
         releasedAt: "2026-01-12T06:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch7_2_1",
+            bookId: "7",
+            userId: "user_43",
+            username: "AdventureSeeker",
+            comment:
+              "The ice cave battle was epic! The three-eyed bear is such a cool monster.",
+            createdAt: "2026-06-30T11:00:00Z",
+            likesCount: 28,
+          },
+        ],
       },
       {
         id: "ch7_3",
@@ -562,6 +1058,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-19",
         releasedAt: "2026-01-19T06:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch7_3_1",
+            bookId: "7",
+            userId: "user_44",
+            username: "ElfLover",
+            comment:
+              "The elven village setting is beautiful! The tree houses are so imaginative.",
+            createdAt: "2026-07-01T10:00:00Z",
+            likesCount: 25,
+          },
+        ],
       },
       {
         id: "ch7_4",
@@ -573,6 +1081,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-01-26",
         releasedAt: "2026-01-26T06:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch7_4_1",
+            bookId: "7",
+            userId: "user_45",
+            username: "DesertWarrior",
+            comment:
+              "The desert ambush and capture added great tension to the story!",
+            createdAt: "2026-07-01T13:00:00Z",
+            likesCount: 30,
+          },
+        ],
       },
       {
         id: "ch7_5",
@@ -584,6 +1104,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-02-02",
         releasedAt: "2026-02-02T06:00:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch7_5_1",
+            bookId: "7",
+            userId: "user_46",
+            username: "EscapeArtist",
+            comment:
+              "The escape sequence was thrilling! The thief girl ally is a great addition.",
+            createdAt: "2026-07-02T11:00:00Z",
+            likesCount: 32,
+          },
+        ],
       },
     ],
   },
@@ -593,11 +1125,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "A genius high school detective investigates the mysterious disappearance of a model student at his school, uncovering dark secrets about illegal experiments involving senior teachers.",
     genre: ["Mystery", "Drama"],
-    banner: "https://picsum.photos/207/307",
-    cover: "https://picsum.photos/207/307",
+    banner:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&h=600&fit=crop",
     isHot: false,
     status: "Completed",
-    rating: 0,
+    rating: 4.3,
     author: "Siska Amelia",
     authorId: "author_8",
     isFree: false,
@@ -605,6 +1139,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 4200,
     createdAt: "2025-10-15T08:30:00Z",
     updatedAt: "2026-03-10T12:00:00Z",
+    comments: [
+      {
+        id: "c8_1",
+        bookId: "8",
+        userId: "user_10",
+        username: "MysteryFan",
+        comment:
+          "The school mystery plot is so suspenseful! Can't stop reading.",
+        createdAt: "2026-03-05T13:10:00Z",
+        likesCount: 44,
+      },
+    ],
     chaptersList: [
       {
         id: "ch8_1",
@@ -616,6 +1162,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-10-15",
         releasedAt: "2025-10-15T08:30:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch8_1_1",
+            bookId: "8",
+            userId: "user_47",
+            username: "DetectiveFan",
+            comment:
+              "The mystery setup is so intriguing! The school cover-up angle is great.",
+            createdAt: "2026-03-05T14:00:00Z",
+            likesCount: 27,
+          },
+        ],
       },
       {
         id: "ch8_2",
@@ -627,6 +1185,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-10-22",
         releasedAt: "2025-10-22T08:30:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch8_2_1",
+            bookId: "8",
+            userId: "user_48",
+            username: "TechMystery",
+            comment:
+              "The USB drive clue is classic detective work! Love the tech element.",
+            createdAt: "2026-03-06T11:00:00Z",
+            likesCount: 23,
+          },
+        ],
       },
       {
         id: "ch8_3",
@@ -638,6 +1208,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-10-29",
         releasedAt: "2025-10-29T08:30:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch8_3_1",
+            bookId: "8",
+            userId: "user_49",
+            username: "ThrillerReader",
+            comment:
+              "The midnight break-in scene was so tense! Great suspense building.",
+            createdAt: "2026-03-07T12:00:00Z",
+            likesCount: 29,
+          },
+        ],
       },
       {
         id: "ch8_4",
@@ -649,6 +1231,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-11-05",
         releasedAt: "2025-11-05T08:30:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch8_4_1",
+            bookId: "8",
+            userId: "user_50",
+            username: "ConspiracyFan",
+            comment:
+              "The discovery of Alika's file was shocking! The conspiracy goes deep.",
+            createdAt: "2026-03-08T10:00:00Z",
+            likesCount: 31,
+          },
+        ],
       },
       {
         id: "ch8_5",
@@ -660,6 +1254,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2025-11-12",
         releasedAt: "2025-11-12T08:30:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch8_5_1",
+            bookId: "8",
+            userId: "user_51",
+            username: "SuspenseLover",
+            comment:
+              "The guidance counselor twist was unexpected! The cliffhanger is intense.",
+            createdAt: "2026-03-09T11:00:00Z",
+            likesCount: 34,
+          },
+        ],
       },
     ],
   },
@@ -669,11 +1275,13 @@ const RAW_BOOKS: BookItem[] = [
     description:
       "A pact with a devil grants a young woman eternal life, but curses her to be forgotten by everyone she meets. Everything changes when, 300 years later, she meets a man who remembers her name.",
     genre: ["Fantasy", "Drama", "Romance"],
-    banner: "https://picsum.photos/208/308",
-    cover: "https://picsum.photos/208/308",
-    isHot: false,
+    banner:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&h=400&fit=crop",
+    cover:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&h=600&fit=crop",
+    isHot: true,
     status: "Ongoing",
-    rating: 0,
+    rating: 4.7,
     author: "V.E. Schwab",
     authorId: "author_9",
     isFree: false,
@@ -681,6 +1289,18 @@ const RAW_BOOKS: BookItem[] = [
     favoritesCount: 11000,
     createdAt: "2026-03-15T07:45:00Z",
     updatedAt: "2026-07-01T18:20:00Z",
+    comments: [
+      {
+        id: "c9_1",
+        bookId: "9",
+        userId: "user_11",
+        username: "RomanceReader",
+        comment:
+          "The immortal but forgotten concept is so heartbreaking yet beautiful.",
+        createdAt: "2026-06-27T16:45:00Z",
+        likesCount: 63,
+      },
+    ],
     chaptersList: [
       {
         id: "ch9_1",
@@ -692,6 +1312,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-15",
         releasedAt: "2026-03-15T07:45:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch9_1_1",
+            bookId: "9",
+            userId: "user_52",
+            username: "HistoricalFictionFan",
+            comment:
+              "The 1714 France setting is beautifully described! The devil deal is classic.",
+            createdAt: "2026-06-27T17:00:00Z",
+            likesCount: 35,
+          },
+        ],
       },
       {
         id: "ch9_2",
@@ -703,6 +1335,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-22",
         releasedAt: "2026-03-22T07:45:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch9_2_1",
+            bookId: "9",
+            userId: "user_53",
+            username: "TragedyLover",
+            comment:
+              "The realization of the curse was heartbreaking! Her parents not recognizing her is devastating.",
+            createdAt: "2026-06-28T10:00:00Z",
+            likesCount: 41,
+          },
+        ],
       },
       {
         id: "ch9_3",
@@ -714,6 +1358,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-03-29",
         releasedAt: "2026-03-29T07:45:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch9_3_1",
+            bookId: "9",
+            userId: "user_54",
+            username: "HistoryBuff",
+            comment:
+              "The passage through history is beautifully written! The loneliness theme is so powerful.",
+            createdAt: "2026-06-29T11:00:00Z",
+            likesCount: 38,
+          },
+        ],
       },
       {
         id: "ch9_4",
@@ -725,6 +1381,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-05",
         releasedAt: "2026-04-05T07:45:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch9_4_1",
+            bookId: "9",
+            userId: "user_55",
+            username: "RomanceFan2",
+            comment:
+              "The moment he remembered her name was so emotional! Beautifully written.",
+            createdAt: "2026-06-30T12:00:00Z",
+            likesCount: 45,
+          },
+        ],
       },
       {
         id: "ch9_5",
@@ -736,6 +1404,18 @@ const RAW_BOOKS: BookItem[] = [
         createdAt: "2026-04-12",
         releasedAt: "2026-04-12T07:45:00Z",
         isFree: false,
+        comments: [
+          {
+            id: "c_ch9_5_1",
+            bookId: "9",
+            userId: "user_56",
+            username: "HopefulRomantic",
+            comment:
+              "The ending with Henry was so beautiful! The curse breaking moment was perfect.",
+            createdAt: "2026-07-01T10:00:00Z",
+            likesCount: 52,
+          },
+        ],
       },
     ],
   },

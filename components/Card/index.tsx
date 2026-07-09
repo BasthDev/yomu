@@ -3,12 +3,12 @@ import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-    Dimensions,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { BookGridCardProps } from "../../utils/books";
 
@@ -27,6 +27,12 @@ export function BookGridCard({ item, onPress }: BookGridCardProps) {
   const ratings = useBookRatingsStore((state) => state.ratings);
   const rating = ratings[item.id] || 0;
 
+  // Calculate total comments from all chapters
+  const totalChapterComments =
+    item.chaptersList?.reduce((total, chapter) => {
+      return total + (chapter.comments?.length || 0);
+    }, 0) || 0;
+
   return (
     <Pressable style={styles.card} onPress={() => onPress?.(item)}>
       {/* Cover Image */}
@@ -41,6 +47,14 @@ export function BookGridCard({ item, onPress }: BookGridCardProps) {
         <View style={styles.ratingBadge}>
           <Ionicons name="star" size={10} color="#ffcc00" />
           <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
+        </View>
+
+        {/* Chapter Count Badge */}
+        <View style={styles.chapterBadge}>
+          <Ionicons name="book" size={10} color="#fff" />
+          <Text style={styles.chapterText}>
+            {item.chaptersList?.length || 0}
+          </Text>
         </View>
       </View>
 
@@ -98,6 +112,18 @@ export function BookGridCard({ item, onPress }: BookGridCardProps) {
               {formatCount(item.favoritesCount)}
             </Text>
           </View>
+          <View style={styles.stat}>
+            <Ionicons
+              name="chatbubble-outline"
+              size={10}
+              color={currentTheme.textSecondary}
+            />
+            <Text
+              style={[styles.statText, { color: currentTheme.textSecondary }]}
+            >
+              {formatCount(totalChapterComments)}
+            </Text>
+          </View>
         </View>
       </View>
     </Pressable>
@@ -112,7 +138,7 @@ const styles = StyleSheet.create({
   coverContainer: {
     width: CARD_WIDTH,
     height: COVER_HEIGHT,
-    borderRadius: 5,
+    borderRadius: 6,
     overflow: "hidden",
     backgroundColor: "#1e1e1e",
     marginBottom: 8,
@@ -134,6 +160,23 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   ratingText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  chapterBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+    gap: 3,
+  },
+  chapterText: {
     color: "#fff",
     fontSize: 10,
     fontWeight: "bold",

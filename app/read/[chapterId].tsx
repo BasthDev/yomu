@@ -13,20 +13,20 @@ import { getRouteParam } from "@/utils/routeParams";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import {
-    ActivityIndicator,
-    Dimensions,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { useGlobalRewardedAd } from "../../context/AdContext";
@@ -35,6 +35,7 @@ import { useBookmarkStore } from "../../store/bookmarkStore";
 import { useChapterUnlockStore } from "../../store/chapterUnlockStore";
 import { useCoinStore } from "../../store/coinStore";
 import { useCommentStore } from "../../store/commentStore";
+import { DUMMY_BOOKS } from "../../utils/dummyData";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -423,9 +424,16 @@ export default function Read() {
         syncAccess.canAccess || (itemAccess?.canAccess ?? false);
       const isChLocked = !canAccess;
 
-      const chapterComments = comments.filter(
-        (c) => c.chapter_id === chItem.id,
-      );
+      // Get chapter comments from dummy data
+      const chapterComments = useMemo(() => {
+        for (const book of DUMMY_BOOKS) {
+          const chapter = book.chaptersList?.find((ch) => ch.id === chItem.id);
+          if (chapter && chapter.comments) {
+            return chapter.comments;
+          }
+        }
+        return [];
+      }, [chItem.id]);
 
       return (
         <ScrollView

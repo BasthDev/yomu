@@ -2,6 +2,7 @@ import { useAuth } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useEffect } from "react";
+import { Platform } from "react-native";
 import { useClerkAuthSync } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
 
@@ -41,7 +42,7 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: currentTheme.background,
           borderTopWidth: 0,
-          height: 60,
+          height: Platform.OS === "ios" ? 80 : 60,
         },
         tabBarLabelStyle: {
           fontSize: 12,
