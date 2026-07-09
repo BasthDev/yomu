@@ -1,0 +1,4733 @@
+{
+    "projectId": "6a4ff0ec0023d3cc3ea5",
+    "endpoint": "https://sgp.cloud.appwrite.io/v1",
+    "projectName": "YOMU - NOVEL",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 31536000,
+                "limit": 0,
+                "sessionsLimit": 0,
+                "passwordHistory": 0,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "tablesDB": [
+        {
+            "$id": "6a4ff163003b6a34621b",
+            "name": "YOMU - DATABASE",
+            "enabled": true
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "novel-covers",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Novel Covers",
+            "enabled": true,
+            "maximumFileSize": 10485760,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "novel-banners",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Novel Banners",
+            "enabled": true,
+            "maximumFileSize": 10485760,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "profile-images",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Profile Images",
+            "enabled": true,
+            "maximumFileSize": 5242880,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "chapter-images",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Chapter Images",
+            "enabled": true,
+            "maximumFileSize": 20971520,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp",
+                "gif"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "inline-images",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Inline Images",
+            "enabled": true,
+            "maximumFileSize": 10485760,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp",
+                "gif"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "banners",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Platform Banners",
+            "enabled": true,
+            "maximumFileSize": 10485760,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "ads",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Advertisements",
+            "enabled": true,
+            "maximumFileSize": 20971520,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp",
+                "mp4",
+                "gif"
+            ],
+            "compression": "gzip",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "audio",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Audio Files",
+            "enabled": true,
+            "maximumFileSize": 104857600,
+            "allowedFileExtensions": [
+                "mp3",
+                "wav",
+                "ogg",
+                "m4a"
+            ],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "videos",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Video Files",
+            "enabled": true,
+            "maximumFileSize": 524288000,
+            "allowedFileExtensions": [
+                "mp4",
+                "webm",
+                "mov"
+            ],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "documents",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Documents",
+            "enabled": true,
+            "maximumFileSize": 52428800,
+            "allowedFileExtensions": [
+                "pdf",
+                "doc",
+                "docx",
+                "txt",
+                "epub"
+            ],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "temporary-uploads",
+            "$permissions": [],
+            "fileSecurity": true,
+            "name": "Temporary Uploads",
+            "enabled": true,
+            "maximumFileSize": 104857600,
+            "allowedFileExtensions": [],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        },
+        {
+            "$id": "6a4ff198003306c34294",
+            "$permissions": [],
+            "fileSecurity": false,
+            "name": "YOMU - STORAGE",
+            "enabled": true,
+            "maximumFileSize": 50000000,
+            "allowedFileExtensions": [],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "user_profiles",
+            "$permissions": [],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "User Profiles",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "username",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 50,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "displayName",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bio",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "avatarUrl",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bannerUrl",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "website",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "socialLinks",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "accountType",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "isVerified",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "isSuspended",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "suspensionReason",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "suspensionEndsAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "isDeleted",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "deletedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "updatedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "userId",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "userId"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "username",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "username"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "accountType",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "accountType"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "isVerified",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "isVerified"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "isDeleted",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "isDeleted"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "createdAt",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "user_roles",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "User Roles",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "role",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "reader",
+                        "writer",
+                        "editor",
+                        "moderator",
+                        "admin"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "assigned_by",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_role",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "role"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "role",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "role"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "novels",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Novels",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "slug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "cover_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "banner_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "author_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "volumes",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Volumes",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "volume_number",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "cover_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "novel_id_volume",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "novel_id",
+                        "volume_number"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "chapters",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Chapters",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "volume_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "chapter_number",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "slug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "notes",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "draft",
+                        "scheduled",
+                        "published",
+                        "archived"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "visibility",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "public",
+                        "private",
+                        "password_protected"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "password",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_free",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "coins_cost",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "words_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "reading_time",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "views_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "likes_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "published_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "scheduled_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "novel_id_chapter",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "novel_id",
+                        "chapter_number"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "slug",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "slug"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "volume_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "volume_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "status",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "status"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "published_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "published_at"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                },
+                {
+                    "key": "title",
+                    "type": "fulltext",
+                    "status": "available",
+                    "columns": [
+                        "title"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "draft_chapters",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Draft Chapters",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "chapter_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "author_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "version",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 1
+                },
+                {
+                    "key": "version_history",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "[]",
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "chapter_id",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "chapter_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "author_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "author_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "updated_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$updatedAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "bookmarks",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Bookmarks",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "chapter_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "position",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "note",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_novel",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "reading_history",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Reading History",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "chapter_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "last_position",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "last_read_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "total_read_time",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_completed",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_novel_chapter",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "novel_id",
+                        "chapter_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "last_read_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "last_read_at"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "favorites",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Favorites",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_novel",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "likes",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Likes",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_novel",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "ratings",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Ratings",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "rating",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_novel",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "rating",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "rating"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "reviews",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Reviews",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "rating",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "likes_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_novel",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "comments",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Comments",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "chapter_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "parent_comment_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "likes_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "replies_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "chapter_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "chapter_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "parent_comment_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "parent_comment_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "comment_likes",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Comment Likes",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "comment_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "comment_id_user",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "comment_id",
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "comment_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "comment_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "reports",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Reports",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "reporter_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "target_type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "novel",
+                        "chapter",
+                        "comment",
+                        "user"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "target_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "reason",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "pending",
+                        "reviewed",
+                        "resolved",
+                        "dismissed"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "moderator_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "moderator_notes",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "reviewed_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "target",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "target_type",
+                        "target_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "status",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "status"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "notifications",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Notifications",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "data",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_read",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "is_read",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_read"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "announcements",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Announcements",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "content",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "priority",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "low",
+                        "normal",
+                        "high",
+                        "urgent"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "is_active",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "starts_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "ends_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "is_active",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_active"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "priority",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "priority"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "genres",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Genres",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "slug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "icon_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novels_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_active",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "slug",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "slug"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "name",
+                    "type": "fulltext",
+                    "status": "available",
+                    "columns": [
+                        "name"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novels_count",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novels_count"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "novel_genres",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Novel Genres",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "genre_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "novel_genre",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "novel_id",
+                        "genre_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "genre_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "genre_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "tags",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Tags",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "slug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novels_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_active",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "slug",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "slug"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "name",
+                    "type": "fulltext",
+                    "status": "available",
+                    "columns": [
+                        "name"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novels_count",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novels_count"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "novel_tags",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Novel Tags",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "tag_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "novel_tag",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "novel_id",
+                        "tag_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "tag_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "tag_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "collections",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Collections",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "cover_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_public",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "novels_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "is_public",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_public"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "collection_novels",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Collection Novels",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "collection_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "novel_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "order",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "collection_novel",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "collection_id",
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "collection_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "collection_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "novel_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "novel_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "order",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "order"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "followings",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Followings",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "follower_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "following_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "follower_following",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "follower_id",
+                        "following_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "follower_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "follower_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "following_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "following_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "writer_followers",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Writer Followers",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "writer_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "follower_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "writer_follower",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "writer_id",
+                        "follower_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "writer_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "writer_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "follower_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "follower_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "achievements",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Achievements",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "icon_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "points",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_unlocked",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "unlocked_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_type",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "type"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "is_unlocked",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_unlocked"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "badges",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Badges",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "icon_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "criteria",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "points",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_active",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "name",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "name"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "is_active",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_active"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "reading_streaks",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Reading Streaks",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "current_streak",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "longest_streak",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "last_read_date",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "current_streak",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "current_streak"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                },
+                {
+                    "key": "longest_streak",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "longest_streak"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "coin_transactions",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Coin Transactions",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "earned",
+                        "spent",
+                        "received",
+                        "purchased",
+                        "bonus"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "amount",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "balance_after",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "metadata",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "type",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "type"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "purchases",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Purchases",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "coins",
+                        "subscription",
+                        "chapter"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "item_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "amount",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "currency",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 10,
+                    "default": "usd",
+                    "encrypt": false
+                },
+                {
+                    "key": "transaction_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "pending",
+                        "completed",
+                        "failed",
+                        "refunded"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "metadata",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "type",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "type"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "status",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "status"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "transaction_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "transaction_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "subscriptions",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Subscriptions",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "plan",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "basic",
+                        "premium",
+                        "pro"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "inactive",
+                        "active",
+                        "cancelled",
+                        "expired"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "starts_at",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "ends_at",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "auto_renew",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "metadata",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "status",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "status"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "ends_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "ends_at"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "ad_watches",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Ad Watches",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "ad_type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "coins_earned",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "metadata",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "watched_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "premium_chapters",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Premium Chapters",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "chapter_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "coins_spent",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "unlock_method",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "coins",
+                        "wait",
+                        "subscription",
+                        "promo"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "metadata",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_chapter",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "chapter_id"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "chapter_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "chapter_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "unlocked_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "coupons",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Coupons",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "code",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "fixed_amount",
+                        "percentage",
+                        "free_chapters",
+                        "free_coins"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "value",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "max_uses",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "used_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "starts_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "expires_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "is_active",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "code",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "code"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "is_active",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_active"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "expires_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "expires_at"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "promo_codes",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Promo Codes",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "code",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "fixed_amount",
+                        "percentage",
+                        "free_chapters",
+                        "free_coins"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "value",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "max_uses",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "used_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "starts_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "expires_at",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "is_active",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "code",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "code"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "is_active",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "is_active"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "reading_statistics",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Reading Statistics",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "date",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "chapters_read",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "words_read",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "reading_time_minutes",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id_date",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id",
+                        "date"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "date",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "date"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "writer_statistics",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Writer Statistics",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "writer_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "date",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "views",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "new_favorites",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "new_chapters",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "coins_earned",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "revenue",
+                    "type": "double",
+                    "required": false,
+                    "array": false,
+                    "min": -1.7976931348623157e+308,
+                    "max": 1.7976931348623157e+308,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "writer_id_date",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "writer_id",
+                        "date"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "writer_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "writer_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "date",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "date"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "dashboard_statistics",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "Dashboard Statistics",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "date",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "new_users",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "new_novels",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "new_chapters",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "total_views",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": 0
+                },
+                {
+                    "key": "total_revenue",
+                    "type": "double",
+                    "required": false,
+                    "array": false,
+                    "min": -1.7976931348623157e+308,
+                    "max": 1.7976931348623157e+308,
+                    "default": 0
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "date",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "date"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "system_logs",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "System Logs",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "level",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "debug",
+                        "info",
+                        "warning",
+                        "error"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "message",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "context",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "level",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "level"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "profiles",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a4ff163003b6a34621b",
+            "name": "User Profiles",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "display_name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bio",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "avatar_url",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "website",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "social_links",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 100000,
+                    "default": "{}",
+                    "encrypt": false
+                },
+                {
+                    "key": "is_deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "user_id",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "display_name",
+                    "type": "fulltext",
+                    "status": "available",
+                    "columns": [
+                        "display_name"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "created_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        }
+    ]
+}

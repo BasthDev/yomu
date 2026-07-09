@@ -1,0 +1,2846 @@
+{
+  "databaseId": "yomu_database",
+  "collections": [
+    {
+      "$id": "user_profiles",
+      "name": "User Profiles",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "username",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "displayName",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 100
+        },
+        {
+          "key": "bio",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 1000
+        },
+        {
+          "key": "avatarUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "bannerUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "website",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "socialLinks",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "accountType",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "reader"
+        },
+        {
+          "key": "isVerified",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "isSuspended",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "suspensionReason",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "suspensionEndsAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "deletedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId",
+          "type": "unique",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "username",
+          "type": "unique",
+          "attributes": ["username"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "accountType",
+          "type": "key",
+          "attributes": ["accountType"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isVerified",
+          "type": "key",
+          "attributes": ["isVerified"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isDeleted",
+          "type": "key",
+          "attributes": ["isDeleted"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "novels",
+      "name": "Novels",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "authorId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "slug",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 10000
+        },
+        {
+          "key": "coverUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "bannerUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "draft"
+        },
+        {
+          "key": "visibility",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "public"
+        },
+        {
+          "key": "language",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 10,
+          "default": "en"
+        },
+        {
+          "key": "isMature",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "wordCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "viewCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "likeCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "commentCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "ratingCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "averageRating",
+          "type": "double",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "chapterCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "isMonetized",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "monetizationType",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 20
+        },
+        {
+          "key": "copyrightNotice",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "isFeatured",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "featuredAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "publishedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "lastUpdatedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "deletedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "authorId",
+          "type": "key",
+          "attributes": ["authorId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "slug",
+          "type": "unique",
+          "attributes": ["slug"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "status",
+          "type": "key",
+          "attributes": ["status"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "visibility",
+          "type": "key",
+          "attributes": ["visibility"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "language",
+          "type": "key",
+          "attributes": ["language"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isMature",
+          "type": "key",
+          "attributes": ["isMature"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isMonetized",
+          "type": "key",
+          "attributes": ["isMonetized"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isFeatured",
+          "type": "key",
+          "attributes": ["isFeatured"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "viewCount",
+          "type": "key",
+          "attributes": ["viewCount"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "likeCount",
+          "type": "key",
+          "attributes": ["likeCount"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "averageRating",
+          "type": "key",
+          "attributes": ["averageRating"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "lastUpdatedAt",
+          "type": "key",
+          "attributes": ["lastUpdatedAt"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "isDeleted",
+          "type": "key",
+          "attributes": ["isDeleted"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "search_title",
+          "type": "fulltext",
+          "attributes": ["title", "description"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "chapters",
+      "name": "Chapters",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "volumeId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "slug",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "chapterNumber",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "content",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 100000
+        },
+        {
+          "key": "wordCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "draft"
+        },
+        {
+          "key": "isPremium",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "coinCost",
+          "type": "integer",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "viewCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "commentCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "likeCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "authorNote",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 2000
+        },
+        {
+          "key": "publishedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "deletedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "volumeId",
+          "type": "key",
+          "attributes": ["volumeId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "slug",
+          "type": "unique",
+          "attributes": ["novelId", "slug"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "chapterNumber",
+          "type": "key",
+          "attributes": ["novelId", "chapterNumber"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "status",
+          "type": "key",
+          "attributes": ["status"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isPremium",
+          "type": "key",
+          "attributes": ["isPremium"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "viewCount",
+          "type": "key",
+          "attributes": ["viewCount"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "publishedAt",
+          "type": "key",
+          "attributes": ["publishedAt"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "isDeleted",
+          "type": "key",
+          "attributes": ["isDeleted"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "volumes",
+      "name": "Volumes",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "volumeNumber",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 2000
+        },
+        {
+          "key": "coverUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "draft"
+        },
+        {
+          "key": "publishedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "deletedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "volumeNumber",
+          "type": "key",
+          "attributes": ["novelId", "volumeNumber"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "status",
+          "type": "key",
+          "attributes": ["status"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isDeleted",
+          "type": "key",
+          "attributes": ["isDeleted"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "genres",
+      "name": "Genres",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "slug",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "iconUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "color",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 10
+        },
+        {
+          "key": "sortOrder",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "isActive",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "novelCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "slug",
+          "type": "unique",
+          "attributes": ["slug"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isActive",
+          "type": "key",
+          "attributes": ["isActive"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "sortOrder",
+          "type": "key",
+          "attributes": ["sortOrder"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "novel_genres",
+      "name": "Novel Genres",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "genreId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "isPrimary",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "novelId_genreId",
+          "type": "unique",
+          "attributes": ["novelId", "genreId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "genreId",
+          "type": "key",
+          "attributes": ["genreId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "tags",
+      "name": "Tags",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "slug",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "category",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "isActive",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "novelCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "slug",
+          "type": "unique",
+          "attributes": ["slug"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isActive",
+          "type": "key",
+          "attributes": ["isActive"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "category",
+          "type": "key",
+          "attributes": ["category"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "novel_tags",
+      "name": "Novel Tags",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "tagId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "novelId_tagId",
+          "type": "unique",
+          "attributes": ["novelId", "tagId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "tagId",
+          "type": "key",
+          "attributes": ["tagId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_library",
+      "name": "User Library",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 30,
+          "default": "reading"
+        },
+        {
+          "key": "rating",
+          "type": "integer",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "lastReadChapterId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "lastReadAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isNotified",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_novelId",
+          "type": "unique",
+          "attributes": ["userId", "novelId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "status",
+          "type": "key",
+          "attributes": ["status"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "lastReadAt",
+          "type": "key",
+          "attributes": ["lastReadAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "bookmarks",
+      "name": "Bookmarks",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "chapterId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "position",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "note",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 1000
+        },
+        {
+          "key": "color",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 10
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_chapterId",
+          "type": "key",
+          "attributes": ["userId", "chapterId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "chapterId",
+          "type": "key",
+          "attributes": ["chapterId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "reading_history",
+      "name": "Reading History",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "chapterId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "progressPercentage",
+          "type": "double",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "lastPosition",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "timeSpent",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "isCompleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "completedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "startedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_chapterId",
+          "type": "unique",
+          "attributes": ["userId", "chapterId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId_novelId",
+          "type": "key",
+          "attributes": ["userId", "novelId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "updatedAt",
+          "type": "key",
+          "attributes": ["updatedAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "comments",
+      "name": "Comments",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "chapterId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "content",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 5000
+        },
+        {
+          "key": "parentId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "likeCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "replyCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "isEdited",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "editedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "deletedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "chapterId",
+          "type": "key",
+          "attributes": ["chapterId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "parentId",
+          "type": "key",
+          "attributes": ["parentId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "likeCount",
+          "type": "key",
+          "attributes": ["likeCount"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        },
+        {
+          "key": "isDeleted",
+          "type": "key",
+          "attributes": ["isDeleted"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "comment_likes",
+      "name": "Comment Likes",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "commentId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_commentId",
+          "type": "unique",
+          "attributes": ["userId", "commentId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "commentId",
+          "type": "key",
+          "attributes": ["commentId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_followers",
+      "name": "User Followers",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "followerId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "followingId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "followerId_followingId",
+          "type": "unique",
+          "attributes": ["followerId", "followingId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "followerId",
+          "type": "key",
+          "attributes": ["followerId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "followingId",
+          "type": "key",
+          "attributes": ["followingId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "novel_likes",
+      "name": "Novel Likes",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_novelId",
+          "type": "unique",
+          "attributes": ["userId", "novelId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "novel_ratings",
+      "name": "Novel Ratings",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "rating",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_novelId",
+          "type": "unique",
+          "attributes": ["userId", "novelId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "rating",
+          "type": "key",
+          "attributes": ["rating"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_coins",
+      "name": "User Coins",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "balance",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "totalEarned",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "totalSpent",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId",
+          "type": "unique",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "coin_transactions",
+      "name": "Coin Transactions",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "type",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 30
+        },
+        {
+          "key": "amount",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "balanceBefore",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "balanceAfter",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "referenceId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "referenceType",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "metadata",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "type",
+          "type": "key",
+          "attributes": ["type"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "referenceId",
+          "type": "key",
+          "attributes": ["referenceId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "chapter_unlocks",
+      "name": "Chapter Unlocks",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "chapterId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "coinCost",
+          "type": "integer",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "transactionId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_chapterId",
+          "type": "unique",
+          "attributes": ["userId", "chapterId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "chapterId",
+          "type": "key",
+          "attributes": ["chapterId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "notifications",
+      "name": "Notifications",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "type",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "body",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 1000
+        },
+        {
+          "key": "imageUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "data",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "targetType",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 20
+        },
+        {
+          "key": "targetId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "type",
+          "type": "key",
+          "attributes": ["type"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_notifications",
+      "name": "User Notifications",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "notificationId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "isRead",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "readAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "isDeleted",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_notificationId",
+          "type": "unique",
+          "attributes": ["userId", "notificationId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isRead",
+          "type": "key",
+          "attributes": ["isRead"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "roles",
+      "name": "Roles",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "slug",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "isSystem",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "isActive",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "slug",
+          "type": "unique",
+          "attributes": ["slug"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "isActive",
+          "type": "key",
+          "attributes": ["isActive"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_roles",
+      "name": "User Roles",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "roleId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "assignedBy",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "expiresAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_roleId",
+          "type": "unique",
+          "attributes": ["userId", "roleId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "roleId",
+          "type": "key",
+          "attributes": ["roleId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "moderation_queue",
+      "name": "Moderation Queue",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "contentType",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "contentId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "pending"
+        },
+        {
+          "key": "reason",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "reportedBy",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "reviewedBy",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "reviewedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "moderationNote",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 1000
+        },
+        {
+          "key": "actionTaken",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "evidenceUrls",
+          "type": "string",
+          "required": false,
+          "array": true
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "contentType_contentId",
+          "type": "key",
+          "attributes": ["contentType", "contentId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "status",
+          "type": "key",
+          "attributes": ["status"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "audit_logs",
+      "name": "Audit Logs",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "action",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 100
+        },
+        {
+          "key": "entityType",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "entityId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "userId",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "ipAddress",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "userAgent",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500
+        },
+        {
+          "key": "oldData",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "newData",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "metadata",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "action",
+          "type": "key",
+          "attributes": ["action"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "entityType_entityId",
+          "type": "key",
+          "attributes": ["entityType", "entityId"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "createdAt",
+          "type": "key",
+          "attributes": ["createdAt"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_preferences",
+      "name": "User Preferences",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "theme",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "system"
+        },
+        {
+          "key": "fontSize",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 16
+        },
+        {
+          "key": "fontFamily",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50,
+          "default": "system"
+        },
+        {
+          "key": "lineHeight",
+          "type": "double",
+          "required": true,
+          "array": false,
+          "default": 1.5
+        },
+        {
+          "key": "pageMargin",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 20
+        },
+        {
+          "key": "readingMode",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 20,
+          "default": "scroll"
+        },
+        {
+          "key": "autoScrollSpeed",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 1
+        },
+        {
+          "key": "showPageNumbers",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "showReadingProgress",
+          "type": "boolean",
+          "required": true,
+          "array": false,
+          "default": true
+        },
+        {
+          "key": "screenTimeout",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 5
+        },
+        {
+          "key": "notifications",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "contentFilters",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "language",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 10,
+          "default": "en"
+        },
+        {
+          "key": "timezone",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId",
+          "type": "unique",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "novel_analytics",
+      "name": "Novel Analytics",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "novelId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "date",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "views",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "uniqueViews",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "reads",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "likes",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "comments",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "favorites",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "unfavorites",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "shares",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "revenue",
+          "type": "double",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "chapterReads",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "novelId_date",
+          "type": "unique",
+          "attributes": ["novelId", "date"],
+          "orders": ["ASC", "DESC"]
+        },
+        {
+          "key": "novelId",
+          "type": "key",
+          "attributes": ["novelId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "date",
+          "type": "key",
+          "attributes": ["date"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "chapter_analytics",
+      "name": "Chapter Analytics",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "chapterId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "date",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "views",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "uniqueViews",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "reads",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "completions",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "averageTimeSpent",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "dropOffPoints",
+          "type": "json",
+          "required": false,
+          "array": false
+        },
+        {
+          "key": "unlocks",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "revenue",
+          "type": "double",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "chapterId_date",
+          "type": "unique",
+          "attributes": ["chapterId", "date"],
+          "orders": ["ASC", "DESC"]
+        },
+        {
+          "key": "chapterId",
+          "type": "key",
+          "attributes": ["chapterId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "date",
+          "type": "key",
+          "attributes": ["date"],
+          "orders": ["DESC"]
+        }
+      ]
+    },
+    {
+      "$id": "user_analytics",
+      "name": "User Analytics",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255
+        },
+        {
+          "key": "date",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "sessionCount",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "totalTimeSpent",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "chaptersRead",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "novelsRead",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "commentsMade",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "likesGiven",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "coinsSpent",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "coinsEarned",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "default": 0
+        },
+        {
+          "key": "createdAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        },
+        {
+          "key": "updatedAt",
+          "type": "datetime",
+          "required": true,
+          "array": false
+        }
+      ],
+      "indexes": [
+        {
+          "key": "userId_date",
+          "type": "unique",
+          "attributes": ["userId", "date"],
+          "orders": ["ASC", "DESC"]
+        },
+        {
+          "key": "userId",
+          "type": "key",
+          "attributes": ["userId"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "date",
+          "type": "key",
+          "attributes": ["date"],
+          "orders": ["DESC"]
+        }
+      ]
+    }
+  ]
+}
