@@ -1,8 +1,11 @@
 import { useAuth, useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -27,6 +30,7 @@ export default function Profile() {
   const firstName = user?.firstName || "";
   const lastName = user?.lastName || "";
   const email = user?.emailAddresses[0]?.emailAddress || "";
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -34,6 +38,62 @@ export default function Profile() {
       router.replace("/auth");
     } catch (error) {
       Alert.alert("Error", "Failed to sign out");
+    }
+  };
+
+  const handleImageUpload = async () => {
+    try {
+      // Request permission
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please grant camera roll permissions",
+        );
+        return;
+      }
+
+      // Pick image
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setIsUploading(true);
+        const uri = result.assets[0].uri;
+
+        // Read the file as base64
+        const fileInfo = await FileSystem.getInfoAsync(uri);
+        if (!fileInfo.exists) {
+          throw new Error("File does not exist");
+        }
+
+        // Read file as base64
+        const base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: "base64",
+        });
+
+        // Create a File object from base64
+        const file = new File(
+          [Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))],
+          "profile.jpg",
+          { type: "image/jpeg" },
+        );
+
+        // Upload to Clerk
+        await user?.setProfileImage({ file });
+
+        Alert.alert("Success", "Profile image updated successfully");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      Alert.alert("Error", "Failed to upload image");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -50,7 +110,21 @@ export default function Profile() {
 
   return (
     <Container>
-      <CustomHeader title="Profile" showBack={false} />
+      <CustomHeader
+        title="Profile"
+        showBack={false}
+        showProfile={false}
+        rightIcon={
+          <View style={styles.logout}>
+            <Ionicons
+              name="log-out-outline"
+              size={24}
+              color={currentTheme.text}
+              onPress={handleSignOut}
+            />
+          </View>
+        }
+      />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -72,25 +146,40 @@ export default function Profile() {
           </View> */}
           {/* Avatar Section */}
           <View style={styles.avatarSection}>
-            {user?.imageUrl ? (
-              <Image
-                source={{ uri: user.imageUrl }}
-                style={styles.avatarImage}
-              />
-            ) : (
-              <View
-                style={[
-                  styles.avatar,
-                  { backgroundColor: currentTheme.primary },
-                ]}
-              >
-                <Text style={styles.avatarText}>
-                  {firstName?.[0]?.toUpperCase() ||
-                    email?.[0]?.toUpperCase() ||
-                    "U"}
-                </Text>
-              </View>
-            )}
+            <TouchableOpacity
+              onPress={handleImageUpload}
+              disabled={isUploading}
+              style={styles.avatarContainer}
+            >
+              {user?.imageUrl ? (
+                <Image
+                  source={{ uri: user.imageUrl }}
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.avatar,
+                    { backgroundColor: currentTheme.primary },
+                  ]}
+                >
+                  <Text style={styles.avatarText}>
+                    {firstName?.[0]?.toUpperCase() ||
+                      email?.[0]?.toUpperCase() ||
+                      "U"}
+                  </Text>
+                </View>
+              )}
+              {isUploading ? (
+                <View style={styles.avatarOverlay}>
+                  <ActivityIndicator size="small" color="#fff" />
+                </View>
+              ) : (
+                <View style={styles.avatarOverlay}>
+                  <Ionicons name="camera" size={24} color="#fff" />
+                </View>
+              )}
+            </TouchableOpacity>
             <Text style={[styles.avatarLabel, { color: currentTheme.text }]}>
               {firstName} {lastName}
             </Text>
@@ -133,7 +222,7 @@ export default function Profile() {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[
                 styles.actionButton,
                 styles.signOutButton,
@@ -145,7 +234,7 @@ export default function Profile() {
               <Text style={[styles.signOutButtonText, { color: "#ef4444" }]}>
                 Sign Out
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* Theme Settings */}
@@ -403,5 +492,29 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     fontWeight: "600",
+  },
+  logout: {
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: "#ccc",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  avatarContainer: {
+    position: "relative",
+    marginBottom: 12,
+  },
+  avatarOverlay: {
+    position: "absolute",
+    bottom: 5,
+    right: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

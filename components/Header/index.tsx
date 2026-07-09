@@ -6,13 +6,13 @@ import { Ionicons as VectorIcons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
-  Animated,
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Animated,
+    Image,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface CustomHeaderProps {
@@ -30,6 +30,8 @@ interface CustomHeaderProps {
   onRemoveFilter?: (filter: string) => void;
   notificationsCount?: number;
   hideIcons?: boolean;
+  rightIcon?: React.ReactNode;
+  showProfile?: boolean;
 }
 
 export function CustomHeader({
@@ -47,13 +49,15 @@ export function CustomHeader({
   onRemoveFilter,
   notificationsCount = 0,
   hideIcons = false,
+  rightIcon,
+  showProfile = true,
 }: CustomHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { currentTheme } = useThemeStore();
   const balance = useCoinStore((state) => state.balance);
   const balanceLoading = useCoinStore((state) => state.isLoading);
-  const { firstName, email, imageUrl } = useAuthStore();
+  const { firstName, email, imageUrl, isLoading } = useAuthStore();
 
   // Animated fade-in for title changes
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -157,27 +161,37 @@ export function CustomHeader({
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            style={styles.profilePic}
-            onPress={() => router.push("/(tabs)/profile")}
-          >
-            {imageUrl ? (
-              <Image source={{ uri: imageUrl }} style={styles.profileImage} />
-            ) : (
-              <View
-                style={[
-                  styles.profileFallback,
-                  { backgroundColor: currentTheme.primary },
-                ]}
-              >
-                <Text style={styles.profileFallbackText}>
-                  {firstName?.[0]?.toUpperCase() ||
-                    email?.[0]?.toUpperCase() ||
-                    "U"}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
+          {showProfile !== false && (
+            <TouchableOpacity
+              style={styles.profilePic}
+              onPress={() => router.push("/(tabs)/profile")}
+            >
+              {isLoading ? (
+                <View
+                  style={[
+                    styles.profileFallback,
+                    { backgroundColor: currentTheme.surface },
+                  ]}
+                />
+              ) : imageUrl ? (
+                <Image source={{ uri: imageUrl }} style={styles.profileImage} />
+              ) : (
+                <View
+                  style={[
+                    styles.profileFallback,
+                    { backgroundColor: currentTheme.primary },
+                  ]}
+                >
+                  <Text style={styles.profileFallbackText}>
+                    {firstName?.[0]?.toUpperCase() ||
+                      email?.[0]?.toUpperCase() ||
+                      "U"}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+          {rightIcon && <View>{rightIcon}</View>}
         </View>
       </View>
 

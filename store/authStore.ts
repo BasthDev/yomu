@@ -11,6 +11,7 @@ interface AuthState {
   lastName: string;
   email: string;
   imageUrl: string;
+  isLoading: boolean;
   setUserId: (userId: string) => void;
   setUserData: (
     firstName: string,
@@ -18,6 +19,7 @@ interface AuthState {
     email: string,
     imageUrl: string,
   ) => void;
+  setLoading: (loading: boolean) => void;
   logout: () => Promise<void>;
 }
 
@@ -28,6 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   lastName: "",
   email: "",
   imageUrl: "",
+  isLoading: true,
 
   setUserId: (userId: string) => {
     set({ isAuthenticated: true, userId });
@@ -39,7 +42,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     email: string,
     imageUrl: string,
   ) => {
-    set({ firstName, lastName, email, imageUrl });
+    set({ firstName, lastName, email, imageUrl, isLoading: false });
+  },
+
+  setLoading: (loading: boolean) => {
+    set({ isLoading: loading });
   },
 
   logout: async () => {
@@ -51,6 +58,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       lastName: "",
       email: "",
       imageUrl: "",
+      isLoading: true,
     });
   },
 }));

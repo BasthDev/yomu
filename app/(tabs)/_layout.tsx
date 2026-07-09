@@ -1,13 +1,16 @@
+import { useAuthStore } from "@/store/authStore";
 import { useAuth } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useEffect } from "react";
-import { Platform } from "react-native";
+import { Image, Platform } from "react-native";
 import { useClerkAuthSync } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
 
 export default function TabsLayout() {
   const { currentTheme, loadTheme } = useThemeStore();
+
+  const { imageUrl, isLoading } = useAuthStore();
 
   let isLoaded = false;
   let isSignedIn = false;
@@ -89,9 +92,19 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "You",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person" size={24} color={color} />
-          ),
+          tabBarIcon: ({ focused }) =>
+            imageUrl ? (
+              <Image
+                source={{ uri: imageUrl }}
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  borderWidth: focused ? 1 : 0,
+                  borderColor: currentTheme.primary,
+                }}
+              />
+            ) : null,
         }}
       />
       {/* <Tabs.Screen

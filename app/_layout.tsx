@@ -63,6 +63,7 @@ function AppBootstrap() {
       <Stack.Screen name="book/[id]" />
       <Stack.Screen name="read/[chapterId]" />
       <Stack.Screen name="comments/[chapterId]" />
+      <Stack.Screen name="test-ad" />
     </Stack>
   );
 }

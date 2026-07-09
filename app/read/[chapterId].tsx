@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     marginTop: 48,
-    marginBottom: 8,
+    // marginBottom: 8,
     opacity: 0.5,
   },
   swipeInstructionText: {
