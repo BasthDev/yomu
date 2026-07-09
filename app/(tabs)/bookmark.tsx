@@ -1,19 +1,12 @@
+import { BookListRow } from "@/components/BookListRow";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import {
-    Image,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
 import { useBookmarkStore } from "../../store/bookmarkStore";
-import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useThemeStore } from "../../store/themeStore";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
 import { navigateToBook } from "../../utils/navigation";
@@ -23,7 +16,6 @@ export default function Bookmark() {
   const { bookmarkedIds, removeBookmark, loadData, isLoading } =
     useBookmarkStore();
   const { currentTheme } = useThemeStore();
-  const getRating = useBookRatingsStore((state) => state.getRating);
 
   useEffect(() => {
     loadData();
@@ -67,85 +59,20 @@ export default function Bookmark() {
             </View>
           ) : (
             <View style={styles.bookList}>
-              {bookmarkedBooks.map((book) => {
-                const rating = getRating(book.id);
-                return (
-                  <Pressable
-                    key={book.id}
-                    style={[
-                      styles.bookCard,
-                      {
-                        backgroundColor: currentTheme.surface,
-                        borderColor: currentTheme.border,
-                      },
-                    ]}
-                    onPress={() => handleBookPress(book.id)}
-                  >
-                    <Image
-                      source={{ uri: book.cover }}
-                      style={styles.bookCover}
-                      resizeMode="cover"
+              {bookmarkedBooks.map((book) => (
+                <BookListRow
+                  key={book.id}
+                  book={book}
+                  rightContent={
+                    <Ionicons
+                      name="bookmark"
+                      size={18}
+                      color={currentTheme.primary}
                     />
-
-                    <View style={styles.bookInfo}>
-                      <Text
-                        style={[styles.bookTitle, { color: currentTheme.text }]}
-                        numberOfLines={2}
-                      >
-                        {book.title}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.bookAuthor,
-                          { color: currentTheme.textSecondary },
-                        ]}
-                      >
-                        {book.author}
-                      </Text>
-
-                      <View style={styles.bookMeta}>
-                        <View style={styles.ratingBox}>
-                          <Ionicons name="star" size={12} color="#ffcc00" />
-                          <Text
-                            style={[
-                              styles.ratingText,
-                              { color: currentTheme.text },
-                            ]}
-                          >
-                            {rating.toFixed(1)}
-                          </Text>
-                        </View>
-                        <View
-                          style={[
-                            styles.statusBadge,
-                            { backgroundColor: currentTheme.primary + "20" },
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.statusText,
-                              { color: currentTheme.primary },
-                            ]}
-                          >
-                            {book.status}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-
-                    <Pressable
-                      style={styles.removeButton}
-                      onPress={() => removeBookmark(book.id)}
-                    >
-                      <Ionicons
-                        name="bookmark"
-                        size={20}
-                        color={currentTheme.primary}
-                      />
-                    </Pressable>
-                  </Pressable>
-                );
-              })}
+                  }
+                  onPress={() => handleBookPress(book.id)}
+                />
+              ))}
             </View>
           )}
         </ContentWithPadding>
@@ -177,57 +104,5 @@ const styles = StyleSheet.create({
   },
   bookList: {
     gap: 12,
-  },
-  bookCard: {
-    flexDirection: "row",
-    borderRadius: 12,
-    padding: 12,
-    gap: 12,
-    borderWidth: 1,
-  },
-  bookCover: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  bookInfo: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  bookTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  bookAuthor: {
-    fontSize: 13,
-    marginBottom: 8,
-  },
-  bookMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  ratingBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  ratingText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: "600",
-    textTransform: "uppercase",
-  },
-  removeButton: {
-    padding: 8,
   },
 });

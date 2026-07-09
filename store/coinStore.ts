@@ -52,17 +52,38 @@ export const useCoinStore = create<CoinState>((set, get) => ({
 
   addCoins: async (amount: number, description: string) => {
     const user = get().clerkUser;
-    if (!user) return;
+    if (!user) {
+      console.error("No user found when adding coins");
+      return;
+    }
 
     try {
       const currentBalance = (user.unsafeMetadata?.coins as number) || 0;
       const newBalance = currentBalance + amount;
-      await user.updateMetadata({
-        unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
+      console.log("Adding coins:", {
+        amount,
+        currentBalance,
+        newBalance,
+        description,
       });
-      set({ balance: newBalance });
+
+      await user.updateMetadata({
+        unsafeMetadata: { coins: newBalance },
+      });
+
+      console.log("User metadata updated successfully");
+
+      // Update local user object to reflect the new metadata
+      set({
+        clerkUser: {
+          ...user,
+          unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
+        },
+        balance: newBalance,
+      });
     } catch (error) {
       console.error("Error adding coins:", error);
+      throw error;
     }
   },
 
@@ -76,9 +97,16 @@ export const useCoinStore = create<CoinState>((set, get) => ({
 
       const newBalance = currentBalance - amount;
       await user.updateMetadata({
-        unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
+        unsafeMetadata: { coins: newBalance },
       });
-      set({ balance: newBalance });
+      // Update local user object to reflect the new metadata
+      set({
+        clerkUser: {
+          ...user,
+          unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
+        },
+        balance: newBalance,
+      });
       return true;
     } catch (error) {
       console.error("Error spending coins:", error);
@@ -96,10 +124,13 @@ export const useCoinStore = create<CoinState>((set, get) => ({
 
   watchRewardAd: async () => {
     const userId = getAuthUserId();
+    console.log("watchRewardAd called for user:", userId);
 
     try {
       const coinsEarned = AD_REWARDS.REWARDED_COINS;
+      console.log("Adding coins from reward ad:", coinsEarned);
       await get().addCoins(coinsEarned, "Watched reward ad");
+      console.log("Coins added successfully from reward ad");
       return true;
     } catch (error) {
       console.error("Error watching ad:", error);
@@ -109,15 +140,18 @@ export const useCoinStore = create<CoinState>((set, get) => ({
 
   watchInterstitialAd: async () => {
     const userId = getAuthUserId();
+    console.log("watchInterstitialAd called for user:", userId);
 
     try {
       const coinsEarned = AD_REWARDS.INTERSTITIAL_COINS;
+      console.log("Adding coins from interstitial ad:", coinsEarned);
       await Database.recordAdWatch(
         userId,
         "rewarded_interstitial",
         coinsEarned,
       );
       await get().addCoins(coinsEarned, "Watched rewarded interstitial ad");
+      console.log("Coins added successfully from interstitial ad");
       return true;
     } catch (error) {
       console.error("Error watching interstitial ad:", error);

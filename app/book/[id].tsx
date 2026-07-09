@@ -3,8 +3,8 @@ import { useSecurity } from "@/context/SecurityContext";
 import { useChapterUnlockStore } from "@/store/chapterUnlockStore";
 import { useThemeStore } from "@/store/themeStore";
 import {
-  ChapterAccessResult,
-  getChapterDisplayStatusSync,
+    ChapterAccessResult,
+    getChapterDisplayStatusSync,
 } from "@/utils/chapterAccess";
 import { navigateToRead } from "@/utils/navigation";
 import { getRouteParam } from "@/utils/routeParams";
@@ -13,16 +13,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
@@ -32,8 +32,14 @@ import { useBookRatingsStore } from "../../store/bookRatingsStore";
 import { useCoinStore } from "../../store/coinStore";
 import { DUMMY_BOOKS } from "../../utils/dummyData";
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
+
 const { width, height } = Dimensions.get("window");
-const BANNER_HEIGHT = 380;
+const BANNER_HEIGHT = 280;
 
 export default function BookDetail() {
   const { id: idParam } = useLocalSearchParams();
@@ -156,9 +162,7 @@ export default function BookDetail() {
     return (
       <Container>
         <View style={styles.centered}>
-          <Text style={{ color: currentTheme.text }}>
-            Novel not found.
-          </Text>
+          <Text style={{ color: currentTheme.text }}>Novel not found.</Text>
         </View>
       </Container>
     );
@@ -266,6 +270,33 @@ export default function BookDetail() {
                 ]}
               >
                 ({ratingCount})
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Ionicons
+                name="eye-outline"
+                size={16}
+                color={currentTheme.textSecondary}
+              />
+              <Text
+                style={[styles.statText, { color: currentTheme.textSecondary }]}
+              >
+                {formatCount(book.viewsCount)}
+              </Text>
+            </View>
+            <View style={styles.statItem}>
+              <Ionicons
+                name="heart-outline"
+                size={16}
+                color={currentTheme.textSecondary}
+              />
+              <Text
+                style={[styles.statText, { color: currentTheme.textSecondary }]}
+              >
+                {formatCount(book.favoritesCount)}
               </Text>
             </View>
           </View>
@@ -570,6 +601,21 @@ const styles = StyleSheet.create({
   ratingBox: { flexDirection: "row", alignItems: "center", gap: 4 },
   ratingText: { fontSize: 14, fontWeight: "bold" },
   ratingCount: { fontSize: 12 },
+  statsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    marginBottom: 16,
+  },
+  statItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  statText: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
   ratingSection: { marginTop: 24, marginBottom: 24 },
   starContainer: { flexDirection: "row", gap: 8, marginTop: 12 },
   starButton: { padding: 8 },
@@ -579,7 +625,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   title: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Lora-Bold",
     fontSize: 28,
     lineHeight: 36,
     marginBottom: 6,
@@ -601,7 +647,7 @@ const styles = StyleSheet.create({
   },
   genreTagText: { color: "#ccc", fontSize: 12, fontWeight: "600" },
   sectionTitle: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Lora-Bold",
     color: "#fff",
     fontSize: 16,
     letterSpacing: 1,

@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Dimensions,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 // 1. Mengimpor tipe data resmi terpusat dari proyek Anda
@@ -21,7 +21,7 @@ export function HeroSlider({ data, onPress }: HeroSliderProps) {
   const { currentTheme } = useThemeStore();
 
   const ITEM_WIDTH = width;
-  const ITEM_HEIGHT = 280;
+  const ITEM_HEIGHT = 350;
 
   return (
     <View style={styles.container}>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Lora-Bold",
     color: "#fff",
     fontSize: 26,
     letterSpacing: 0.5,

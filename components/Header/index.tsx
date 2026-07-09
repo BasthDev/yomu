@@ -4,7 +4,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { navigateToWallet } from "@/utils/navigation";
 import { Ionicons as VectorIcons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Image,
@@ -55,26 +55,17 @@ export function CustomHeader({
   const balanceLoading = useCoinStore((state) => state.isLoading);
   const { firstName, email, imageUrl } = useAuthStore();
 
-  // Animated crossfade for title changes
+  // Animated fade-in for title changes
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const [displayedTitle, setDisplayedTitle] = useState(title);
 
   useEffect(() => {
-    if (title === displayedTitle) return;
-    // Fade out, swap text, fade in
+    fadeAnim.setValue(0.3); // start at low opacity to avoid complete blanking
     Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 120,
+      toValue: 1,
+      duration: 250,
       useNativeDriver: true,
-    }).start(() => {
-      setDisplayedTitle(title);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 180,
-        useNativeDriver: true,
-      }).start();
-    });
-  }, [title]);
+    }).start();
+  }, [title, fadeAnim]);
 
   const handleLogoPress = () => {
     if (pathname !== "/") {
@@ -137,7 +128,7 @@ export function CustomHeader({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {displayedTitle}
+              {title}
             </Animated.Text>
           </View>
         )}
@@ -283,7 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   logo: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Audiowide-Regular",
     fontSize: 32,
     color: "#E50914",
   },

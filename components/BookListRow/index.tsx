@@ -8,6 +8,9 @@ interface BookListRowProps {
   book: BookItem;
   commentCount?: number;
   onPress: (book: BookItem) => void;
+  subtitle?: string;
+  rightContent?: React.ReactNode;
+  customStats?: React.ReactNode;
 }
 
 function formatCount(n: number): string {
@@ -20,20 +23,14 @@ export function BookListRow({
   book,
   commentCount = 0,
   onPress,
+  subtitle,
+  rightContent,
+  customStats,
 }: BookListRowProps) {
   const { currentTheme } = useThemeStore();
 
   return (
-    <Pressable
-      style={[
-        styles.row,
-        {
-          backgroundColor: currentTheme.surface,
-          borderColor: currentTheme.border,
-        },
-      ]}
-      onPress={() => onPress(book)}
-    >
+    <Pressable style={styles.row} onPress={() => onPress(book)}>
       <Image
         source={{ uri: book.cover }}
         style={styles.cover}
@@ -51,53 +48,67 @@ export function BookListRow({
           style={[styles.author, { color: currentTheme.textSecondary }]}
           numberOfLines={1}
         >
-          {book.author} · {book.genre.join(", ")}
+          {subtitle || `${book.author} · ${book.genre.join(", ")}`}
         </Text>
-        <View style={styles.stats}>
-          <View style={styles.stat}>
-            <Ionicons
-              name="eye-outline"
-              size={12}
-              color={currentTheme.textSecondary}
-            />
-            <Text
-              style={[styles.statText, { color: currentTheme.textSecondary }]}
-            >
-              {formatCount(book.viewsCount)}
-            </Text>
-          </View>
-          <View style={styles.stat}>
-            <Ionicons
-              name="heart-outline"
-              size={12}
-              color={currentTheme.textSecondary}
-            />
-            <Text
-              style={[styles.statText, { color: currentTheme.textSecondary }]}
-            >
-              {formatCount(book.favoritesCount)}
-            </Text>
-          </View>
-          <View style={styles.stat}>
-            <Ionicons
-              name="chatbubble-outline"
-              size={12}
-              color={currentTheme.textSecondary}
-            />
-            <Text
-              style={[styles.statText, { color: currentTheme.textSecondary }]}
-            >
-              {formatCount(commentCount)}
-            </Text>
-          </View>
-        </View>
+        {customStats ||
+          (!subtitle && (
+            <View style={styles.stats}>
+              <View style={styles.stat}>
+                <Ionicons
+                  name="eye-outline"
+                  size={12}
+                  color={currentTheme.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.statText,
+                    { color: currentTheme.textSecondary },
+                  ]}
+                >
+                  {formatCount(book.viewsCount)}
+                </Text>
+              </View>
+              <View style={styles.stat}>
+                <Ionicons
+                  name="heart-outline"
+                  size={12}
+                  color={currentTheme.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.statText,
+                    { color: currentTheme.textSecondary },
+                  ]}
+                >
+                  {formatCount(book.favoritesCount)}
+                </Text>
+              </View>
+              <View style={styles.stat}>
+                <Ionicons
+                  name="chatbubble-outline"
+                  size={12}
+                  color={currentTheme.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.statText,
+                    { color: currentTheme.textSecondary },
+                  ]}
+                >
+                  {formatCount(commentCount)}
+                </Text>
+              </View>
+            </View>
+          ))}
       </View>
 
-      <Ionicons
-        name="chevron-forward"
-        size={18}
-        color={currentTheme.textSecondary}
-      />
+      {rightContent || (
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={currentTheme.textSecondary}
+        />
+      )}
     </Pressable>
   );
 }
@@ -106,15 +117,13 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 1,
+    // padding: 10,
     gap: 10,
-    height: 76,
+    height: 100,
   },
   cover: {
-    width: 44,
-    height: 56,
+    width: 80,
+    height: 100,
     borderRadius: 6,
   },
   info: {
@@ -124,8 +133,8 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 18,
+    fontFamily: "Lora-Bold",
   },
   author: {
     fontSize: 12,

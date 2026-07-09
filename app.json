@@ -2,7 +2,7 @@
   "expo": {
     "name": "Yomu",
     "slug": "Yomu",
-    "version": "1.0.3",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/yomu.png",
     "scheme": "yomu",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "4"
+      "buildNumber": "6"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +22,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "id.my.basth.yomu",
-      "versionCode": 4
+      "versionCode": 6
     },
     "web": {
       "output": "static",
@@ -42,7 +42,22 @@
           }
         }
       ],
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Audiowide-Regular.ttf",
+            "./assets/fonts/Lora-Regular.ttf",
+            "./assets/fonts/Lora-Italic.ttf",
+            "./assets/fonts/Lora-Bold.ttf",
+            "./assets/fonts/Lora-BoldItalic.ttf",
+            "./assets/fonts/Literata-VariableFont_opsz,wght.ttf",
+            "./assets/fonts/Literata-Italic-VariableFont_opsz,wght.ttf",
+            "./assets/fonts/Merriweather-VariableFont_opsz,wdth,wght.ttf",
+            "./assets/fonts/Merriweather-Italic-VariableFont_opsz,wdth,wght.ttf"
+          ]
+        }
+      ],
       "expo-sqlite",
       "@clerk/expo",
       "expo-secure-store",

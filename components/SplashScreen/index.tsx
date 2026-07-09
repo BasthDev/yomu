@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, StyleSheet, useWindowDimensions, View, Text } from "react-native";
+import {
+    Animated,
+    StyleSheet,
+    Text,
+    useWindowDimensions,
+    View,
+} from "react-native";
 import { useThemeStore } from "../../store/themeStore";
 
 interface SplashScreenProps {
@@ -7,7 +13,10 @@ interface SplashScreenProps {
   onAnimationEnd: () => void;
 }
 
-export function SplashScreen({ fontsLoaded, onAnimationEnd }: SplashScreenProps) {
+export function SplashScreen({
+  fontsLoaded,
+  onAnimationEnd,
+}: SplashScreenProps) {
   const { width } = useWindowDimensions();
   const { currentTheme } = useThemeStore();
   const fullWord = useMemo(() => ["Y", "O", "M", "U"], []);
@@ -46,8 +55,8 @@ export function SplashScreen({ fontsLoaded, onAnimationEnd }: SplashScreenProps)
             toValue: 0,
             duration: 1000,
             useNativeDriver: false,
-          })
-        ])
+          }),
+        ]),
       ).start();
     } else {
       loadingBarWidth.stopAnimation();
@@ -61,7 +70,7 @@ export function SplashScreen({ fontsLoaded, onAnimationEnd }: SplashScreenProps)
 
   useEffect(() => {
     if (!animationStarted) return;
-    
+
     // Animate letters one by one
     const animations = fullWord.map((_, index) => {
       return Animated.parallel([
@@ -91,7 +100,14 @@ export function SplashScreen({ fontsLoaded, onAnimationEnd }: SplashScreenProps)
       setTouchEnabled(false);
       onAnimationEnd();
     });
-  }, [animationStarted, fullWord, slideAnims, fadeAnims, containerOpacity, onAnimationEnd]);
+  }, [
+    animationStarted,
+    fullWord,
+    slideAnims,
+    fadeAnims,
+    containerOpacity,
+    onAnimationEnd,
+  ]);
 
   return (
     <Animated.View
@@ -100,16 +116,23 @@ export function SplashScreen({ fontsLoaded, onAnimationEnd }: SplashScreenProps)
     >
       {!animationStarted ? (
         <View style={styles.loadingContainer}>
-          <Text style={{ color: currentTheme.text, marginBottom: 20 }}>Loading Assets...</Text>
-          <View style={[styles.loadingBarBackground, { backgroundColor: currentTheme.surface, width: width * 0.6 }]}>
-            <Animated.View 
+          <Text style={{ color: currentTheme.text, marginBottom: 20 }}>
+            Loading Assets...
+          </Text>
+          <View
+            style={[
+              styles.loadingBarBackground,
+              { backgroundColor: currentTheme.surface, width: width * 0.6 },
+            ]}
+          >
+            <Animated.View
               style={[
-                styles.loadingBarFill, 
-                { 
+                styles.loadingBarFill,
+                {
                   backgroundColor: currentTheme.primary,
-                  width: loadingBarWidth
-                }
-              ]} 
+                  width: loadingBarWidth,
+                },
+              ]}
             />
           </View>
         </View>
@@ -150,21 +173,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   letter: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Audiowide-Regular",
     fontSize: 60,
     color: "#E50914",
     marginHorizontal: 2,
   },
   loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   loadingBarBackground: {
     height: 4,
     borderRadius: 2,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   loadingBarFill: {
-    height: '100%',
-  }
+    height: "100%",
+  },
 });

@@ -1,14 +1,8 @@
+import { BookListRow } from "@/components/BookListRow";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import {
-    Image,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
@@ -132,69 +126,46 @@ export default function History() {
                   if (!book) return null;
 
                   return (
-                    <Pressable
+                    <BookListRow
                       key={historyItem.bookId}
-                      style={[
-                        styles.historyCard,
-                        {
-                          backgroundColor: currentTheme.surface,
-                          borderColor: currentTheme.border,
-                        },
-                      ]}
+                      book={book}
+                      subtitle={`${book.author} · ${book.genre.join(", ")}`}
+                      customStats={
+                        <View style={styles.stats}>
+                          <View style={styles.stat}>
+                            <Ionicons
+                              name="book-outline"
+                              size={12}
+                              color={currentTheme.textSecondary}
+                            />
+                            <Text
+                              style={[
+                                styles.statText,
+                                { color: currentTheme.textSecondary },
+                              ]}
+                            >
+                              Ch. {historyItem.chapterNumber}
+                            </Text>
+                          </View>
+                          <View style={styles.stat}>
+                            <Ionicons
+                              name="time-outline"
+                              size={12}
+                              color={currentTheme.textSecondary}
+                            />
+                            <Text
+                              style={[
+                                styles.statText,
+                                { color: currentTheme.textSecondary },
+                              ]}
+                            >
+                              {formatTimeAgo(historyItem.lastReadAt)}
+                            </Text>
+                          </View>
+                        </View>
+                      }
                       onPress={() => handleBookPress(historyItem.bookId)}
-                    >
-                      <Image
-                        source={{ uri: book.cover }}
-                        style={styles.bookCover}
-                        resizeMode="cover"
-                      />
-
-                      <View style={styles.bookInfo}>
-                        <Text
-                          style={[
-                            styles.bookTitle,
-                            { color: currentTheme.text },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {book.title}
-                        </Text>
-
-                        <Text
-                          style={[
-                            styles.chapterLine,
-                            { color: currentTheme.primary },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          Ch. {historyItem.chapterNumber} ·{" "}
-                          {historyItem.chapterTitle}
-                        </Text>
-
-                        <Text
-                          style={[
-                            styles.timeText,
-                            { color: currentTheme.textSecondary },
-                          ]}
-                        >
-                          {formatTimeAgo(historyItem.lastReadAt)}
-                        </Text>
-                      </View>
-
-                      <Pressable
-                        style={[
-                          styles.continueButton,
-                          { backgroundColor: currentTheme.primary },
-                        ]}
-                        onPress={() => handleContinueReading(historyItem)}
-                      >
-                        <Ionicons
-                          name="chevron-forward"
-                          size={18}
-                          color="#fff"
-                        />
-                      </Pressable>
-                    </Pressable>
+                    />
                   );
                 })}
               </View>
@@ -247,47 +218,17 @@ const styles = StyleSheet.create({
   historyList: {
     gap: 12,
   },
-  historyCard: {
+  stats: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 2,
+  },
+  stat: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
-    padding: 14,
-    gap: 16,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    gap: 3,
   },
-  bookCover: {
-    width: 64,
-    height: 88,
-    borderRadius: 8,
-  },
-  bookInfo: {
-    flex: 1,
-    minWidth: 0,
-    justifyContent: "center",
-    gap: 4,
-  },
-  bookTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    letterSpacing: 0.2,
-  },
-  chapterLine: {
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  timeText: {
-    fontSize: 12,
-  },
-  continueButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
+  statText: {
+    fontSize: 11,
   },
 });

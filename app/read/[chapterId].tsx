@@ -12,20 +12,27 @@ import { navigateToComments } from "@/utils/navigation";
 import { getRouteParam } from "@/utils/routeParams";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import {
-  ActivityIndicator,
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Dimensions,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { useGlobalRewardedAd } from "../../context/AdContext";
 import { useRewardedInterstitialAd } from "../../hooks/useRewardedInterstitialAd";
 import { useBookmarkStore } from "../../store/bookmarkStore";
+import { useChapterUnlockStore } from "../../store/chapterUnlockStore";
 import { useCoinStore } from "../../store/coinStore";
 import { useCommentStore } from "../../store/commentStore";
 
@@ -59,13 +66,38 @@ export default function Read() {
     refreshUnlocks,
   } = useSecurity();
 
+  const match = useMemo(
+    () => (chapterId ? findBookAndChapter(chapterId) : null),
+    [chapterId, findBookAndChapter],
+  );
+
+  const lastMatchRef = useRef(match);
+  if (match) {
+    lastMatchRef.current = match;
+  }
+  const activeMatch = match ?? lastMatchRef.current;
+  const { book, chapter, chapterIndex } = activeMatch || {};
+
   const [pendingUnlock, setPendingUnlock] = useState<ChapterItem | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const [carouselIndex, setCarouselIndex] = useState(() => {
+    if (activeMatch && book?.chaptersList) {
+      const idx = book.chaptersList.findIndex((ch) => ch.id === chapterId);
+      return idx !== -1 ? idx : 0;
+    }
+    return 0;
+  });
+
+  const purchasedChapterIds = useChapterUnlockStore(
+    (state) => state.purchasedChapterIds,
+  );
 
   // accessMap: chapterId -> ChapterAccessResult | null
   // undefined = not yet checked, null = currently checking, result = done
-  const [accessMap, setAccessMap] = useState<Record<string, ChapterAccessResult | null>>({});
+  const [accessMap, setAccessMap] = useState<
+    Record<string, ChapterAccessResult | null>
+  >({});
 
   const {
     isLoaded: isInterstitialLoaded,
@@ -79,18 +111,6 @@ export default function Read() {
     showRewardedAd: showUnlockAd,
   } = useGlobalRewardedAd();
 
-  const match = useMemo(
-    () => (chapterId ? findBookAndChapter(chapterId) : null),
-    [chapterId, findBookAndChapter],
-  );
-
-  const lastMatchRef = useRef(match);
-  if (match) {
-    lastMatchRef.current = match;
-  }
-  const activeMatch = match ?? lastMatchRef.current;
-
-  const { book, chapter, chapterIndex } = activeMatch || {};
   const hasPrev = chapterIndex !== undefined && chapterIndex > 0;
   const hasNext =
     book?.chaptersList && chapterIndex !== undefined
@@ -101,6 +121,35 @@ export default function Read() {
     hasPrev && book?.chaptersList ? book.chaptersList[chapterIndex - 1] : null;
   const nextChapter =
     hasNext && book?.chaptersList ? book.chaptersList[chapterIndex + 1] : null;
+
+  const checkAccessSync = useCallback(
+    (chItem: ChapterItem): ChapterAccessResult => {
+      if (!book) return { canAccess: false };
+      if (book.isFree || !chItem.isLocked) {
+        return { canAccess: true, reason: "free" };
+      }
+      if (purchasedChapterIds[chItem.id]) {
+        return { canAccess: true, reason: "unlocked" };
+      }
+
+      // Calculate wait days
+      const releaseDate = new Date(chItem.releasedAt);
+      const now = new Date();
+      const diffMs = now.getTime() - releaseDate.getTime();
+      const daysSinceRelease = diffMs / (1000 * 60 * 60 * 24);
+
+      if (daysSinceRelease >= 3) {
+        return { canAccess: true, reason: "wait_available" };
+      }
+
+      return {
+        canAccess: false,
+        reason: "coins_needed",
+        daysUntilFree: Math.ceil(3 - daysSinceRelease),
+      };
+    },
+    [book, purchasedChapterIds],
+  );
 
   // Check access for a chapter, store in map (null while checking)
   const checkAndStoreAccess = useCallback(
@@ -121,7 +170,8 @@ export default function Read() {
       for (const ch of book.chaptersList!) {
         if (cancelled) break;
         // Skip if already have a result (not null/undefined)
-        if (accessMap[ch.id] !== undefined && accessMap[ch.id] !== null) continue;
+        if (accessMap[ch.id] !== undefined && accessMap[ch.id] !== null)
+          continue;
         setAccessMap((prev) => ({ ...prev, [ch.id]: null })); // mark checking
         const res = await checkAccess(book, ch);
         if (!cancelled) {
@@ -130,9 +180,11 @@ export default function Read() {
       }
     };
     preloadAll();
-    return () => { cancelled = true; };
-  // Only re-run when book changes (not accessMap to avoid infinite loop)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true;
+    };
+    // Only re-run when book changes (not accessMap to avoid infinite loop)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [book, checkAccess]);
 
   // Re-check current chapter specifically when chapterId changes (fast path)
@@ -142,14 +194,18 @@ export default function Read() {
     const existing = accessMap[activeMatch.chapter.id];
     if (existing === null) return; // already checking
     checkAndStoreAccess(book, activeMatch.chapter);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeMatch?.chapter.id]);
 
-  // Current chapter access (for modal visibility)
-  const access = chapterId ? accessMap[chapterId] : undefined;
+  // Current chapter access (resolved synchronously to prevent delay)
+  const currentAccess = activeMatch
+    ? checkAccessSync(activeMatch.chapter)
+    : null;
+  const access = currentAccess;
 
   const isUnlockModalVisible =
-    pendingUnlock !== null || (access !== undefined && access !== null && !access.canAccess);
+    pendingUnlock !== null ||
+    (currentAccess !== null && !currentAccess.canAccess);
 
   const { showPrompt, recordChapterRead, skipBonus, completeBonus } =
     useBonusCoinsPrompt(isInterstitialLoaded, isUnlockModalVisible);
@@ -180,20 +236,17 @@ export default function Read() {
   useEffect(() => {
     if (!match || !chapterId) return;
 
+    const syncAccess = checkAccessSync(match.chapter);
+
     // Record reading history only when unlocked
-    if (access?.canAccess) {
+    if (syncAccess.canAccess) {
       updateReadingHistory(
         match.book.id,
         match.chapter.id,
         match.chapter.chapterNumber,
         match.chapter.title,
       );
-    }
-
-    // Always record chapter read for bonus prompt counting
-    // (free chapters count too, locked chapters shouldn't count so skip if definitively locked)
-    const isDefinitelyLocked = access !== undefined && access !== null && !access.canAccess;
-    if (!isDefinitelyLocked) {
+      // Record chapter read for bonus prompt counting ONLY if it is unlocked
       recordChapterRead(chapterId);
     }
   }, [
@@ -201,6 +254,7 @@ export default function Read() {
     match,
     updateReadingHistory,
     recordChapterRead,
+    checkAccessSync,
   ]);
 
   useEffect(() => {
@@ -228,36 +282,39 @@ export default function Read() {
 
   // carouselData is STABLE - does NOT depend on accessMap to avoid remounting carousel items
   const carouselData = useMemo(() => {
-    return (book?.chaptersList || []);
+    return book?.chaptersList || [];
   }, [book?.chaptersList]);
 
-  const refreshAccessAfterUnlock = useCallback(async (unlockedChapterId: string) => {
-    if (!activeMatch || !book) return;
+  const refreshAccessAfterUnlock = useCallback(
+    async (unlockedChapterId: string) => {
+      if (!activeMatch || !book) return;
 
-    // Re-hydrate the store so purchasedChapterIds is fresh for future checks
-    await refreshUnlocks();
+      // Re-hydrate the store so purchasedChapterIds is fresh for future checks
+      await refreshUnlocks();
 
-    // Directly mark the unlocked chapter as accessible - no need to re-query
-    // since we KNOW the unlock succeeded
-    setAccessMap((prev) => ({
-      ...prev,
-      [unlockedChapterId]: { canAccess: true, reason: "unlocked" as const },
-    }));
+      // Directly mark the unlocked chapter as accessible - no need to re-query
+      // since we KNOW the unlock succeeded
+      setAccessMap((prev) => ({
+        ...prev,
+        [unlockedChapterId]: { canAccess: true, reason: "unlocked" as const },
+      }));
 
-    // Re-check current chapter access only if it's not the one we just unlocked
-    if (activeMatch.chapter.id !== unlockedChapterId) {
-      const res = await checkAccess(book, activeMatch.chapter);
-      setAccessMap((prev) => ({ ...prev, [activeMatch.chapter.id]: res }));
-    }
-    if (prevChapter && prevChapter.id !== unlockedChapterId) {
-      const prevRes = await checkAccess(book, prevChapter);
-      setAccessMap((prev) => ({ ...prev, [prevChapter.id]: prevRes }));
-    }
-    if (nextChapter && nextChapter.id !== unlockedChapterId) {
-      const nextRes = await checkAccess(book, nextChapter);
-      setAccessMap((prev) => ({ ...prev, [nextChapter.id]: nextRes }));
-    }
-  }, [activeMatch, book, prevChapter, nextChapter, checkAccess, refreshUnlocks]);
+      // Re-check current chapter access only if it's not the one we just unlocked
+      if (activeMatch.chapter.id !== unlockedChapterId) {
+        const res = await checkAccess(book, activeMatch.chapter);
+        setAccessMap((prev) => ({ ...prev, [activeMatch.chapter.id]: res }));
+      }
+      if (prevChapter && prevChapter.id !== unlockedChapterId) {
+        const prevRes = await checkAccess(book, prevChapter);
+        setAccessMap((prev) => ({ ...prev, [prevChapter.id]: prevRes }));
+      }
+      if (nextChapter && nextChapter.id !== unlockedChapterId) {
+        const nextRes = await checkAccess(book, nextChapter);
+        setAccessMap((prev) => ({ ...prev, [nextChapter.id]: nextRes }));
+      }
+    },
+    [activeMatch, book, prevChapter, nextChapter, checkAccess, refreshUnlocks],
+  );
 
   const handleUnlockWithCoins = async () => {
     if (!activeMatch || !unlockTarget) return;
@@ -353,151 +410,163 @@ export default function Read() {
   }
 
   // Stable renderItem - reads accessMapRef.current (ref, not state) so it never causes re-renders
-  const renderChapterContent = useCallback((
-    chItem: ChapterItem,
-    scrollRefInstance: React.RefObject<ScrollView>,
-  ) => {
-    // Read from ref so this callback stays stable even as accessMap updates
-    const itemAccess = accessMapRef.current[chItem.id];
-    // undefined = not yet requested, null = checking
-    const isLoadingAccess = itemAccess === undefined || itemAccess === null;
-    const isChLocked = !isLoadingAccess && !itemAccess?.canAccess;
-    const chapterComments = comments.filter((c) => c.chapter_id === chItem.id);
+  const renderChapterContent = useCallback(
+    (chItem: ChapterItem, scrollRefInstance: React.RefObject<ScrollView>) => {
+      // 1. Resolve access synchronously first to render content or lock screen immediately
+      const syncAccess = checkAccessSync(chItem);
 
-    return (
-      <ScrollView
-        ref={scrollRefInstance}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <ContentWithPadding style={{ flexGrow: 1 }}>
-          <View
-            style={[
-              styles.novelContainer,
-              { flexGrow: 1, justifyContent: "space-between" },
-            ]}
-          >
-            <View>
-              <View style={styles.headerRow}>
-                <Text
-                  style={[styles.chapterTitle, { color: currentTheme.primary }]}
-                >
-                  CHAPTER {chItem.chapterNumber}
-                </Text>
+      // 2. Check if we have an override in the access map (e.g. from background preloads or unlocking)
+      const itemAccess = accessMapRef.current[chItem.id];
 
-                <TouchableOpacity
-                  style={styles.commentsHeaderIcon}
-                  onPress={() => navigateToComments(router, chItem.id)}
-                >
-                  <Ionicons
-                    name="chatbubble-outline"
-                    size={18}
-                    color={currentTheme.primary}
-                  />
+      // Determine final access status
+      const canAccess =
+        syncAccess.canAccess || (itemAccess?.canAccess ?? false);
+      const isChLocked = !canAccess;
+
+      const chapterComments = comments.filter(
+        (c) => c.chapter_id === chItem.id,
+      );
+
+      return (
+        <ScrollView
+          ref={scrollRefInstance}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <ContentWithPadding style={{ flexGrow: 1 }}>
+            <View
+              style={[
+                styles.novelContainer,
+                { flexGrow: 1, justifyContent: "space-between" },
+              ]}
+            >
+              <View>
+                <View style={styles.headerRow}>
                   <Text
                     style={[
-                      styles.commentsTitleText,
-                      { color: currentTheme.text },
+                      styles.chapterTitle,
+                      { color: currentTheme.primary },
                     ]}
                   >
-                    ({chapterComments.length})
+                    CHAPTER {chItem.chapterNumber}
                   </Text>
-                </TouchableOpacity>
-              </View>
-              <Text
-                style={[styles.chapterSubtitle, { color: currentTheme.text }]}
-              >
-                {chItem.title}
-              </Text>
-              <View
-                style={[
-                  styles.divider,
-                  { backgroundColor: currentTheme.border },
-                ]}
-              />
 
-              {isLoadingAccess ? (
-                /* Still checking — show nothing, content will appear once ready */
-                <View style={{ minHeight: 200 }} />
-              ) : isChLocked ? (
-                /* Definitively locked — show lock card only */
-                <View
-                  style={[
-                    styles.inlineLockedContainer,
-                    { borderColor: currentTheme.border },
-                  ]}
-                >
-                  <Ionicons name="lock-closed" size={40} color="#ffd700" />
-                  <Text
-                    style={[
-                      styles.lockedTitleText,
-                      { color: currentTheme.text },
-                    ]}
-                  >
-                    This chapter is locked
-                  </Text>
-                  <Text
-                    style={[
-                      styles.lockedSubText,
-                      { color: currentTheme.textSecondary },
-                    ]}
-                  >
-                    Unlock this chapter to continue reading
-                  </Text>
                   <TouchableOpacity
-                    style={[
-                      styles.inlineUnlockButton,
-                      { backgroundColor: currentTheme.primary },
-                    ]}
-                    onPress={() => setPendingUnlock(chItem)}
+                    style={styles.commentsHeaderIcon}
+                    onPress={() => navigateToComments(router, chItem.id)}
                   >
-                    <Ionicons name="lock-open" size={16} color="#fff" />
-                    <Text style={styles.inlineUnlockButtonText}>
-                      Tap to Unlock
+                    <Ionicons
+                      name="chatbubble-outline"
+                      size={18}
+                      color={currentTheme.primary}
+                    />
+                    <Text
+                      style={[
+                        styles.commentsTitleText,
+                        { color: currentTheme.text },
+                      ]}
+                    >
+                      ({chapterComments.length})
                     </Text>
                   </TouchableOpacity>
                 </View>
-              ) : (
-                /* Unlocked — show content */
+                <Text
+                  style={[styles.chapterSubtitle, { color: currentTheme.text }]}
+                >
+                  {chItem.title}
+                </Text>
+                <View
+                  style={[
+                    styles.divider,
+                    { backgroundColor: currentTheme.border },
+                  ]}
+                />
+
+                {isChLocked ? (
+                  /* Definitively locked — show lock card only */
+                  <View
+                    style={[
+                      styles.inlineLockedContainer,
+                      { borderColor: currentTheme.border },
+                    ]}
+                  >
+                    <Ionicons name="lock-closed" size={40} color="#ffd700" />
+                    <Text
+                      style={[
+                        styles.lockedTitleText,
+                        { color: currentTheme.text },
+                      ]}
+                    >
+                      This chapter is locked
+                    </Text>
+                    <Text
+                      style={[
+                        styles.lockedSubText,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      Unlock this chapter to continue reading
+                    </Text>
+                    <TouchableOpacity
+                      style={[
+                        styles.inlineUnlockButton,
+                        { backgroundColor: currentTheme.primary },
+                      ]}
+                      onPress={() => setPendingUnlock(chItem)}
+                    >
+                      <Ionicons name="lock-open" size={16} color="#fff" />
+                      <Text style={styles.inlineUnlockButtonText}>
+                        Tap to Unlock
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  /* Unlocked — show content */
+                  <Text
+                    style={[
+                      styles.paragraph,
+                      { color: currentTheme.textSecondary },
+                    ]}
+                  >
+                    {chItem.content}
+                  </Text>
+                )}
+              </View>
+
+              <View style={styles.swipeInstructionContainer}>
+                <Ionicons
+                  name="swap-horizontal-outline"
+                  size={16}
+                  color={currentTheme.textSecondary}
+                  style={{ opacity: 0.5 }}
+                />
                 <Text
                   style={[
-                    styles.paragraph,
+                    styles.swipeInstructionText,
                     { color: currentTheme.textSecondary },
                   ]}
                 >
-                  {chItem.content}
+                  Swipe left or right to change chapter
                 </Text>
-              )}
+              </View>
             </View>
+          </ContentWithPadding>
+        </ScrollView>
+      );
+      // Only stable deps - comments, theme, and checkAccessSync
+    },
+    [comments, currentTheme, setPendingUnlock, checkAccessSync],
+  );
 
-            <View style={styles.swipeInstructionContainer}>
-              <Ionicons
-                name="swap-horizontal-outline"
-                size={16}
-                color={currentTheme.textSecondary}
-                style={{ opacity: 0.5 }}
-              />
-              <Text
-                style={[
-                  styles.swipeInstructionText,
-                  { color: currentTheme.textSecondary },
-                ]}
-              >
-                Swipe left or right to change chapter
-              </Text>
-            </View>
-          </View>
-        </ContentWithPadding>
-      </ScrollView>
-    );
-  // Only stable deps - comments and theme (accessMap via ref, not state)
-  }, [comments, currentTheme, setPendingUnlock]);
+  // Determine title chapter synchronously from carouselIndex to avoid param sync blinking
+  const titleChapter =
+    (book?.chaptersList && book.chaptersList[carouselIndex]) || chapter;
 
   return (
     <Container>
       <CustomHeader
-        title={`Eps ${chapter.chapterNumber}: ${chapter.title}`}
+        title={book.title}
         showBack
         forceBackPath={`/book/${book.id}`}
       />
@@ -512,7 +581,7 @@ export default function Read() {
         renderItem={useCallback(
           ({ item }: { item: ChapterItem }) =>
             renderChapterContent(item, getScrollRef(item.id)),
-          [renderChapterContent]
+          [renderChapterContent],
         )}
       />
 
@@ -558,7 +627,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   chapterTitle: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Literata-Regular",
     fontSize: 14,
     letterSpacing: 2,
   },

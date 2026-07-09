@@ -1,7 +1,7 @@
 import { ClerkProvider, useUser } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
-import { Audiowide_400Regular, useFonts } from "@expo-google-fonts/audiowide";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -69,7 +69,15 @@ function AppBootstrap() {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Audiowide_400Regular,
+    "Audiowide-Regular": require("../assets/fonts/Audiowide-Regular.ttf"),
+    "Lora-Regular": require("../assets/fonts/Lora-Regular.ttf"),
+    "Lora-Italic": require("../assets/fonts/Lora-Italic.ttf"),
+    "Lora-Bold": require("../assets/fonts/Lora-Bold.ttf"),
+    "Lora-BoldItalic": require("../assets/fonts/Lora-BoldItalic.ttf"),
+    "Literata-Regular": require("../assets/fonts/Literata-VariableFont_opsz,wght.ttf"),
+    "Literata-Italic": require("../assets/fonts/Literata-Italic-VariableFont_opsz,wght.ttf"),
+    "Merriweather-Regular": require("../assets/fonts/Merriweather-VariableFont_opsz,wdth,wght.ttf"),
+    "Merriweather-Italic": require("../assets/fonts/Merriweather-Italic-VariableFont_opsz,wdth,wght.ttf"),
   });
 
   const [splashVisible, setSplashVisible] = useState(true);
@@ -111,7 +119,10 @@ export default function RootLayout() {
               <StatusBar style="light" />
               <AppBootstrap />
               {splashVisible && (
-                <SplashScreen fontsLoaded={fontsLoaded} onAnimationEnd={() => setAnimationDone(true)} />
+                <SplashScreen
+                  fontsLoaded={fontsLoaded}
+                  onAnimationEnd={() => setAnimationDone(true)}
+                />
               )}
             </AdProvider>
           </SecurityProvider>

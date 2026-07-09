@@ -60,7 +60,8 @@ export default function Index() {
           <BookGridCard item={item} onPress={handleBookPress} />
         )}
         keyExtractor={(item) => item.id}
-        numColumns={2}
+        key="3-columns"
+        numColumns={3}
         columnWrapperStyle={styles.row}
         ListHeaderComponent={renderHeader}
         contentContainerStyle={[
@@ -78,9 +79,10 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     marginBottom: 16,
     paddingHorizontal: 16,
+    gap: 12,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   sectionTitle: {
-    fontFamily: "Audiowide_400Regular",
+    fontFamily: "Lora-Bold",
     color: "#ffffff",
     fontSize: 18,
     letterSpacing: 1,
