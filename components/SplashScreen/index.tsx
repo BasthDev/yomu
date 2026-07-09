@@ -1,11 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-    Animated,
-    StyleSheet,
-    Text,
-    useWindowDimensions,
-    View,
-} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+  type SharedValue,
+} from "react-native-reanimated";
+
 import { useThemeStore } from "../../store/themeStore";
 
 interface SplashScreenProps {
@@ -17,177 +21,202 @@ export function SplashScreen({
   fontsLoaded,
   onAnimationEnd,
 }: SplashScreenProps) {
-  const { width } = useWindowDimensions();
   const { currentTheme } = useThemeStore();
-  const fullWord = useMemo(() => ["Y", "O", "M", "U"], []);
-  const [touchEnabled, setTouchEnabled] = useState(true);
-  const [animationStarted, setAnimationStarted] = useState(false);
-  const [minTimePassed, setMinTimePassed] = useState(false);
+
+  const letters = useMemo(() => ["Y", "O", "M", "U"], []);
+
+  const [canAnimate, setCanAnimate] = useState(false);
+
+  const containerOpacity = useSharedValue(1);
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.96);
+
+  const letterValues = letters.map(() => ({
+    opacity: useSharedValue(0),
+    translateY: useSharedValue(18),
+  }));
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimePassed(true), 1000);
+    const timer = setTimeout(() => {
+      setCanAnimate(true);
+    }, 700);
+
     return () => clearTimeout(timer);
   }, []);
 
-  // Animated values - memoized to prevent recreation
-  const containerOpacity = useRef(new Animated.Value(1)).current;
-  const slideAnims = useMemo(
-    () => fullWord.map(() => new Animated.Value(width)),
-    [fullWord, width],
-  );
-  const fadeAnims = useMemo(
-    () => fullWord.map(() => new Animated.Value(0)),
-    [fullWord],
-  );
-  const loadingBarWidth = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
-    // Simple looping loading bar while waiting for fonts or min time
-    if (!fontsLoaded || !minTimePassed) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(loadingBarWidth, {
-            toValue: width * 0.6,
-            duration: 1000,
-            useNativeDriver: false,
-          }),
-          Animated.timing(loadingBarWidth, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: false,
-          }),
-        ]),
-      ).start();
-    } else {
-      loadingBarWidth.stopAnimation();
-    }
-  }, [fontsLoaded, minTimePassed, loadingBarWidth, width]);
+    if (!fontsLoaded || !canAnimate) return;
 
-  useEffect(() => {
-    if (!fontsLoaded || !minTimePassed) return;
-    setAnimationStarted(true);
-  }, [fontsLoaded, minTimePassed]);
-
-  useEffect(() => {
-    if (!animationStarted) return;
-
-    // Animate letters one by one
-    const animations = fullWord.map((_, index) => {
-      return Animated.parallel([
-        Animated.timing(slideAnims[index], {
-          toValue: 0,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnims[index], {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-      ]);
+    logoOpacity.value = withTiming(1, {
+      duration: 300,
+      easing: Easing.out(Easing.quad),
     });
 
-    // After all letters slide in, fade out container
-    Animated.sequence([
-      Animated.stagger(300, animations),
-      Animated.delay(1000),
-      Animated.timing(containerOpacity, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setTouchEnabled(false);
-      onAnimationEnd();
+    logoScale.value = withTiming(1, {
+      duration: 350,
+      easing: Easing.out(Easing.quad),
     });
-  }, [
-    animationStarted,
-    fullWord,
-    slideAnims,
-    fadeAnims,
-    containerOpacity,
-    onAnimationEnd,
-  ]);
+
+    letters.forEach((_, index) => {
+      letterValues[index].opacity.value = withDelay(
+        index * 80,
+        withTiming(1, {
+          duration: 250,
+          easing: Easing.out(Easing.quad),
+        }),
+      );
+
+      letterValues[index].translateY.value = withDelay(
+        index * 80,
+        withTiming(0, {
+          duration: 280,
+          easing: Easing.out(Easing.cubic),
+        }),
+      );
+    });
+
+    setTimeout(() => {
+      containerOpacity.value = withTiming(
+        0,
+        {
+          duration: 400,
+          easing: Easing.inOut(Easing.quad),
+        },
+        () => {
+          runOnJS(onAnimationEnd)();
+        },
+      );
+
+      logoScale.value = withTiming(1.04, {
+        duration: 400,
+      });
+    }, 1600);
+  }, [fontsLoaded, canAnimate]);
+
+  const containerStyle = useAnimatedStyle(() => ({
+    opacity: containerOpacity.value,
+  }));
+
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [
+      {
+        scale: logoScale.value,
+      },
+    ],
+  }));
 
   return (
     <Animated.View
-      pointerEvents={touchEnabled ? "auto" : "none"}
-      style={[styles.container, { opacity: containerOpacity }]}
+      style={[
+        styles.container,
+        containerStyle,
+        {
+          backgroundColor: currentTheme.background,
+        },
+      ]}
     >
-      {!animationStarted ? (
-        <View style={styles.loadingContainer}>
-          <Text style={{ color: currentTheme.text, marginBottom: 20 }}>
-            Loading Assets...
-          </Text>
-          <View
-            style={[
-              styles.loadingBarBackground,
-              { backgroundColor: currentTheme.surface, width: width * 0.6 },
-            ]}
-          >
-            <Animated.View
-              style={[
-                styles.loadingBarFill,
-                {
-                  backgroundColor: currentTheme.primary,
-                  width: loadingBarWidth,
-                },
-              ]}
-            />
-          </View>
-        </View>
-      ) : (
+      <Animated.View style={[styles.logoContainer, logoStyle]}>
         <View style={styles.wordContainer}>
-          {fullWord.map((letter, index) => (
-            <Animated.Text
-              key={index}
+          {letters.map((letter, index) => (
+            <Letter
+              key={letter}
+              value={letterValues[index]}
+              letter={letter}
+              color={currentTheme.primary}
+            />
+          ))}
+        </View>
+
+        {!fontsLoaded && (
+          <View style={styles.loading}>
+            <ActivityIndicator size="small" color={currentTheme.primary} />
+
+            <Text
               style={[
-                styles.letter,
+                styles.loadingText,
                 {
-                  opacity: fadeAnims[index],
-                  transform: [{ translateX: slideAnims[index] }],
-                  color: currentTheme.primary,
+                  color: currentTheme.text,
                 },
               ]}
             >
-              {letter}
-            </Animated.Text>
-          ))}
-        </View>
-      )}
+              Loading...
+            </Text>
+          </View>
+        )}
+      </Animated.View>
     </Animated.View>
+  );
+}
+
+function Letter({
+  letter,
+  value,
+  color,
+}: {
+  letter: string;
+  value: {
+    opacity: SharedValue<number>;
+    translateY: SharedValue<number>;
+  };
+  color: string;
+}) {
+  const style = useAnimatedStyle(() => ({
+    opacity: value.opacity.value,
+    transform: [
+      {
+        translateY: value.translateY.value,
+      },
+    ],
+  }));
+
+  return (
+    <Animated.Text
+      style={[
+        styles.letter,
+        style,
+        {
+          color,
+        },
+      ]}
+    >
+      {letter}
+    </Animated.Text>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#121212",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 9999,
   },
+
+  logoContainer: {
+    alignItems: "center",
+  },
+
   wordContainer: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
   },
+
   letter: {
     fontFamily: "Audiowide-Regular",
-    fontSize: 60,
-    color: "#E50914",
+    fontSize: 64,
+    letterSpacing: 5,
     marginHorizontal: 2,
   },
-  loadingContainer: {
+
+  loading: {
+    marginTop: 24,
     alignItems: "center",
-    justifyContent: "center",
   },
-  loadingBarBackground: {
-    height: 4,
-    borderRadius: 2,
-    overflow: "hidden",
-  },
-  loadingBarFill: {
-    height: "100%",
+
+  loadingText: {
+    marginTop: 10,
+    fontSize: 13,
+    opacity: 0.7,
   },
 });
