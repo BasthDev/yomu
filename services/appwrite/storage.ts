@@ -1,4 +1,5 @@
 import { ID } from "appwrite";
+import * as FileSystem from "expo-file-system";
 import { BUCKETS, storage } from "./config";
 
 export interface StorageService {
@@ -31,12 +32,23 @@ class AppwriteStorageService implements StorageService {
       // Use folder-based file ID: folder/uniqueId
       const fileId = ID.unique();
       const fileWithPath = `${folder}/${fileId}`;
-      const response = await storage.createFile(
+
+      // For React Native, read file using FileSystem
+      const fileContent = await FileSystem.readAsStringAsync(file.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Create a File object from base64 content
+      const base64Data = `data:${file.type};base64,${fileContent}`;
+      const response = await fetch(base64Data);
+      const blob = await response.blob();
+
+      const fileResponse = await storage.createFile(
         BUCKETS.STORAGE,
         fileWithPath,
-        file as any, // Type assertion for React Native file format
+        blob as any,
       );
-      return response.$id;
+      return fileResponse.$id;
     } catch (error) {
       console.error("Error uploading file:", error);
       throw error;

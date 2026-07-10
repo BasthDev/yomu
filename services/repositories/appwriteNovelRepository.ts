@@ -9,32 +9,32 @@ export interface Novel {
   $permissions: string[];
   $databaseId: string;
   $collectionId: string;
-  authorId: string;
+  author_id: string;
   title: string;
   slug: string;
   description?: string;
-  coverUrl?: string;
-  bannerUrl?: string;
+  cover_url?: string;
+  banner_url?: string;
   status: "draft" | "published" | "hiatus" | "completed";
   visibility: "public" | "private" | "unlisted";
   language: string;
-  isMature: boolean;
-  wordCount: number;
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
-  ratingCount: number;
-  averageRating: number;
-  chapterCount: number;
-  isMonetized: boolean;
-  monetizationType?: string;
-  copyrightNotice?: string;
-  isFeatured: boolean;
-  featuredAt?: string;
-  publishedAt?: string;
-  lastUpdatedAt?: string;
-  isDeleted: boolean;
-  deletedAt?: string;
+  is_mature: boolean;
+  word_count: number;
+  view_count: number;
+  like_count: number;
+  comment_count: number;
+  rating_count: number;
+  average_rating: number;
+  chapter_count: number;
+  is_monetized: boolean;
+  monetization_type?: string;
+  copyright_notice?: string;
+  is_featured: boolean;
+  featured_at?: string;
+  published_at?: string;
+  last_updated_at?: string;
+  is_deleted: boolean;
+  deleted_at?: string;
 }
 
 export interface NovelRepository {
@@ -54,7 +54,7 @@ class AppwriteNovelRepository implements NovelRepository {
         DATABASE_ID,
         COLLECTIONS.NOVELS,
         [
-          Query.equal("isDeleted", false),
+          Query.equal("is_deleted", false),
           Query.equal("status", "published"),
           Query.orderDesc("$createdAt"),
         ],
@@ -86,8 +86,8 @@ class AppwriteNovelRepository implements NovelRepository {
         DATABASE_ID,
         COLLECTIONS.NOVELS,
         [
-          Query.equal("authorId", authorId),
-          Query.equal("isDeleted", false),
+          Query.equal("author_id", authorId),
+          Query.equal("is_deleted", false),
           Query.orderDesc("$createdAt"),
         ],
       );
@@ -105,7 +105,7 @@ class AppwriteNovelRepository implements NovelRepository {
         COLLECTIONS.NOVELS,
         [
           Query.search("title", query),
-          Query.equal("isDeleted", false),
+          Query.equal("is_deleted", false),
           Query.equal("status", "published"),
         ],
       );
@@ -178,23 +178,23 @@ class AppwriteNovelRepository implements NovelRepository {
       title: novel.title,
       description: novel.description || "",
       genre: ["Fiction"], // Default genre, should be fetched from novel_genres
-      banner: novel.bannerUrl || "",
-      cover: novel.coverUrl || "",
-      isHot: novel.isFeatured,
+      banner: novel.banner_url || "",
+      cover: novel.cover_url || "",
+      isHot: novel.is_featured,
       status:
         novel.status === "completed"
           ? "Completed"
           : novel.status === "hiatus"
             ? "Hiatus"
             : "Ongoing",
-      rating: novel.averageRating,
+      rating: novel.average_rating,
       author: "", // We'd need to fetch author data separately
-      authorId: novel.authorId,
-      isFree: !novel.isMonetized,
-      viewsCount: novel.viewCount,
-      favoritesCount: novel.likeCount, // Using likeCount as favoritesCount for now
+      authorId: novel.author_id,
+      isFree: !novel.is_monetized,
+      viewsCount: novel.view_count,
+      favoritesCount: novel.like_count, // Using like_count as favoritesCount for now
       createdAt: novel.$createdAt,
-      updatedAt: novel.lastUpdatedAt || novel.$updatedAt,
+      updatedAt: novel.last_updated_at || novel.$updatedAt,
       chaptersList: [], // We'd need to fetch chapters separately
       comments: [], // We'd need to fetch comments separately
     }));
@@ -209,23 +209,23 @@ class AppwriteNovelRepository implements NovelRepository {
       title: novel.title,
       description: novel.description || "",
       genre: ["Fiction"], // Default genre, should be fetched from novel_genres
-      banner: novel.bannerUrl || "",
-      cover: novel.coverUrl || "",
-      isHot: novel.isFeatured,
+      banner: novel.banner_url || "",
+      cover: novel.cover_url || "",
+      isHot: novel.is_featured,
       status:
         novel.status === "completed"
           ? "Completed"
           : novel.status === "hiatus"
             ? "Hiatus"
             : "Ongoing",
-      rating: novel.averageRating,
+      rating: novel.average_rating,
       author: "", // We'd need to fetch author data separately
-      authorId: novel.authorId,
-      isFree: !novel.isMonetized,
-      viewsCount: novel.viewCount,
-      favoritesCount: novel.likeCount, // Using likeCount as favoritesCount for now
+      authorId: novel.author_id,
+      isFree: !novel.is_monetized,
+      viewsCount: novel.view_count,
+      favoritesCount: novel.like_count, // Using like_count as favoritesCount for now
       createdAt: novel.$createdAt,
-      updatedAt: novel.lastUpdatedAt || novel.$updatedAt,
+      updatedAt: novel.last_updated_at || novel.$updatedAt,
       chaptersList: [], // We'd need to fetch chapters separately
       comments: [], // We'd need to fetch comments separately
     };

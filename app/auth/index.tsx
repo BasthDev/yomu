@@ -1,4 +1,3 @@
-import { useAuth, useClerk, useSignIn, useSignUp } from "@clerk/expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,28 +12,33 @@ import {
   View,
 } from "react-native";
 import { Container } from "../../components/Container";
+import { authService } from "../../services/appwrite/auth";
+import { useAuthStore } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
 
 export default function AuthScreen() {
   const { type } = useLocalSearchParams<{ type?: "signin" | "signup" }>();
   const router = useRouter();
   const { currentTheme } = useThemeStore();
-  const { isLoaded, isSignedIn } = useAuth();
-  const { signIn } = useSignIn();
-  const { signUp } = useSignUp();
-  const { setActive } = useClerk();
+  const { isAuthenticated, checkAuth } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(type === "signup");
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isLoaded && isSignedIn) {
+    if (isAuthenticated) {
       router.replace("/(tabs)");
     }
-  }, [isLoaded, isSignedIn, router]);
+  }, [isAuthenticated, router]);
+
+  // Check auth on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -42,62 +46,31 @@ export default function AuthScreen() {
       return;
     }
 
+    if (isSignUp && !name) {
+      Alert.alert("Error", "Please enter your name");
+      return;
+    }
+
     setLoading(true);
     try {
       if (isSignUp) {
-        if (!signUp) return;
-
-        const result = await signUp.create({
-          emailAddress: email,
-          password,
-        });
-
-        if ("error" in result && result.error) {
-          Alert.alert("Error", result.error.message || "Sign up failed");
-          return;
-        }
-
-        // Complete sign-up without email verification
-        await signUp.finalize();
-        if (signUp.status === "complete") {
-          await setActive({ session: signUp.createdSessionId });
-          router.replace("/(tabs)");
-        } else {
-          Alert.alert("Sign up", "Please complete verification");
-        }
+        await authService.signUp(email, password, name);
+        Alert.alert("Success", "Account created successfully!");
+        router.replace("/(tabs)");
       } else {
-        if (!signIn) return;
-
-        const result = await signIn.create({
-          identifier: email,
-          password,
-        });
-
-        if ("error" in result && result.error) {
-          Alert.alert("Error", result.error.message || "Sign in failed");
-          return;
-        }
-
-        // Set the active session
-        if (signIn.status === "complete") {
-          await setActive({ session: signIn.createdSessionId });
-          router.replace("/(tabs)");
-        } else {
-          Alert.alert("Sign in", "Please complete verification");
-        }
+        await authService.signIn(email, password);
+        Alert.alert("Success", "Signed in successfully!");
+        router.replace("/(tabs)");
       }
     } catch (err: any) {
-      Alert.alert(
-        "Error",
-        err.errors?.[0]?.message || err.message || "Authentication failed",
-      );
+      Alert.alert("Error", err.message || "Authentication failed");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    Alert.alert("Google Sign In", "Coming soon - configure Google OAuth");
+    Alert.alert("Google Sign In", "Coming soon - configure Appwrite OAuth");
   };
 
   return (
@@ -122,6 +95,29 @@ export default function AuthScreen() {
           </View>
 
           <View style={styles.form}>
+            {isSignUp && (
+              <View style={styles.inputContainer}>
+                <Text style={[styles.label, { color: currentTheme.text }]}>
+                  Name
+                </Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: currentTheme.background,
+                      color: currentTheme.text,
+                      borderColor: currentTheme.textSecondary + "30",
+                    },
+                  ]}
+                  placeholder="Enter your name"
+                  placeholderTextColor={currentTheme.textSecondary}
+                  value={name}
+                  onChangeText={setName}
+                  autoCapitalize="words"
+                />
+              </View>
+            )}
+
             <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: currentTheme.text }]}>
                 Email

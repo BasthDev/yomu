@@ -1,14 +1,14 @@
 import { create } from "zustand";
+import { profileRepository } from "../services/repositories/appwriteProfileRepository";
 import { AD_REWARDS } from "../utils/adConfig";
 import { getAuthUserId, getAuthUserIdOrNull } from "../utils/authUser";
 import * as Database from "../utils/database";
+import { useAuthStore } from "./authStore";
 import { useChapterUnlockStore } from "./chapterUnlockStore";
 
 interface CoinState {
   balance: number;
   isLoading: boolean;
-  clerkUser: any;
-  setClerkUser: (user: any) => void;
   loadBalance: () => Promise<void>;
   addCoins: (amount: number, description: string) => Promise<void>;
   spendCoins: (amount: number, description: string) => Promise<boolean>;
@@ -28,21 +28,17 @@ interface CoinState {
 export const useCoinStore = create<CoinState>((set, get) => ({
   balance: 0,
   isLoading: true,
-  clerkUser: null,
-
-  setClerkUser: (user: any) => {
-    set({ clerkUser: user });
-  },
 
   loadBalance: async () => {
-    const user = get().clerkUser;
-    if (!user) {
+    const { userId } = useAuthStore.getState();
+    if (!userId) {
       set({ balance: 0, isLoading: false });
       return;
     }
 
     try {
-      const balance = (user.unsafeMetadata?.coins as number) || 0;
+      const profile = await profileRepository.getProfileByUserId(userId);
+      const balance = (profile as any)?.coins || 0;
       set({ balance, isLoading: false });
     } catch (error) {
       console.error("Error loading balance:", error);
@@ -51,14 +47,14 @@ export const useCoinStore = create<CoinState>((set, get) => ({
   },
 
   addCoins: async (amount: number, description: string) => {
-    const user = get().clerkUser;
-    if (!user) {
+    const { userId } = useAuthStore.getState();
+    if (!userId) {
       console.error("No user found when adding coins");
       return;
     }
 
     try {
-      const currentBalance = (user.unsafeMetadata?.coins as number) || 0;
+      const currentBalance = get().balance;
       const newBalance = currentBalance + amount;
       console.log("Adding coins:", {
         amount,
@@ -67,20 +63,14 @@ export const useCoinStore = create<CoinState>((set, get) => ({
         description,
       });
 
-      await user.updateMetadata({
-        unsafeMetadata: { coins: newBalance },
-      });
-
-      console.log("User metadata updated successfully");
-
-      // Update local user object to reflect the new metadata
-      set({
-        clerkUser: {
-          ...user,
-          unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
-        },
-        balance: newBalance,
-      });
+      // Update profile in Appwrite database
+      const profile = await profileRepository.getProfileByUserId(userId);
+      if (profile) {
+        await profileRepository.updateProfile(profile.$id, {
+          coins: newBalance,
+        });
+      }
+      set({ balance: newBalance });
     } catch (error) {
       console.error("Error adding coins:", error);
       throw error;
@@ -88,25 +78,22 @@ export const useCoinStore = create<CoinState>((set, get) => ({
   },
 
   spendCoins: async (amount: number, description: string) => {
-    const user = get().clerkUser;
-    if (!user) return false;
+    const { userId } = useAuthStore.getState();
+    if (!userId) return false;
 
     try {
-      const currentBalance = (user.unsafeMetadata?.coins as number) || 0;
+      const currentBalance = get().balance;
       if (currentBalance < amount) return false;
 
       const newBalance = currentBalance - amount;
-      await user.updateMetadata({
-        unsafeMetadata: { coins: newBalance },
-      });
-      // Update local user object to reflect the new metadata
-      set({
-        clerkUser: {
-          ...user,
-          unsafeMetadata: { ...user.unsafeMetadata, coins: newBalance },
-        },
-        balance: newBalance,
-      });
+      // Update profile in Appwrite database
+      const profile = await profileRepository.getProfileByUserId(userId);
+      if (profile) {
+        await profileRepository.updateProfile(profile.$id, {
+          coins: newBalance,
+        });
+      }
+      set({ balance: newBalance });
       return true;
     } catch (error) {
       console.error("Error spending coins:", error);

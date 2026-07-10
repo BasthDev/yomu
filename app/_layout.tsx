@@ -1,6 +1,4 @@
 import { useThemeStore } from "@/store/themeStore";
-import { ClerkProvider, useUser } from "@clerk/expo";
-import { tokenCache } from "@clerk/expo/token-cache";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -16,7 +14,7 @@ import { AdProvider } from "../context/AdContext";
 import { SecurityProvider } from "../context/SecurityContext";
 import { queryClient } from "../lib/queryClient";
 
-import { useAuthStore, useClerkAuthSync } from "../store/authStore";
+import { useAppwriteAuthSync, useAuthStore } from "../store/authStore";
 
 import { useChapterUnlockStore } from "../store/chapterUnlockStore";
 
@@ -35,17 +33,18 @@ if (Platform.OS === "android") {
 }
 
 function AppBootstrap() {
-  useClerkAuthSync();
+  useAppwriteAuthSync();
 
   const userId = useAuthStore((state) => state.userId);
+  const firstName = useAuthStore((state) => state.firstName);
+  const lastName = useAuthStore((state) => state.lastName);
+  const email = useAuthStore((state) => state.email);
 
   const loadBalance = useCoinStore((state) => state.loadBalance);
 
   const hydrateUnlocks = useChapterUnlockStore((state) => state.hydrate);
 
   const resetUnlocks = useChapterUnlockStore((state) => state.reset);
-
-  const { user } = useUser();
 
   useEffect(() => {
     const task = InteractionManager.runAfterInteractions(() => {
@@ -58,19 +57,16 @@ function AppBootstrap() {
   }, []);
 
   useEffect(() => {
-    if (!userId || !user) {
+    if (!userId) {
       useCoinStore.setState({
         balance: 0,
         isLoading: false,
-        clerkUser: null,
       });
 
       resetUnlocks();
 
       return;
     }
-
-    useCoinStore.getState().setClerkUser(user);
 
     const task = InteractionManager.runAfterInteractions(() => {
       loadBalance();
@@ -81,7 +77,7 @@ function AppBootstrap() {
     return () => {
       task.cancel();
     };
-  }, [userId, user]);
+  }, [userId, firstName, lastName, email]);
 
   const { currentTheme, colorMode } = useThemeStore();
 
@@ -111,6 +107,7 @@ function AppBootstrap() {
         <Stack.Screen name="comments/[chapterId]" />
 
         <Stack.Screen name="test-ad" />
+        <Stack.Screen name="user" />
       </Stack>
     </>
   );
@@ -187,25 +184,20 @@ export default function RootLayout() {
         flex: 1,
       }}
     >
-      <ClerkProvider
-        publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}
-        tokenCache={tokenCache}
-      >
-        <QueryClientProvider client={queryClient}>
-          <SecurityProvider>
-            <AdProvider>
-              <AppBootstrap />
+      <QueryClientProvider client={queryClient}>
+        <SecurityProvider>
+          <AdProvider>
+            <AppBootstrap />
 
-              {splashVisible && (
-                <SplashScreen
-                  fontsLoaded={fontsLoaded}
-                  onAnimationEnd={() => setAnimationDone(true)}
-                />
-              )}
-            </AdProvider>
-          </SecurityProvider>
-        </QueryClientProvider>
-      </ClerkProvider>
+            {splashVisible && (
+              <SplashScreen
+                fontsLoaded={fontsLoaded}
+                onAnimationEnd={() => setAnimationDone(true)}
+              />
+            )}
+          </AdProvider>
+        </SecurityProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

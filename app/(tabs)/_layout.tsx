@@ -1,39 +1,37 @@
 import { useAuthStore } from "@/store/authStore";
-import { useAuth } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useEffect } from "react";
-import { Image, Platform } from "react-native";
-import { useClerkAuthSync } from "../../store/authStore";
+import { Image, Platform, Text, View } from "react-native";
+import { useAppwriteAuthSync } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
 
 export default function TabsLayout() {
   const { currentTheme, loadTheme } = useThemeStore();
 
-  const { imageUrl, isLoading } = useAuthStore();
+  const { imageUrl, firstName, lastName, email, isAuthenticated, isLoading } =
+    useAuthStore();
 
-  let isLoaded = false;
-  let isSignedIn = false;
-
-  try {
-    const auth = useAuth();
-    isLoaded = auth.isLoaded;
-    isSignedIn = auth.isSignedIn;
-  } catch (error) {
-    // Auth context not available yet, return null
-    return null;
-  }
-
-  // Sync Clerk auth state with our store
-  useClerkAuthSync();
+  // Sync Appwrite auth state with our store
+  useAppwriteAuthSync();
 
   useEffect(() => {
     loadTheme();
   }, [loadTheme]);
 
-  if (!isLoaded) return null;
+  if (isLoading) return null;
 
-  if (!isSignedIn) return <Redirect href="/auth" />;
+  if (!isAuthenticated) return <Redirect href="/auth" />;
+
+  const getInitials = () => {
+    if (firstName) {
+      return firstName[0].toUpperCase();
+    }
+    if (email) {
+      return email[0].toUpperCase();
+    }
+    return "U";
+  };
 
   return (
     <Tabs
@@ -104,7 +102,30 @@ export default function TabsLayout() {
                   borderColor: currentTheme.primary,
                 }}
               />
-            ) : null,
+            ) : (
+              <View
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: currentTheme.primary,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderWidth: focused ? 1 : 0,
+                  borderColor: currentTheme.primary,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: 12,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {getInitials()}
+                </Text>
+              </View>
+            ),
         }}
       />
       {/* <Tabs.Screen

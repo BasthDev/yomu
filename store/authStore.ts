@@ -1,6 +1,6 @@
-import { useAuth, useUser } from "@clerk/expo";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { create } from "zustand";
+import { authService } from "../services/appwrite/auth";
 import * as Database from "../utils/database";
 import { getDisplayName } from "../utils/userDisplayName";
 
@@ -21,11 +21,12 @@ interface AuthState {
   ) => void;
   setLoading: (loading: boolean) => void;
   logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
-  userId: "", // Will be set from Clerk
+  userId: "",
   firstName: "",
   lastName: "",
   email: "",
@@ -50,52 +51,81 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
-    // Clerk handles logout via useAuth hook
-    set({
-      isAuthenticated: false,
-      userId: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      imageUrl: "",
-      isLoading: true,
-    });
+    try {
+      await authService.signOut();
+      set({
+        isAuthenticated: false,
+        userId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        imageUrl: "",
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  },
+
+  checkAuth: async () => {
+    try {
+      const user = await authService.getCurrentUser();
+      if (user) {
+        const firstName = user.name?.split(" ")[0] || "";
+        const lastName = user.name?.split(" ").slice(1).join(" ") || "";
+        const email = user.email || "";
+
+        set({
+          isAuthenticated: true,
+          userId: user.$id,
+          firstName,
+          lastName,
+          email,
+          imageUrl: "",
+          isLoading: false,
+        });
+
+        // Backfill comment display names
+        const displayName = getDisplayName(firstName, lastName);
+        if (displayName) {
+          Database.updateCommentDisplayNames(user.$id, displayName).catch(
+            (err) =>
+              console.error("Failed to backfill comment display names:", err),
+          );
+        }
+      } else {
+        set({
+          isAuthenticated: false,
+          userId: "",
+          firstName: "",
+          lastName: "",
+          email: "",
+          imageUrl: "",
+          isLoading: false,
+        });
+      }
+    } catch (error) {
+      set({
+        isAuthenticated: false,
+        userId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        imageUrl: "",
+        isLoading: false,
+      });
+    }
   },
 }));
 
-// Hook to sync Clerk auth state with our store
-export const useClerkAuthSync = () => {
-  const { isLoaded, isSignedIn, userId } = useAuth();
-  const { user } = useUser();
-  const setUserId = useAuthStore((s) => s.setUserId);
-  const setUserData = useAuthStore((s) => s.setUserData);
-  const prevDisplayNameRef = useRef<string | null>(null);
+// Hook to check auth on mount
+export const useAppwriteAuthSync = () => {
+  const checkAuth = useAuthStore((s) => s.checkAuth);
+  const isLoading = useAuthStore((s) => s.isLoading);
 
   useEffect(() => {
-    if (isLoaded && isSignedIn && userId) {
-      setUserId(userId);
-    }
-  }, [isLoaded, isSignedIn, userId, setUserId]);
+    checkAuth();
+  }, [checkAuth]);
 
-  useEffect(() => {
-    if (!user || !userId) return;
-
-    const firstName = user.firstName || "";
-    const lastName = user.lastName || "";
-    const displayName = getDisplayName(firstName, lastName);
-
-    setUserData(
-      firstName,
-      lastName,
-      user.emailAddresses[0]?.emailAddress || "",
-      user.imageUrl || "",
-    );
-
-    if (displayName && displayName !== prevDisplayNameRef.current) {
-      prevDisplayNameRef.current = displayName;
-      Database.updateCommentDisplayNames(userId, displayName).catch((err) =>
-        console.error("Failed to backfill comment display names:", err),
-      );
-    }
-  }, [user, userId, setUserData]);
+  return { isLoading };
 };

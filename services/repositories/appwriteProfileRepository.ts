@@ -8,15 +8,14 @@ export interface Profile {
   $permissions: string[];
   $databaseId: string;
   $collectionId: string;
-  userId: string;
-  displayName: string;
+  user_id: string;
+  display_name: string;
   bio?: string;
-  avatarUrl?: string;
+  avatar_url?: string;
   website?: string;
-  socialLinks?: Record<string, string>;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
+  social_links?: string;
+  coins?: number;
+  is_deleted: boolean;
 }
 
 export interface ProfileRepository {
@@ -33,10 +32,10 @@ class AppwriteProfileRepository implements ProfileRepository {
         DATABASE_ID,
         COLLECTIONS.PROFILES,
         [
-          Query.equal("userId", userId),
-          Query.equal("isDeleted", false),
+          Query.equal("user_id", userId),
+          Query.equal("is_deleted", false),
           Query.limit(1),
-        ]
+        ],
       );
       return (response.documents[0] as unknown as Profile) || null;
     } catch (error) {
@@ -46,46 +45,54 @@ class AppwriteProfileRepository implements ProfileRepository {
   }
 
   async createProfile(data: Partial<Profile>): Promise<Profile> {
-    const { $id, $createdAt, $updatedAt, $permissions, $databaseId, $collectionId, ...profileData } = data as any;
+    const {
+      $id,
+      $createdAt,
+      $updatedAt,
+      $permissions,
+      $databaseId,
+      $collectionId,
+      ...profileData
+    } = data as any;
     const response = await databases.createDocument(
       DATABASE_ID,
       COLLECTIONS.PROFILES,
       "unique()",
       {
         ...profileData,
-        isDeleted: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
+        is_deleted: false,
+        coins: 0,
+      },
     );
     return response as unknown as Profile;
   }
 
   async updateProfile(id: string, data: Partial<Profile>): Promise<Profile> {
-    const { $id, $createdAt, $updatedAt, $permissions, $databaseId, $collectionId, ...profileData } = data as any;
+    const {
+      $id,
+      $createdAt,
+      $updatedAt,
+      $permissions,
+      $databaseId,
+      $collectionId,
+      ...profileData
+    } = data as any;
     const response = await databases.updateDocument(
       DATABASE_ID,
       COLLECTIONS.PROFILES,
       id,
-      {
-        ...profileData,
-        updatedAt: new Date().toISOString(),
-      }
+      profileData,
     );
     return response as unknown as Profile;
   }
 
   async deleteProfile(id: string): Promise<void> {
     // Soft delete
-    await databases.updateDocument(
-      DATABASE_ID,
-      COLLECTIONS.PROFILES,
-      id,
-      {
-        isDeleted: true,
-      }
-    );
+    await databases.updateDocument(DATABASE_ID, COLLECTIONS.PROFILES, id, {
+      is_deleted: true,
+    });
   }
 }
 
-export const profileRepository: ProfileRepository = new AppwriteProfileRepository();
+export const profileRepository: ProfileRepository =
+  new AppwriteProfileRepository();

@@ -1,99 +1,166 @@
-import { useAuth, useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
-import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Image,
-  Pressable,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Container } from "../../components/Container";
 import { ContentWithPadding } from "../../components/Content";
 import { CustomHeader } from "../../components/Header";
+import { storageService } from "../../services/appwrite/storage";
+import { profileRepository } from "../../services/repositories/appwriteProfileRepository";
+import { useAuthStore } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
 
 export default function Profile() {
   const router = useRouter();
   const { currentTheme, themeName, setPresetTheme, colorMode, setColorMode } =
     useThemeStore();
-  const { user } = useUser();
-  const { signOut } = useAuth();
+  const { firstName, lastName, email, userId, logout } = useAuthStore();
 
-  const firstName = user?.firstName || "";
-  const lastName = user?.lastName || "";
-  const email = user?.emailAddresses[0]?.emailAddress || "";
-  const [isUploading, setIsUploading] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [bio, setBio] = useState("");
+  const [website, setWebsite] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [youtube, setYoutube] = useState("");
+  const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
-  const handleSignOut = async () => {
+  useEffect(() => {
+    loadProfile();
+  }, [userId]);
+
+  const loadProfile = async () => {
+    if (!userId) return;
     try {
-      await signOut();
-      router.replace("/auth");
+      const profileData = await profileRepository.getProfileByUserId(userId);
+      setProfile(profileData);
+      if (profileData) {
+        setBio(profileData.bio || "");
+        setWebsite(profileData.website || "");
+        setAvatarUri(profileData.avatar_url || null);
+
+        // Parse social links JSON
+        try {
+          const links = JSON.parse(profileData.social_links || "{}");
+          setInstagram(links.instagram || "");
+          setTiktok(links.tiktok || "");
+          setTwitter(links.twitter || "");
+          setYoutube(links.youtube || "");
+        } catch (e) {
+          console.error("Error parsing social links:", e);
+        }
+      }
     } catch (error) {
-      Alert.alert("Error", "Failed to sign out");
+      console.error("Error loading profile:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleImageUpload = async () => {
+  const pickImage = async () => {
     try {
-      // Request permission
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
           "Permission needed",
-          "Please grant camera roll permissions",
+          "Please grant camera roll permissions to upload an avatar",
         );
         return;
       }
 
-      // Pick image
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
-      });
+      } as any);
 
       if (!result.canceled && result.assets[0]) {
-        setIsUploading(true);
-        const uri = result.assets[0].uri;
+        setUploadingAvatar(true);
+        try {
+          const fileInfo = result.assets[0];
 
-        // Read the file as base64
-        const fileInfo = await FileSystem.getInfoAsync(uri);
-        if (!fileInfo.exists) {
-          throw new Error("File does not exist");
+          const uploadedFileId = await storageService.uploadFile("avatars", {
+            uri: fileInfo.uri,
+            type: fileInfo.type || "image/jpeg",
+            name: fileInfo.fileName || `avatar_${Date.now()}.jpg`,
+            size: fileInfo.fileSize || 0,
+          });
+
+          const fileUrl = storageService.getFileView("avatars", uploadedFileId);
+
+          if (profile) {
+            await profileRepository.updateProfile(profile.$id, {
+              avatar_url: fileUrl,
+            });
+            setAvatarUri(fileUrl);
+            await loadProfile();
+          }
+        } catch (error) {
+          console.error("Error uploading avatar:", error);
+          Alert.alert("Error", "Failed to upload avatar");
+        } finally {
+          setUploadingAvatar(false);
         }
-
-        // Read file as base64
-        const base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: "base64",
-        });
-
-        // Create a File object from base64
-        const file = new File(
-          [Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))],
-          "profile.jpg",
-          { type: "image/jpeg" },
-        );
-
-        // Upload to Clerk
-        await user?.setProfileImage({ file });
-
-        Alert.alert("Success", "Profile image updated successfully");
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
-      Alert.alert("Error", "Failed to upload image");
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image");
+    }
+  };
+
+  const handleSave = async () => {
+    if (!profile) return;
+    setSaving(true);
+    try {
+      // Combine social links to JSON
+      const socialLinksJson = JSON.stringify({
+        instagram: instagram,
+        tiktok: tiktok,
+        twitter: twitter,
+        youtube: youtube,
+      });
+
+      await profileRepository.updateProfile(profile.$id, {
+        display_name: `${firstName} ${lastName}`,
+        bio: bio,
+        website: website,
+        social_links: socialLinksJson,
+      });
+      setEditing(false);
+      await loadProfile();
+      Alert.alert("Success", "Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      Alert.alert("Error", "Failed to update profile");
     } finally {
-      setIsUploading(false);
+      setSaving(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      router.replace("/auth");
+    } catch (error) {
+      Alert.alert("Error", "Failed to sign out");
     }
   };
 
@@ -130,32 +197,16 @@ export default function Profile() {
         showsVerticalScrollIndicator={false}
       >
         <ContentWithPadding style={styles.content}>
-          {/* <View
-            style={{
-              padding: 20,
-              backgroundColor: "#0e0d0f",
-            }}
-          >
-            <Image
-              source={require("@/assets/images/yomu-crop.png")}
-              style={{
-                width: 120,
-                height: 120,
-              }}
-            />
-          </View> */}
           {/* Avatar Section */}
-          <View style={styles.avatarSection}>
-            <TouchableOpacity
-              onPress={handleImageUpload}
-              disabled={isUploading}
-              style={styles.avatarContainer}
-            >
-              {user?.imageUrl ? (
-                <Image
-                  source={{ uri: user.imageUrl }}
-                  style={styles.avatarImage}
-                />
+          <View
+            style={[
+              styles.avatarSection,
+              { backgroundColor: currentTheme.surface },
+            ]}
+          >
+            <View style={styles.avatarContainer}>
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={styles.avatar} />
               ) : (
                 <View
                   style={[
@@ -170,18 +221,23 @@ export default function Profile() {
                   </Text>
                 </View>
               )}
-              {isUploading ? (
-                <View style={styles.avatarOverlay}>
-                  <ActivityIndicator size="small" color="#fff" />
-                </View>
-              ) : (
-                <View style={styles.avatarOverlay}>
-                  <Ionicons name="camera" size={24} color="#fff" />
-                </View>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.editAvatarButton,
+                  { backgroundColor: currentTheme.primary },
+                ]}
+                onPress={pickImage}
+                disabled={uploadingAvatar}
+              >
+                {uploadingAvatar ? (
+                  <Ionicons name="hourglass" size={16} color="#fff" />
+                ) : (
+                  <Ionicons name="camera" size={16} color="#fff" />
+                )}
+              </TouchableOpacity>
+            </View>
             <Text style={[styles.avatarLabel, { color: currentTheme.text }]}>
-              {firstName} {lastName}
+              {`${firstName} ${lastName}`}
             </Text>
             <Text
               style={[
@@ -191,6 +247,404 @@ export default function Profile() {
             >
               {email}
             </Text>
+          </View>
+
+          {/* Profile Information */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: currentTheme.text }]}>
+                Profile Information
+              </Text>
+              <TouchableOpacity
+                onPress={() => setEditing(!editing)}
+                style={styles.editButton}
+              >
+                <Ionicons
+                  name={editing ? "close" : "create-outline"}
+                  size={20}
+                  color={currentTheme.primary}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {editing ? (
+              <>
+                <View style={styles.inputContainer}>
+                  <Text
+                    style={[styles.inputLabel, { color: currentTheme.text }]}
+                  >
+                    Bio
+                  </Text>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      styles.textArea,
+                      {
+                        color: currentTheme.text,
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                    value={bio}
+                    onChangeText={setBio}
+                    placeholder="Tell us about yourself"
+                    placeholderTextColor={currentTheme.textSecondary}
+                    multiline
+                    numberOfLines={4}
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text
+                    style={[styles.inputLabel, { color: currentTheme.text }]}
+                  >
+                    Website
+                  </Text>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        color: currentTheme.text,
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                    value={website}
+                    onChangeText={setWebsite}
+                    placeholder="https://yourwebsite.com"
+                    placeholderTextColor={currentTheme.textSecondary}
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text
+                    style={[styles.inputLabel, { color: currentTheme.text }]}
+                  >
+                    Instagram
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputWithIcon,
+                      {
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="logo-instagram"
+                      size={20}
+                      color={currentTheme.textSecondary}
+                      style={styles.inputIcon}
+                    />
+                    <TextInput
+                      style={[
+                        styles.input,
+                        styles.inputWithIconText,
+                        { color: currentTheme.text },
+                      ]}
+                      value={instagram}
+                      onChangeText={setInstagram}
+                      placeholder="@username"
+                      placeholderTextColor={currentTheme.textSecondary}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text
+                    style={[styles.inputLabel, { color: currentTheme.text }]}
+                  >
+                    TikTok
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputWithIcon,
+                      {
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="logo-tiktok"
+                      size={20}
+                      color={currentTheme.textSecondary}
+                      style={styles.inputIcon}
+                    />
+                    <TextInput
+                      style={[
+                        styles.input,
+                        styles.inputWithIconText,
+                        { color: currentTheme.text },
+                      ]}
+                      value={tiktok}
+                      onChangeText={setTiktok}
+                      placeholder="@username"
+                      placeholderTextColor={currentTheme.textSecondary}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text
+                    style={[styles.inputLabel, { color: currentTheme.text }]}
+                  >
+                    Twitter/X
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputWithIcon,
+                      {
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="logo-x"
+                      size={20}
+                      color={currentTheme.textSecondary}
+                      style={styles.inputIcon}
+                    />
+                    <TextInput
+                      style={[
+                        styles.input,
+                        styles.inputWithIconText,
+                        { color: currentTheme.text },
+                      ]}
+                      value={twitter}
+                      onChangeText={setTwitter}
+                      placeholder="@username"
+                      placeholderTextColor={currentTheme.textSecondary}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text
+                    style={[styles.inputLabel, { color: currentTheme.text }]}
+                  >
+                    YouTube
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputWithIcon,
+                      {
+                        backgroundColor: currentTheme.surface,
+                        borderColor: currentTheme.border,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="logo-youtube"
+                      size={20}
+                      color={currentTheme.textSecondary}
+                      style={styles.inputIcon}
+                    />
+                    <TextInput
+                      style={[
+                        styles.input,
+                        styles.inputWithIconText,
+                        { color: currentTheme.text },
+                      ]}
+                      value={youtube}
+                      onChangeText={setYoutube}
+                      placeholder="channel URL"
+                      placeholderTextColor={currentTheme.textSecondary}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.saveButton,
+                    { backgroundColor: currentTheme.primary },
+                  ]}
+                  onPress={handleSave}
+                  disabled={saving}
+                >
+                  <Text style={styles.saveButtonText}>
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {profile?.bio && (
+                  <View style={styles.infoRow}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      Bio
+                    </Text>
+                    <Text
+                      style={[styles.infoValue, { color: currentTheme.text }]}
+                    >
+                      {profile.bio}
+                    </Text>
+                  </View>
+                )}
+
+                {profile?.website && (
+                  <View style={styles.infoRow}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      Website
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(profile.website)}
+                    >
+                      <Text
+                        style={[
+                          styles.infoValueLink,
+                          { color: currentTheme.primary },
+                        ]}
+                      >
+                        {profile.website}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* Social Links Display */}
+                {(instagram || tiktok || twitter || youtube) && (
+                  <View style={styles.socialLinksContainer}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      Social Links
+                    </Text>
+                    <View style={styles.socialLinksGrid}>
+                      {instagram && (
+                        <TouchableOpacity
+                          style={styles.socialLinkItem}
+                          onPress={() =>
+                            Linking.openURL(
+                              `https://instagram.com/${instagram.replace("@", "")}`,
+                            )
+                          }
+                        >
+                          <Ionicons
+                            name="logo-instagram"
+                            size={24}
+                            color={currentTheme.primary}
+                          />
+                          <Text
+                            style={[
+                              styles.socialLinkText,
+                              { color: currentTheme.text },
+                            ]}
+                          >
+                            {instagram}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      {tiktok && (
+                        <TouchableOpacity
+                          style={styles.socialLinkItem}
+                          onPress={() =>
+                            Linking.openURL(
+                              `https://tiktok.com/@${tiktok.replace("@", "")}`,
+                            )
+                          }
+                        >
+                          <Ionicons
+                            name="logo-tiktok"
+                            size={24}
+                            color={currentTheme.primary}
+                          />
+                          <Text
+                            style={[
+                              styles.socialLinkText,
+                              { color: currentTheme.text },
+                            ]}
+                          >
+                            {tiktok}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      {twitter && (
+                        <TouchableOpacity
+                          style={styles.socialLinkItem}
+                          onPress={() =>
+                            Linking.openURL(
+                              `https://twitter.com/${twitter.replace("@", "")}`,
+                            )
+                          }
+                        >
+                          <Ionicons
+                            name="logo-x"
+                            size={24}
+                            color={currentTheme.primary}
+                          />
+                          <Text
+                            style={[
+                              styles.socialLinkText,
+                              { color: currentTheme.text },
+                            ]}
+                          >
+                            {twitter}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      {youtube && (
+                        <TouchableOpacity
+                          style={styles.socialLinkItem}
+                          onPress={() => Linking.openURL(youtube)}
+                        >
+                          <Ionicons
+                            name="logo-youtube"
+                            size={24}
+                            color={currentTheme.primary}
+                          />
+                          <Text
+                            style={[
+                              styles.socialLinkText,
+                              { color: currentTheme.text },
+                            ]}
+                          >
+                            {youtube}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+                )}
+
+                {!profile?.bio &&
+                  !profile?.website &&
+                  !instagram &&
+                  !tiktok &&
+                  !twitter &&
+                  !youtube && (
+                    <Text
+                      style={[
+                        styles.noInfoText,
+                        { color: currentTheme.textSecondary },
+                      ]}
+                    >
+                      No profile information added yet. Tap the edit icon to add
+                      your bio, website, and social links.
+                    </Text>
+                  )}
+              </>
+            )}
           </View>
 
           {/* Account Actions */}
@@ -203,7 +657,7 @@ export default function Profile() {
                 styles.actionButton,
                 { borderColor: currentTheme.border },
               ]}
-              onPress={() => router.push("/(tabs)/user")}
+              onPress={() => router.push("../user")}
             >
               <Ionicons
                 name="person-outline"
@@ -221,20 +675,6 @@ export default function Profile() {
                 color={currentTheme.textSecondary}
               />
             </TouchableOpacity>
-
-            {/* <TouchableOpacity
-              style={[
-                styles.actionButton,
-                styles.signOutButton,
-                { borderColor: "#ef4444" },
-              ]}
-              onPress={handleSignOut}
-            >
-              <Ionicons name="log-out-outline" size={24} color="#ef4444" />
-              <Text style={[styles.signOutButtonText, { color: "#ef4444" }]}>
-                Sign Out
-              </Text>
-            </TouchableOpacity> */}
           </View>
 
           {/* Theme Settings */}
@@ -245,7 +685,7 @@ export default function Profile() {
 
             {/* Dark/Light Mode Toggle */}
             <View style={styles.modeToggleContainer}>
-              <Pressable
+              <TouchableOpacity
                 style={[
                   styles.modeButton,
                   colorMode === "dark" && styles.selectedMode,
@@ -275,9 +715,9 @@ export default function Profile() {
                 >
                   Dark
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 style={[
                   styles.modeButton,
                   colorMode === "light" && styles.selectedMode,
@@ -307,7 +747,7 @@ export default function Profile() {
                 >
                   Light
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
 
             <Text style={[styles.sectionTitle, { color: currentTheme.text }]}>
@@ -322,39 +762,89 @@ export default function Profile() {
               Choose your preferred accent color
             </Text>
 
-            <View style={styles.colorGrid}>
-              {themeColors.map((theme) => (
-                <Pressable
-                  key={theme.key}
+            {/* Color Dropdown */}
+            <TouchableOpacity
+              style={[
+                styles.dropdownButton,
+                {
+                  borderColor: currentTheme.border,
+                  backgroundColor: currentTheme.surface,
+                },
+              ]}
+              onPress={() => setColorDropdownOpen(!colorDropdownOpen)}
+            >
+              <View style={styles.selectedColorDisplay}>
+                <View
                   style={[
-                    styles.colorButton,
-                    themeName === theme.key && styles.selectedColor,
-                    { backgroundColor: currentTheme.surface },
+                    styles.colorCircleSmall,
+                    {
+                      backgroundColor:
+                        themeColors.find((t) => t.key === themeName)?.color ||
+                        currentTheme.primary,
+                    },
                   ]}
-                  onPress={() => setPresetTheme(theme.key)}
+                />
+                <Text
+                  style={[styles.dropdownText, { color: currentTheme.text }]}
                 >
-                  <View
+                  {themeColors.find((t) => t.key === themeName)?.name ||
+                    "Default"}
+                </Text>
+              </View>
+              <Ionicons
+                name={colorDropdownOpen ? "chevron-up" : "chevron-down"}
+                size={20}
+                color={currentTheme.textSecondary}
+              />
+            </TouchableOpacity>
+
+            {colorDropdownOpen && (
+              <View
+                style={[
+                  styles.dropdownMenu,
+                  {
+                    backgroundColor: currentTheme.surface,
+                    borderColor: currentTheme.border,
+                  },
+                ]}
+              >
+                {themeColors.map((theme) => (
+                  <TouchableOpacity
+                    key={theme.key}
                     style={[
-                      styles.colorCircle,
-                      { backgroundColor: theme.color },
+                      styles.dropdownItem,
+                      themeName === theme.key && styles.dropdownItemSelected,
                     ]}
-                  />
-                  {themeName === theme.key && (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={24}
-                      color={theme.color}
-                      style={styles.checkIcon}
-                    />
-                  )}
-                  <Text
-                    style={[styles.colorName, { color: currentTheme.text }]}
+                    onPress={() => {
+                      setPresetTheme(theme.key);
+                      setColorDropdownOpen(false);
+                    }}
                   >
-                    {theme.name}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+                    <View
+                      style={[
+                        styles.colorCircleSmall,
+                        { backgroundColor: theme.color },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.dropdownItemText,
+                        { color: currentTheme.text },
+                      ]}
+                    >
+                      {theme.name}
+                    </Text>
+                    {themeName === theme.key && (
+                      <Ionicons
+                        name="checkmark"
+                        size={20}
+                        color={currentTheme.primary}
+                      />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
         </ContentWithPadding>
       </ScrollView>
@@ -372,6 +862,8 @@ const styles = StyleSheet.create({
   avatarSection: {
     alignItems: "center",
     paddingVertical: 30,
+    borderRadius: 16,
+    marginBottom: 24,
   },
   avatar: {
     width: 100,
@@ -379,12 +871,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
-  },
-  avatarImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
     marginBottom: 16,
   },
   avatarText: {
@@ -407,12 +893,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 20,
     fontWeight: "600",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   sectionSubtitle: {
     color: "#888",
     fontSize: 14,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   modeToggleContainer: {
     flexDirection: "row",
@@ -451,13 +937,162 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-  signOutButton: {
+  bioText: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  websiteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+  },
+  websiteText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  editButton: {
+    padding: 8,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  input: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    fontSize: 16,
+  },
+  inputWithIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  inputIcon: {
+    paddingHorizontal: 12,
+  },
+  inputWithIconText: {
+    flex: 1,
+    padding: 12,
+    borderWidth: 0,
+  },
+  textArea: {
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  saveButton: {
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
     marginTop: 8,
   },
-  signOutButtonText: {
-    flex: 1,
+  saveButtonText: {
+    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  infoRow: {
+    marginBottom: 16,
+  },
+  infoLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  infoValue: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  infoValueLink: {
+    fontSize: 14,
+    textDecorationLine: "underline",
+  },
+  noInfoText: {
+    fontSize: 14,
+    fontStyle: "italic",
+    textAlign: "center",
+    paddingVertical: 20,
+  },
+  dropdownButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 4,
+  },
+  selectedColorDisplay: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  colorCircleSmall: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  dropdownText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  dropdownMenu: {
+    marginTop: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
+  dropdownItemSelected: {
+    backgroundColor: "rgba(0,0,0,0.05)",
+  },
+  dropdownItemText: {
+    flex: 1,
+    fontSize: 16,
+  },
+  socialLinksContainer: {
+    marginTop: 16,
+  },
+  socialLinksGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 8,
+  },
+  socialLinkItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  socialLinkText: {
+    fontSize: 13,
+    fontWeight: "500",
   },
   colorGrid: {
     flexDirection: "row",
@@ -496,7 +1131,6 @@ const styles = StyleSheet.create({
   logout: {
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: "#ccc",
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -506,15 +1140,16 @@ const styles = StyleSheet.create({
     position: "relative",
     marginBottom: 12,
   },
-  avatarOverlay: {
+  editAvatarButton: {
     position: "absolute",
-    bottom: 5,
-    right: 5,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 20,
-    width: 40,
-    height: 40,
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
   },
 });
